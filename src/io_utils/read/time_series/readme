@@ -1,9 +1,0 @@
-Each dataset gets its own, (geo) reader that knows where the data is
-stored (local, project PCs, in the GEO network), but can be extended
-to other (fallback) pathes.
-
-The readers are mostly based on the official packages (github), but we
-have implemented some features, so that the can be combined into a
-GeoDsTsReader to easily read multiple datasets.
-    This includes a resampling function in each reader
-

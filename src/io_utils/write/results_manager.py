@@ -16,6 +16,16 @@ import xarray as xr
 import ntpath
 
 def compress_nc(infile, replace=True):
+    """
+    Compress a target netcdf file
+
+    Parameters
+    ----------
+    infile : str
+        Path to the target netcdf file
+    replace : bool, optional (default: True)
+        Overwrite the input file with the compressed one.
+    """
     ds = xr.open_dataset(infile)
 
     path = os.path.abspath(os.path.join(infile, os.pardir))

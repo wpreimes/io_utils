@@ -1,0 +1,12 @@
+LEVEL1:
+  A_CLASS<CLASS> : [numpy.ma, masked_array]
+  A_FUNCTION<FUNCTION> : [numpy.ma, unique]
+  PATH<PATH><WIN> : ['D:\', 'data']
+  PATH<PATH><LINUX> : ['/', 'data']
+  A_MODULE<MODULE> : numpy.ma
+OTHER:
+  TEST_1: TEST1
+  TEST_2: 2
+  TEST_DICT: {'one':1}
+  TEST_LIST: [1,2,3]
+
