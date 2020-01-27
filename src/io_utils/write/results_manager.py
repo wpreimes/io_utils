@@ -15,7 +15,7 @@ from collections import OrderedDict
 import xarray as xr
 import ntpath
 
-def compress_nc(infile, replace=True):
+def compress_nc(infile, replace=True, dtypes=np.float32):
     """
     Compress a target netcdf file
 
@@ -32,8 +32,12 @@ def compress_nc(infile, replace=True):
     filename = ntpath.basename(infile)
     outfile = os.path.join(path, 'compressed_' + filename)
 
+    for var in ds.variables:
+        if var not in ['lat', 'lon', 'time']:
+            ds.variables[var][:] = dtypes(ds.variables[var][:])
+
     ds.to_netcdf(outfile, mode='w',
-              encoding={var: {'complevel': 6, 'zlib': True} for var in ds.variables \
+              encoding={var: {'complevel': 9, 'zlib': True} for var in ds.variables \
                         if var not in ['lat', 'lon', 'time']})
     ds.close()
     if replace:
@@ -91,7 +95,7 @@ def build_filename(root, key):
 
     return os.path.join(root, '.'.join([fname, ext]))
 
-def netcdf_results_manager(results, save_path, filename=None, zlib=True):
+def netcdf_results_manager(results, save_path, filename=None, zlib=True, fv=99999):
     """
     Function for writing the results of the validation process as NetCDF file.
 
@@ -133,7 +137,7 @@ def netcdf_results_manager(results, save_path, filename=None, zlib=True):
                 var = ncfile.variables[field]
             else:
                 var_type = results[key][field].dtype
-                kwargs = {'fill_value': -99999}
+                kwargs = {'fill_value': fv}
                 # if dtype is a object the assumption is that the data is a
                 # string
                 if var_type == object:
@@ -185,7 +189,7 @@ class Results(object):
         return self.__var_attrs
 
     @glob_attrs.setter
-    def glob_attrs(self, attrs):
+    def glob_attrs(self, attrs, ):
         """
         Set the global attributes (global metadata.
 
@@ -370,7 +374,7 @@ class NcResultsManager(object):
         self.res[name].var_attrs = var_attrs
 
 
-    def _to_netcdf(self, filename=None):
+    def _to_netcdf(self, filename=None, fill_value=-9999., dtypes=np.float32):
         """
         Write the data from memory to disk as a netcdf file.
         """
@@ -403,7 +407,11 @@ class NcResultsManager(object):
                             encoding = {}
                             for var in dataset.variables:
                                 if var not in [r.lat_name, r.lon_name]:
-                                    encoding[var] = {'complevel': 6, 'zlib': True}
+                                    dataset.variables[var][:] = dtypes(dataset.variables[var].fillna(fill_value))
+                                    print(dataset.variables[var][:])
+                                    print(type(dataset.variables[var][:]))
+                                    encoding[var] = {'complevel': 9, 'zlib': True,
+                                                     '_FillValue':fill_value}
                         else:
                             encoding = None
                         dataset.to_netcdf(filename, engine='netcdf4', encoding=encoding)
@@ -417,8 +425,27 @@ class NcResultsManager(object):
                     self._to_netcdf()
 
 if __name__ == '__main__':
-    src = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\global.nc"
-    compress_nc(src)
+    path = r'C:\Temp\test_compress'
+
+    writer= NcResultsManager(save_path=path, zlib=True, buffr_size=None, force_points=None)
+
+    gpis = np.array(list(range(1,1000)))
+    lat = np.array(list(range(30,30+len(gpis),1)))
+    lon = np.array(list(range(-119,-119+len(gpis),1)))
+    n_obs = np.random.randint(0,1000,len(gpis))
+    data=  np.array([1] * len(gpis))
+    empty=  np.array([np.nan] * len(gpis))
+    #s = np.array(['s%i' %i for i in gpis])
+    n = np.random.random_sample(len(lon))
+
+
+    results = {('test1','test2') :
+                   dict(lat=lat, lon=lon, gpi=gpis, n_obs=n_obs, n=n, data=data, empty=empty)}
+
+    for name, result in results.items():
+        writer.add(name, result)
+
+    writer.close()
 
     # one = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\joined.nc"
     # other = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\third.nc"
@@ -446,12 +473,3 @@ if __name__ == '__main__':
     # var_attrs = {'n_obs': {'name':'Number of Observations', 'smthg_else':1}}
     # glob_attrs = {'test1':'test', 'test2': 'test'}
     #
-    # writer= NcResultsManager(save_path=path, zlib=True, buffr_size=2, force_points=None)
-    #
-    # for name, result in results.items():
-    #     writer.add(name, result)
-    #
-    # for name in list(results.keys()):
-    #     writer.set_attrs(name=name, glob_attrs=glob_attrs, var_attrs=var_attrs)
-    #
-    # writer.close()

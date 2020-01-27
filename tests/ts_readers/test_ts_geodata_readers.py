@@ -68,7 +68,7 @@ def test_era5land_snow_reader():
 def test_eraint_reader():
     reader = GeoEraIntGBG4Ts(dataset=('ERAINT-Land', 'GBG4', 'core'),
                            ioclass_kws={'read_bulk': True},
-                           parameters=['39'], scale_factors={'39': 100.})
+                           parameters=['39'], scale_factors={'39': 1.})
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
 
@@ -79,18 +79,19 @@ def test_C3S201706_combined_readers():
     force_path_group = '_test'
     reader = GeoC3Sv201706FullCDRTs(dataset=('C3S', 'v201706', 'COMBINED'),
         grid_path=None, ioclass_kws={'read_bulk': True},
-        parameters=['sm', 'flag', 'sm_uncertainty'], scale_factors={'sm': 100.},
+        parameters=['sm', 'flag', 'sm_uncertainty'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
-    reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
+    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
     #print(ts)
 
 if __name__ == '__main__':
-    test_cci_v045_reader()
-    #test_cci_v044_reader()
-    #test_era5land_snow_reader()
-    #test_eraint_reader()
-    #test_C3S201706_combined_readers()
+    # test_cci_v045_reader()
+    # test_cci_v044_reader()
+    # test_era5land_merged_reader()
+    # test_era5land_snow_reader()
+    # test_eraint_reader()
+    test_C3S201706_combined_readers()
 
 

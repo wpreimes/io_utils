@@ -60,7 +60,8 @@ class PathConfig(object):
                 print('OS: {}; PathGroup: {}; Dataset: {}'.format(
                     self.os, group, self.name))
             else:
-                raise PathNotFoundError('No configuration found for the passed group')
+                raise PathNotFoundError('No configuration found for group {}'.
+                                        format(group))
             return path
         else:
             for group, ospath in self.config.items():

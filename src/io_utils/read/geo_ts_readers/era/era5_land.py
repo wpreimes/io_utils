@@ -18,12 +18,13 @@ class GeoPathEra5LandTs(ERATs):
     # Reader implementation that uses the PATH configuration from above
     _ds_implemented = [('ERA5-Land', 'sm_precip_lai'),
                        ('ERA5-Land', 'snow'),
-                       ('ERA5-Land', 'temperature')]
+                       ('ERA5-Land', 'temperature'),
+                       ('ERA5-Land', 'testdata')]
 
-    def __init__(self, dataset, **kwargs):
+    def __init__(self, dataset, force_path_group=None, **kwargs):
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
-        ts_path = self.path_config.load_path()
+        ts_path = self.path_config.load_path(force_path_group=force_path_group)
         super(GeoPathEra5LandTs, self).__init__(ts_path, **kwargs)
 
 # check if datasets in reader and in dict match

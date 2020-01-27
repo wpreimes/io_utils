@@ -19,3 +19,7 @@ from src.io_utils.read.geo_ts_readers.gldas.gldas21 import *
 from src.io_utils.read.geo_ts_readers.gldas.gldas20 import *
 
 from src.io_utils.read.geo_ts_readers.merra.merra2 import *
+
+from src.io_utils.read.geo_ts_readers.smos.smos_ic import *
+
+from src.io_utils.read.geo_ts_readers.smap.smap import *

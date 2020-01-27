@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Module description
+Paths for different subversions / paramter combinations of MERRA2 Time Series.
 """
 # TODO:
 #   (+) 

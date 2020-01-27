@@ -16,7 +16,6 @@ import os
 from pprint import pprint
 from collections import OrderedDict
 
-
 class GeoDsTsReader(object):
     # Implements Adapters for the
     # todo: Implement an Adaptor for the full, loaded DF, e.g. to filter for certain temperature thresholds?

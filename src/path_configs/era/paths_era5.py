@@ -48,10 +48,14 @@ path_settings = \
                                          'datasets',
                                          'netcdf'),
                  }),
+            ]),
+        ('ERA5', 'testdata'):
+        # paths will be tried in this order
+            OrderedDict([
                 ('_test',
                  {
-                     'win': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'core'),
-                     'lin': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'core')
+                     'win': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'sm_tmp'),
+                     'lin': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'sm_tmp')
                  }),
             ]),
     }

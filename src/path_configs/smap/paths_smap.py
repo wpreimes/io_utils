@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+
+"""
+Paths for different subversions / paramter combinations of SMAP Time Series.
+"""
+
+import os
+from collections import OrderedDict
+from rsroot import root_path
+
+from src.globals import get_test_root
+
+path_settings = \
+    {
+        ('SMAP', 'SP3SMPv5', 'ASC'):
+            # paths will be tried in this order
+            OrderedDict([
+                ('local',
+                    {
+                        'win': os.path.join(root_path.d,
+                                            'data-read',
+                                            'SMAP_TS',
+                                            'SPL3SMP.005',
+                                            'ASC'),
+                        'lin': os.path.join(root_path.dr,
+                                            'USERS',
+                                            'wpreimes',
+                                            'SMAP_TS',
+                                            'SPL3SMP.005',
+                                            'ASC'),
+                    }),
+                ('radar',
+                    {
+                        'win': os.path.join(root_path.r,
+                                            'Datapool_processed',
+                                            'SMAP',
+                                            'SPL3SMP_v5',
+                                            'PM_ascending',
+                                            'netcdf'),
+                        'lin': os.path.join(root_path.r,
+                                            'Datapool_processed',
+                                            'SMAP',
+                                            'SPL3SMP_v5',
+                                            'PM_ascending',
+                                            'netcdf'),
+                    }),
+                ('_test',
+                    {
+                        'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                            'SMAP', 'smap_spl3smpv5_asc'),
+                        'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                            'SMAP', 'smap_spl3smpv5_asc'),
+                    }),
+            ]),
+        ('SMAP', 'SP3SMPv5', 'DES'):
+        # paths will be tried in this order
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'SMAP_TS',
+                                         'SPL3SMP.005',
+                                         'DES'),
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'SMAP_TS',
+                                         'SPL3SMP.005',
+                                         'DES'),
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'SMAP',
+                                         'SPL3SMP_v5',
+                                         'AM_descending',
+                                         'netcdf'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'SMAP',
+                                         'SPL3SMP_v5',
+                                         'AM_descending',
+                                         'netcdf'),
+                 }),
+            ]),
+    }

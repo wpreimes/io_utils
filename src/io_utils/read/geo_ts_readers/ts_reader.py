@@ -13,6 +13,7 @@ import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
@@ -83,16 +84,35 @@ class GeoTsReader(object):
         return df
 
 if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers.era import GeoEra5LandTs
-    cls = GeoEra5LandTs
-
-    reader = GeoTsReader(cls,
-                reader_kwargs={'var_groups': ['sm_precip_lai', 'temperature'],
-                               'parameters': ['stl1', 'swvl1'],
+    from io_utils.read.geo_ts_readers import GeoMerra2Ts
+    from io_utils.read.geo_ts_readers import GeoCCISMv4Ts
+    merrareader = GeoTsReader(GeoMerra2Ts,
+                reader_kwargs={'dataset': ('MERRA2', 'core'),
+                               'parameters': ['SFMC'],
                                'ioclass_kws': {'read_bulk': True}},
-                selfmaskingadapter_kwargs={'op':'>=', 'threshold':277.15, 'column_name':'stl1'},
-                climadapter_kwargs={'columns':['swvl1'], 'timespan':[datetime(1991,1,1), datetime(2010,12,31)]},
-                resample=None, params_rename={'swvl1': 'ERA5LandSM'})
-    ts = reader.read(15,45)
+                resample=('1D', pd.DataFrame.mean), params_rename={'SFMC': 'MERRA2 SFMC'})
 
+    ccireader = GeoTsReader(GeoCCISMv4Ts,
+                reader_kwargs={'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
+                               'parameters': ['sm'],
+                               'ioclass_kws': {'read_bulk': True}},
+                resample=('1D', pd.DataFrame.mean), params_rename={'sm': 'ESA CCI SM'})
 
+    ts_merra = merrareader.read(46.375, 18.625)
+    ts_cci = ccireader.read(46.375, 18.625)
+
+    df = pd.concat([ts_merra, ts_cci], axis=1)
+    df_mean = df.rolling(30, min_periods=10).mean().dropna()
+
+    from pytesmo.scaling import scale
+    df_mean= scale(df_mean, 'mean_std', reference_index=1)
+
+    df_mean['$\Delta$(CAN,REF)'] = df_mean['ESA CCI SM'] - df_mean['MERRA2 SFMC']
+
+    df_mean = df_mean.loc['2007-01-01': '2018-12-31']
+    ax = df_mean.plot()
+    ax.hlines(0, df_mean.index[0], df_mean.index[-1])
+    ax.vlines('2012-07-01', -0.05, 0.17, color='red', linewidth=5)
+    from matplotlib.legend import _get_legend_handles
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
+               ncol=3, mode="expand", borderaxespad=0.)

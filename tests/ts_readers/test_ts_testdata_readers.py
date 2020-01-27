@@ -3,14 +3,35 @@
 """
 Test the readers for which there is test data in this package
 """
-# TODO:
-#   (+) 
-#---------
-# NOTES:
-#   -
 from io_utils.read.geo_ts_readers import *
 
 test_loc = (-155.875, 19.625)
+
+def test_smosic_reader():
+    force_path_group = '_test'
+    smos_reader = GeoSMOSICTs(dataset=('SMOS', 'IC', 'ASC'),
+                              ioclass_kws={'read_bulk': True},
+                              parameters=['Soil_Moisture', 'Quality_Flag'],
+                              scale_factors={'sm': 1.},
+                              force_path_group=force_path_group)
+    celldata = smos_reader.read_cells([165,166])
+    assert any([not data.empty for gpi, data in celldata.items()])
+    smos_reader = SelfMaskingAdapter(smos_reader, '==', 0, 'Quality_Flag')
+    ts = smos_reader.read(*test_loc)
+    assert not ts.empty
+
+def test_smap_spl3_reader():
+    force_path_group = '_test'
+    smap_reader = GeoSMAPTs(dataset=('SMAP', 'SP3SMPv5', 'ASC'),
+                         ioclass_kws={'read_bulk': True},
+                         parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
+                         scale_factors={'soil_moisture_pm': 1.},
+                         force_path_group=force_path_group)
+    celldata = smap_reader.read_cells([165,166])
+    assert any([not data.empty for gpi, data in celldata.items()])
+    smap_reader = SelfMaskingAdapter(smap_reader, '!=', 999, 'retrieval_qual_flag_pm')
+    ts = smap_reader.read(*test_loc)
+    assert not ts.empty
 
 def test_cci_v033_reader():
     vers = 'v033'
@@ -229,17 +250,6 @@ def test_gldas20_ts_reader():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
-def test_gldas21_ts_reader():
-    force_path_group = '_test'
-    reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'core'),
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['SoilMoi0_10cm_inst'],
-                          scale_factors={'SoilMoi0_10cm_inst': 0.01},
-                          force_path_group=force_path_group)
-    ts = reader.read(*test_loc)
-    assert not ts.dropna(how='all').empty
-    #print(ts)
-
 def test_merra2_ts_reader():
     force_path_group = '_test'
     reader = GeoMerra2Ts(dataset=('MERRA2', 'core'),
@@ -250,12 +260,51 @@ def test_merra2_ts_reader():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
+def test_era5_land_ts_reader():
+    force_path_group = '_test'
+    reader = GeoEra5LandTs(group_vars={'testdata': ['swvl1', 'stl1']},
+                           ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.},
+                           force_path_group=force_path_group)
+    reader = SelfMaskingAdapter(reader, '>=', 273.15, 'stl1')
+    ts = reader.read(*test_loc)
+    assert not ts.dropna(how='all').empty
+    #print(ts)
+
+
+def test_era5_ts_reader():
+    force_path_group = '_test'
+    reader = GeoEra5Ts(dataset=('ERA5', 'testdata'),
+                       ioclass_kws={'read_bulk': True},
+                       parameters=['swvl1', 'stl1'], scale_factors={'swvl1': 100.},
+                       force_path_group=force_path_group)
+    reader = SelfMaskingAdapter(reader, '>=', 273.15, 'stl1')
+    ts = reader.read(*test_loc)
+    assert not ts.dropna(how='all').empty
+    # print(ts)
+
+def test_gldas21_ts_reader():
+    force_path_group = '_test'
+    reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'testdata'),
+                          ioclass_kws={'read_bulk': True},
+                          parameters=['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
+                          scale_factors={'SoilMoi0_10cm_inst': 0.01},
+                          force_path_group=force_path_group)
+    reader = SelfMaskingAdapter(reader, '>=', 273.15, 'SoilTMP0_10cm_inst')
+    ts = reader.read(*test_loc)
+    assert not ts.dropna(how='all').empty
+    #print(ts)
 
 if __name__ == '__main__':
-    test_cci_v033_reader()
-    test_cci_v044_reader()
-    test_cci_v045_reader()
-
+    test_smap_spl3_reader()
+    # test_smosic_reader()
+    # test_gldas21_ts_reader()
+    # test_era5_land_ts_reader()
+    # test_era5_ts_reader()
+    #
+    # test_cci_v033_reader()
+    # test_cci_v044_reader()
+    # test_cci_v045_reader()
+    #
     # test_merra2_ts_reader()
     #
     # test_C3S201706_single_readers()

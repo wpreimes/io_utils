@@ -16,7 +16,8 @@ from path_configs.era.paths_era5 import path_settings
 class GeoEra5Ts(ERATs):
     # Reader implementation that uses the PATH configuration from above
 
-    _ds_implemented = [('ERA5', 'core')]
+    _ds_implemented = [('ERA5', 'core'),
+                       ('ERA5', 'testdata')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
         self.dataset = dataset
@@ -30,7 +31,7 @@ assert sorted(list(path_settings.keys())) == sorted(GeoEra5Ts._ds_implemented)
 
 if __name__ == '__main__':
     reader = GeoEra5Ts(dataset=('ERA5', 'core'),
-                       resample='D', ioclass_kws={'read_bulk': True},
+                       ioclass_kws={'read_bulk': True},
                        parameters=['swvl1'], scale_factors={'swvl1': 100.})
     ts = reader.read(15,48)
     print(ts)

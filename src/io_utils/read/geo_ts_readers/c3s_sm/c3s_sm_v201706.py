@@ -118,6 +118,7 @@ for ds in GeoC3Sv201706FullCDRTs._ds_implemented:
     assert tuple(list(ds) + ['TCDR'])  in path_settings.keys()
     assert tuple(list(ds) + ['ICDR']) in path_settings.keys()
 
+# ==============================================================================
 if __name__ == '__main__':
     for record in ['TCDR', 'ICDR']:
         for dataset in ['COMBINED', 'ACTIVE', 'PASSIVE']:

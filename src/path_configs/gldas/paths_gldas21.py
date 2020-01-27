@@ -4,8 +4,6 @@ import os
 from rsroot import root_path
 from src.globals import get_test_root
 
-test_data_path = os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas21_ts')
-
 path_settings = \
     {
         ('GLDAS21', 'core'):
@@ -38,10 +36,13 @@ path_settings = \
                                             'datasets',
                                             'netcdf'),
                     }),
-                ('_test',
-                    {
-                        'win': test_data_path,
-                        'lin': test_data_path,
-                    })
         ]),
+
+        ('GLDAS21', 'testdata'):
+            ('_test',
+             {
+                 'win': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas21_ts'),
+                 'lin': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas21_ts'),
+             }),
+
     }
