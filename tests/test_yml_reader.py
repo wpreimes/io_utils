@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Module description
-"""
-# TODO:
-#   (+) 
-#---------
-# NOTES:
-#   -
 import os
 from src.io_utils.yml.read import spaceify
 import numpy as np
@@ -15,7 +7,7 @@ import sys
 
 def test_read():
     yml_path = os.path.join(
-        os.path.dirname(os.path.join(os.path.abspath(__file__))), 'test_data', 'test_config.yml')
+        os.path.dirname(os.path.join(os.path.abspath(__file__))), 'test_data', 'yml', 'test_config.yml')
     LEVEL1, OTHER = spaceify(yml_path)
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)

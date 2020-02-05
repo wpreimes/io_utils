@@ -36,7 +36,10 @@ class GeoCCISMv4Ts(CCITs):
                        ('ESA_CCI_SM', 'v045', 'PASSIVE'),
                        ('ESA_CCI_SM', 'v044', 'COMBINED'),
                        ('ESA_CCI_SM', 'v044', 'ACTIVE'),
-                       ('ESA_CCI_SM', 'v044', 'PASSIVE')]
+                       ('ESA_CCI_SM', 'v044', 'PASSIVE'),
+                       ('ESA_CCI_SM', 'v047', 'COMBINED'),
+                       ('ESA_CCI_SM', 'v047', 'ACTIVE'),
+                       ('ESA_CCI_SM', 'v047', 'PASSIVE')]
 
 
     def __init__(self, dataset, exact_index=False, force_path_group=None, **kwargs):

@@ -17,6 +17,123 @@ from src.globals import get_test_root
 
 path_settings = \
     {
+        ('ESA_CCI_SM', 'v047', 'COMBINED'):
+        # paths will be tried in this order
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'CCI_47_D_TS',
+                                         'combined'),
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'CCI_47_D_TS',
+                                         'combined'),
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'combined'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'combined'),
+                 }),
+                ('_test',
+                 {
+                     'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'combined'),
+                     'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'combined')
+                 })
+            ]),
+
+        ('ESA_CCI_SM', 'v047', 'ACTIVE'):
+        # paths will be tried in this order
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'CCI_47_D_TS',
+                                         'active'),
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'CCI_47_D_TS',
+                                         'active'),
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'active'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'active'),
+                 }),
+                ('_test',
+                 {
+                     'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'active'),
+                     'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'active')
+                 })
+            ]),
+
+        ('ESA_CCI_SM', 'v047', 'PASSIVE'):
+        # paths will be tried in this order
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'CCI_47_D_TS',
+                                         'passive'),
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'CCI_47_D_TS',
+                                         'passive'),
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'passive'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool_processed',
+                                         'ESA_CCI_SM',
+                                         'ESA_CCI_SM_v04.7',
+                                         '063_images_to_ts',
+                                         'passive'),
+                 }),
+                ('_test',
+                 {
+                     'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'passive'),
+                     'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'esa_cci_sm', 'v047', 'passive')
+                 })
+            ]),
+
         ('ESA_CCI_SM', 'v045', 'COMBINED'):
             # paths will be tried in this order
             OrderedDict([

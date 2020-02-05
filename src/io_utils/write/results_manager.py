@@ -1,475 +1,556 @@
 # -*- coding: utf-8 -*-
 
-'''
-The results manager stores validation results as netcdf files.
-'''
+"""
+Xarray Stacked Images Writer.
+Create 3D datasets, allows setting spatial and temporal subset (images and time
+series)
+"""
 
-import os
-import netCDF4
-
-from datetime import datetime
-import pandas as pd
-import numpy as np
-import warnings
-from collections import OrderedDict
 import xarray as xr
-import ntpath
+import numpy as np
+import pandas as pd
+from datetime import datetime
+import warnings
+import matplotlib.pyplot as plt
+import os
+from io_utils.utils import safe_arange
+from pygeogrids.grids import BasicGrid, CellGrid, lonlat2cell
 
-def compress_nc(infile, replace=True, dtypes=np.float32):
+def minmax(values):
+    return np.nanmin(values), np.nanmax(values)
+
+def to_reg_cell_grid(grid, cellsize=5.):
     """
-    Compress a target netcdf file
+    Create RegularCellGrid from BasicGrid or CellGrid
 
     Parameters
     ----------
-    infile : str
-        Path to the target netcdf file
-    replace : bool, optional (default: True)
-        Overwrite the input file with the compressed one.
-    """
-    ds = xr.open_dataset(infile)
+    grid : CellGrid or BasicGrid
+        Input grid to convert
+    cellsize : float, optional (default: 5.)
+        Cell size of the CellGrid to create.
 
-    path = os.path.abspath(os.path.join(infile, os.pardir))
-    filename = ntpath.basename(infile)
-    outfile = os.path.join(path, 'compressed_' + filename)
-
-    for var in ds.variables:
-        if var not in ['lat', 'lon', 'time']:
-            ds.variables[var][:] = dtypes(ds.variables[var][:])
-
-    ds.to_netcdf(outfile, mode='w',
-              encoding={var: {'complevel': 9, 'zlib': True} for var in ds.variables \
-                        if var not in ['lat', 'lon', 'time']})
-    ds.close()
-    if replace:
-        os.remove(infile)
-        os.rename(outfile, infile)
-
-
-def join_files(tmp_dir, out_file, mfdataset=False):
-    if mfdataset:
-        cell_data = xr.open_mfdataset(os.path.join(tmp_dir, '*.nc'))
-        cell_data.to_netcdf(out_file)
-    else:
-        if len(os.listdir(tmp_dir)) == 0:
-            return
-    dfs = []
-    for filename in os.listdir(tmp_dir):
-        ds = xr.open_dataset(os.path.join(tmp_dir, filename))
-        dfs.append(ds.to_dataframe().dropna(how='all'))
-
-    df = pd.concat(dfs, axis=0)
-
-    df.to_xarray().to_netcdf(out_file, mode='w', engine='scipy')
-
-def build_filename(root, key):
-    """
-    Create savepath/filename that does not exceed 255 characters
-    Parameters
-    ----------
-    root : str
-        Directory where the file should be stored
-    key : list of tuples
-        The keys are joined to create a filename from them. If the length of the
-        joined keys is too long we shorten it.
     Returns
     -------
-    fname : str
-        Full path to the netcdf file to store
+    grid : RegularCellGrid
+        A regularly gridded CellGrid
     """
-    ds_names = []
-    for ds in key:
-        if isinstance(ds, tuple):
-            ds_names.append('.'.join(ds))
-        else:
-            ds_names.append(ds)
 
-    fname = '_with_'.join(ds_names)
-    ext = 'nc'
+    if isinstance(grid, RegularCellGrid) and (grid.cellsize == cellsize):
+        return grid
 
-    if len(os.path.join(root, '.'.join([fname, ext]))) > 255:
-        ds_names = [str(ds[0]) for ds in key]
-        fname = '_with_'.join(ds_names)
-
-        if len(os.path.join(root, '.'.join([fname, ext]))) > 255:
-            fname = 'validation'
-
-    return os.path.join(root, '.'.join([fname, ext]))
-
-def netcdf_results_manager(results, save_path, filename=None, zlib=True, fv=99999):
-    """
-    Function for writing the results of the validation process as NetCDF file.
-
-    Parameters
-    ----------
-    results : dict of dicts
-        Keys: Combinations of (referenceDataset.column, otherDataset.column)
-        Values: dict containing the results from metric_calculator
-    save_path : str
-        Path where the file/files will be saved.
-    filename : str, optional (default: None)
-        Name of the file under which the results are stored. If this is None,
-        we build a filename from the keys of results.
-    zlib : bool, optional (default: True)
-        Activate netcdf compression (level 6 of 9).
-    """
-    for key in results.keys():
-        if not filename:
-            fname = build_filename(save_path, key)
-        else:
-            fname = filename
-        filename = os.path.join(save_path, fname)
-        if not os.path.exists(filename):
-            ncfile = netCDF4.Dataset(filename, 'w')
-
-            global_attr = {}
-            s = "%Y-%m-%d %H:%M:%S"
-            global_attr['date_created'] = datetime.now().strftime(s)
-            ncfile.setncatts(global_attr)
-
-            ncfile.createDimension('dim', None)
-        else:
-            ncfile = netCDF4.Dataset(filename, 'a')
-
-        index = len(ncfile.dimensions['dim'])
-        for field in results[key]:
-
-            if field in ncfile.variables.keys():
-                var = ncfile.variables[field]
-            else:
-                var_type = results[key][field].dtype
-                kwargs = {'fill_value': fv}
-                # if dtype is a object the assumption is that the data is a
-                # string
-                if var_type == object:
-                    var_type = str
-                    kwargs = {}
-
-                if zlib:
-                    kwargs['zlib'] = True,
-                    kwargs['complevel'] = 6
-
-                var = ncfile.createVariable(field, var_type,
-                                            'dim', **kwargs)
-            var[index:] = results[key][field]
-
-        ncfile.close()
+    return RegularCellGrid(grid.arrlon, grid.arrlat, cellsize, gpis=grid.gpis,
+                           subset=grid.subset, shape=grid.shape)
 
 
-class Results(object):
-    # todo: use arrays instead of dataframes to speed things up?
-    def __init__(self, lon_name='lon', lat_name='lat'):
+class Point(object):
+
+    """ Helper class to combine lon and lat in one Point """
+
+    def __init__(self, lon, lat):
+
+        if lat > 90. or lat <-90:
+            raise IOError('{} is out of valid bounds (+-90) for Latitude'.format(lat))
+        if lon > 180. or lon <-180:
+            raise IOError('{} is out of valid bounds (+-180) for Longitude'.format(lon))
+
+        self.__lon, self.__lat = lon, lat
+        self.__loc = (lon, lat)
+
+    def __str__(self):
+        return 'Lon: {}, Lat: {}'.format(self.lon, self.lat)
+
+    @property
+    def lon(self):
+        return self.__lon
+
+    @property
+    def lat(self):
+        return self.__lat
+
+    @property
+    def loc(self):
+        return (self.lon, self.lat)
+
+class RegularCellGrid(CellGrid):
+
+    # Special for of a Cell Grid that has equal spacing between grid points
+
+    def __init__(self, lon, lat, cellsize=5., gpis=None, geodatum='WGS84',
+                 subset=None, setup_kdTree=False, **kwargs):
+
+        self.cellsize = cellsize
+        cells = lonlat2cell(lon, lat, cellsize=cellsize)
+
+        super(RegularCellGrid, self).__init__(lon, lat, cells, gpis, geodatum,
+                                              subset=subset, setup_kdTree=setup_kdTree,
+                                              **kwargs)
+
+        self.dx, self.dy = self._grid_space()
+
+    def _grid_space(self):
+        # find the resolution of the grid and check if it is regular along x and y
+        lons, lats = self.get_grid_points()[1], self.get_grid_points()[2]
+        diff_x, diff_y = np.diff(sorted(np.unique(lons))), np.diff(sorted(np.unique(lats)))
+
+        dx = np.max(diff_x)
+        assert np.min(diff_x) == dx
+        dy = np.max(diff_y)
+        assert np.min(diff_y) == dy
+
+        assert np.all(diff_x == dx)
+        assert np.all(diff_y == dy)
+
+        return dx, dy
+
+
+class RegularArea(object):
+
+    """ Helper class to combine lons and lats that span an Area """
+
+    def __init__(self, llc, urc, grid):
         """
-        Parameters
-        ----------
-        lon_name : str, optional (default: 'lon')
-            Name, under which the longitude values will be stored.
-        lat_name : str, optional (default: 'lat')
-            Name, under which the latitude values will be stored.
-        """
-        self.data = pd.DataFrame()
-
-        self.__lonlat = (lon_name, lat_name)
-        self.__glob_attrs = None
-        self.__var_attrs = None
-
-    @property
-    def lon_name(self):
-        return self.__lonlat[0]
-
-    @property
-    def lat_name(self):
-        return self.__lonlat[1]
-
-    @property
-    def glob_attrs(self):
-        return self.__glob_attrs
-
-    @property
-    def var_attrs(self):
-        return self.__var_attrs
-
-    @glob_attrs.setter
-    def glob_attrs(self, attrs, ):
-        """
-        Set the global attributes (global metadata.
+        Create an regularly gridded 2d Area.
 
         Parameters
         ----------
-        attrs : dict
+        llc : Point
+            Lower left corner point of the Area
+        urc : Point
+            Upper right corner point of the Area
+        grid : BasicGrid or CellGrid
+            An independent grid that the area is a subset of.
         """
-        s = "%Y-%m-%d %H:%M:%S"
-        attrs['date_created'] = datetime.now().strftime(s)
-        self.__glob_attrs = attrs
+        self.grid = to_reg_cell_grid(grid)
 
-    @var_attrs.setter
-    def var_attrs(self, attrs):
+        self.llc = llc
+        self.urc = urc
+
+        self.subset = self._subset_from_corners()
+
+    def _subset(self, llc, urc):
+
+        ind = np.where((self.grid.activearrlon >= llc.lon) &
+                       (self.grid.activearrlon <= urc.lon) &
+                       (self.grid.activearrlat >= llc.lat) &
+                       (self.grid.activearrlat <= urc.lat))
+
+        gpis = self.grid.activegpis[ind]
+        lons = self.grid.activearrlon[ind]
+        lats = self.grid.activearrlat[ind]
+
+        return gpis, lons, lats
+
+    def _subset_from_corners(self):
+        self._assert_corners()
+
+        gpis, lons, lats = self._subset(self.llc, self.urc)
+
+        subset = self.grid.subgrid_from_gpis(gpis)
+        subset.shape = (np.unique(lats).size, np.unique(lons).size)
+
+        return subset
+
+    def _assert_corners(self):
+        # check if the corner points are also in the grid
+        assert self.llc.lon in self.grid.get_grid_points()[1]
+        assert self.llc.lat in self.grid.get_grid_points()[2]
+
+    def as_slice(self, d=False):
         """
-        Set the variable attributes (var metadata)
-
-        Parameters
-        ----------
-        attrs : dict of dicts
-        """
-        self.__var_attrs = attrs
-
-    def add_data(self, lons, lats, data):
-        """
-        Add results to the data frame
-
-        Parameters
-        ----------
-        lons : np.array
-            Longitudes of values in vals
-        lats : np.array
-            Latitudes of vals
-        data : dict
-            Keys are the variable names and vals are arrays (of same size as
-            lats and lons) of according values.
-        """
-
-        n_vals = np.array([v.size for k, v in data.items()])
-        if not np.all(n_vals == n_vals[0]) or not (lats.size == lons.size == n_vals[0]):
-            raise IOError('Data input dimensions do not conform.')
-
-        index = pd.MultiIndex.from_arrays((lats, lons),
-                                          names=(self.lat_name, self.lon_name))
-        df = pd.DataFrame(index=index, data={n: v for n,v in data.items()})
-
-        self.data = pd.concat([self.data, df], axis=0)
-
-    def to_xarray(self):
-        """
-        Convert the stored information to a xarray dataset.
-
-        Returns
-        -------
-        ds : xr.dataset
-            The xarray image, with a lat and lon dimension and variables and
-            according metadata.
-        """
-        ds = self.data.to_xarray()
-
-        if self.var_attrs:
-            ds = ds.assign_attrs(self.glob_attrs)
-
-        if self.var_attrs:
-            for n, d in self.var_attrs.items():
-                if n in ds.variables:
-                    if isinstance(d, dict):
-                        d = OrderedDict(d)
-                    ds[n].attrs = d
-
-        return ds
-
-
-class NcResultsManager(object):
-    """
-    Stores validation results on a regular or irregular grid.
-    """
-
-    """
-    It should:
-    
-        - Be opened and closed via 'with' and via 'close()'
-        - It should allow storing results for multiple points in time and/or
-            multiple depths
-        - Contain a buffer that is filled and dumped into a nc file when full,
-            then emptied and filled again, then merged with data in file, dumpted etc.
-        - Allow setting metadata for global attributes and variable attributes
-        - Allow compression of results
-        - 
-    
-    """
-
-    def __init__(self, save_path, zlib=True, force_points=False,
-                 buffr_size=None):
-        '''
-        Create a data frame from the jobs.
-        Add options for compression and for buffer storing?
-        Parameters
-        -------
-        save_path : str
-            Root folder where we store the results.
-        zlib : bool, optional (default: True)
-            Activate compression of all results.
-        force_points : bool, optional (default: False)
-            By default, we try to store the results in a grid, only if there a
-            duplicate locations, we fall back to a (less efficient) point format.
-            If this is True, the point format is always used (not recommended
-            for global validations with satellite data).
-        buffr_size : int, optional (default: None)
-            Write the results down if after this many points are stored in the buffer.
-            If buffr_size is None, then the buffer will only be written upon
-            __exit__().
-        '''
-        self.save_path = save_path
-        self.zlib = zlib
-        self.ncformat = 'point' if force_points else None
-        self.buffr_size = buffr_size
-
-        # data storage
-        self.res = dict() # names and dataframes that will become files
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
-            print('exc_type: {}'.format(exc_type))
-            print('exc_value: {}'.format(exc_val))
-            print('exc_traceback: {}'.format(exc_tb))
-
-        self.close()
-        return True
-
-    def close(self):
-        self._to_netcdf()
-
-    def _add_empty(self, name, lon_name, lat_name):
-        self.res[name] = Results(lon_name, lat_name)
-
-    def add_dict(self, data, lon_name='lon', lat_name='lat'):
-        for name, result in data.items():
-            self.add(name, result, lon_name=lon_name, lat_name=lat_name)
-
-    def add(self, name, data, lon_name='lon', lat_name='lat'):
-        """
-        Add results from dictionary to buffer
+        Create a lon and lat slice of the Area.
 
         Parameters
         ---------
-        name : str or tuple
-            The name if the dataset (as in self.dfs)
-        data : dict
-            Keys are variable names (e.g. gpi, lon, lat, etc.), values are arrays
-            (of same length) with according values
-        lon_name : str, optional (default: 'lon')
-            The name of the longitude variable in data
-        lat_name : str, optional (default: 'lat')
-            The name of the latitude variable in data
-        """
-        if name not in self.res.keys():
-            self._add_empty(name, lon_name, lat_name)
-        lons = data[lon_name]
-        lats = data[lat_name]
-        data.pop(lon_name)
-        data.pop(lat_name)
+        d : bool, optional (default: False)
+            Include step size in slice
 
-        self.res[name].add_data(lons, lats, data)
-
-    def set_attrs(self, name, glob_attrs, var_attrs):
+        Returns
+        -------
+        lon_slice : slice
+            Slice across the area
+        lat_slice : slice
+            Slice across the area
         """
-        Set the global attributes of the respective file.
+        return slice(self.llc.lon, self.urc.lon, self.grid.dx if d else None), \
+               slice(self.llc.lat, self.urc.lat, self.grid.dy if d else None)
+
+class RegularStackDataResultsManager(object):
+
+    """ Store netcdf cubes with xarray and dask """
+
+    def __init__(self, dx=0.25, dy=0.25, z=None, z_name='z',
+                 llc=Point(-179.875, -89.875), urc=Point(179.875, 89.875),
+                 indexed=True, zlib=True, fill_value=9999., chunksize=5.):
+
+        """
+        Parameters
+        ----------
+        dx : float, optional (default: 0.25)
+            Regular spacing in x/lon direction
+        dy : float, optional (default: 0.25)
+            Regular spacing in y/lat direction
+        z : np.array
+            Z Values, e.g. Timestamps (z dimension of cube)
+        z_name : str, optional (default: time)
+            Name of the z dimension (e.g. time or depth)
+        llc : Point, optional (default: Point(-179.875, -89.875))
+            Lower left corner point of the dataset area.
+        urc : Point, optional (default: Point(179.875, 89.875))
+            Upper right corner point of the dataset area.
+        indexed : bool, optional (default: True)
+            Add a 2d variable of unique index to each point of the dataset.
+        zlib : bool, optional (default: True)
+            Compress data when writing to netcdf
+        fill_value : float, optional (default: 9999.)
+            Fill value nans are replaced with
+        """
+
+        self.zlib = zlib
+        self.z_name = z_name
+        self.fill_value = fill_value
+
+        self.llc, self.urc = llc, urc
+
+        lons, lats = self._coords(dx, dy)
+        self.shape = (z.size, lats.size, lons.size)
+
+        gpis = self._gpis('ll') # origin is in the lower left
+
+        self.ds = xr.Dataset(data_vars={'gpi': (['lat', 'lon'], gpis)} if indexed else None,
+                             coords={'lon': lons, 'lat': lats, self.z_name: z})
+
+        self.grid = to_reg_cell_grid(self._grid(gpis), 5.)
+
+    @property
+    def subset(self):
+        return (self.llc, self.urc)
+
+    def _grid(self, gpis):
+        # create a pygeogrids object
+
+        lons, lats = np.meshgrid(self.ds.lon.values, np.flipud(self.ds.lat.values))
+        lons, lats = lons.flatten(), lats.flatten()
+        grid = BasicGrid(lons, lats, gpis=gpis.flatten()).to_cell_grid(5.)
+
+        return grid
+
+    def _gpis(self, origin='ll'):
+        """
+        Parameters
+        ---------
+        origin : str, optional (Default: 'll')
+            String indication where gpi=0 is.
+            ll = lower left, ur=upper right, lr = lower right, ul = upper left
+
+        Returns
+        ---------
+        gpis : np.ndarray
+            Array of GPIs
+        """
+        origins = ['ll', 'lr', 'ul', 'ur']
+
+        if origin not in origins:
+            raise NotImplementedError(
+                "Origin {} not implemented. Choose one of: {}"
+                    .format(origin, ','.join(origins)))
+
+        n = self.shape[1] * self.shape[2]
+        gpis = np.arange(n).reshape(self.shape[1], self.shape[2])
+
+        if origin[0] == 'l':
+            gpis = np.flipud(gpis)
+        if origin[1] == 'r':
+            gpis = np.fliplr(gpis)
+
+        return gpis
+
+    def _coords(self, dx, dy):
+        """ Build coord range with chosen resolution over dataset area """
+        lons = safe_arange(self.llc.lon, self.urc.lon+dx, dx)
+        lats = safe_arange(self.llc.lat, self.urc.lat+dy, dy)
+        self.dx, self.dy = dx, dy
+
+        return lons, lats
+
+    def _add_empty_2d(self, name):
+        # add a empty variable without z dimension of the passed name
+        print('Add empty 2D variable {}'.format(name))
+        shape = (self.shape[1], self.shape[2])
+        self.ds[name] = \
+            xr.DataArray(np.full(shape, self.fill_value), dims=['lat', 'lon'],
+                         coords=[self.ds.lat, self.ds.lon])
+
+    def _add_empty_3d(self, name):
+        # add a empty variable with z dimension of the passed name
+        print('Add empty 3D variable {}'.format(name))
+        self.ds[name] = \
+            xr.DataArray(np.full(self.shape, self.fill_value),
+                         dims=[self.z_name, 'lat', 'lon'],
+                         coords=[self.ds[self.z_name], self.ds.lat, self.ds.lon])
+
+    def _write_img(self, data, **kwargs):
+        """
+        Write area to dataset.
 
         Parameters
         ----------
-        name : str or tuple
-            Name of the dataset for which the attributes are set.
-        glob_attrs : dict
-            Dictionary of global attributes (keys) and their values
-        var_attrs : dict of dicts
-            Dictionary of variable and the attributes
+        data : xr.Dataset, 2d arrays to write, keys are variable names
         """
-        self.res[name].glob_attrs = glob_attrs
-        self.res[name].var_attrs = var_attrs
+        for var in list(data.data_vars.keys()):
+            if var not in self.ds.variables:
+                self._add_empty_3d(var)
+            self.ds[var].loc[dict(**kwargs)] = data[var]
 
-
-    def _to_netcdf(self, filename=None, fill_value=-9999., dtypes=np.float32):
+    def _write_ser(self, data, **kwargs):
         """
-        Write the data from memory to disk as a netcdf file.
+        Write (time) series of multiple variables in data frame
         """
-        for name, r in self.res.items():
-            if filename is None:
-                if not isinstance(name, str):
-                    build_fname = True
-                else:
-                    build_fname = False
 
-                if build_fname:
-                    filename = build_filename(self.save_path, name)
-                else:
-                    filename = os.path.join(self.save_path, name + '.nc')
+        for var in data.keys():
 
-            if self.ncformat == 'point':
-                data = {}
-                for col in r.data:
-                    data[col] = r.data[col].values
-                data['lat'] = r.data.index.get_level_values('lat').values
-                data['lon'] = r.data.index.get_level_values('lon').values
-                data = {name: data}
-                netcdf_results_manager(data, self.save_path, filename=filename,
-                                       zlib=self.zlib)
+            if var not in self.ds.variables:
+                self._add_empty_3d(var)
+
+            assert data[var].size == self.ds[self.z_name].size
+
+            dat = data[var]
+            dat[np.isnan(dat)] = self.fill_value
+            self.ds[var].loc[dict(**kwargs)] = dat
+
+    def store_stack(self, filename=None, dtypes=np.float32):
+        try:
+            if self.zlib:
+                encoding = {}
+                for var in self.ds.variables:
+                    if var not in ['lat', 'lon', self.z_name]:
+                        encoding[var] = {'complevel': 9, 'zlib': True,
+                                         'dtype': dtypes,
+                                         '_FillValue': self.fill_value}
             else:
-                try:
-                    dataset = r.to_xarray()
-                    try:
-                        if self.zlib:
-                            encoding = {}
-                            for var in dataset.variables:
-                                if var not in [r.lat_name, r.lon_name]:
-                                    dataset.variables[var][:] = dtypes(dataset.variables[var].fillna(fill_value))
-                                    print(dataset.variables[var][:])
-                                    print(type(dataset.variables[var][:]))
-                                    encoding[var] = {'complevel': 9, 'zlib': True,
-                                                     '_FillValue':fill_value}
-                        else:
-                            encoding = None
-                        dataset.to_netcdf(filename, engine='netcdf4', encoding=encoding)
-                    except: # todo: specifiy exception
-                        warnings.warn('Compression failed, store uncompressed results.')
-                        dataset.to_netcdf(filename, engine='netcdf4')
+                encoding = None
+            self.ds.to_netcdf(filename, engine='netcdf4', encoding=encoding)
+        except:  # todo: specifiy exception
+            warnings.warn('Compression failed, store uncompressed results.')
+            self.ds.to_netcdf(filename, engine='netcdf4')
 
-                    dataset.close()
-                except: # todo: specify exception?
-                    self.ncformat = 'point'
-                    self._to_netcdf()
+        self.ds.close()
+
+    def store_files(self, path, filename_templ='file_{}.nc',
+                    dtypes=np.float32):
+        """
+        filename_templ :
+            {} is replaced by the z indicator (strftime(z) if z is a date time).
+        """
+        # todo: add option to append to existing file (memory dump)
+        # todo: integrate with the other function
+
+        if self.zlib:
+            encoding = {}
+            for var in self.ds.variables:
+                if var not in ['lat', 'lon', self.z_name]:
+                    encoding[var] = {'complevel': 9, 'zlib': True,
+                                     'dtype': dtypes,
+                                     '_FillValue': self.fill_value}
+        else:
+            encoding = None
+        datetime_obs = [np.datetime64, datetime]
+        for z in self.ds[self.z_name]:
+            if any([isinstance(z, dt) for dt in datetime_obs]):
+                pydatetime=pd.to_datetime(z.values).to_pydatetime()
+                datestr = datetime.strftime(pydatetime, '%Y%m%d')
+                filename = filename_templ.format(datestr)
+            else:
+                filename = filename_templ.format(str(z.values))
+            try:
+                self.ds.loc[{self.z_name: z}].to_netcdf(os.path.join(path, filename),
+                                                       engine='netcdf4', encoding=encoding)
+            except:  # todo: specifiy exception
+                warnings.warn('Compression failed, store uncompressed results.')
+                self.ds.loc[{self.z_name: z}].to_netcdf(os.path.join(path, filename),
+                                                       engine='netcdf4')
+
+        self.ds.close()
+
+    def _subset_area(self, llc, urc):
+        """
+        Read subset of current dataset:
+
+        Parameters
+        ----------
+        llc : Point
+            Lower left corner point of area to read
+        urc : Point
+            Upper right corner point of area to read
+
+        Returns
+        ---------
+        subset : xr.Dataset
+            Spatial subset of the current Dataset.
+        """
+
+        lon_slice, lat_slice = RegularArea(llc, urc, self.grid).as_slice(True)
+        subset = self.ds.loc[dict(lon=lon_slice, lat=lat_slice)]
+
+        return subset
+
+    def _df2arr(self, df, llc:Point, urc:Point, lon_name:str, lat_name:str):
+        # get the lon and lat extent from df and create a 2d array#
+        local_df = df.copy(True)
+        area = RegularArea(llc, urc, self.grid)
+
+        local_df = local_df.set_index([lat_name, lon_name]).sort_index()
+
+        _, subset_lons, subset_lats, _ = area.subset.get_grid_points()
+
+        full_df = pd.DataFrame(data={'lon': subset_lons, 'lat': subset_lats})
+        full_df = full_df.set_index([lat_name, lon_name]).sort_index()
+
+        for k in local_df.columns:
+            full_df[k] = self.fill_value
+
+        full_df.loc[local_df.index] = local_df
+        arr = full_df.to_xarray()
+
+        slice_lon, slice_lat = area.as_slice(False)
+
+        return arr, slice_lon, slice_lat
+
+    def spatial_subset(self, llc, urc, in_place=False):
+        """
+        Cut the current data set to a new subset
+        """
+        if in_place:
+            self.ds = self._subset_area(llc, urc)
+            return self.ds
+        else:
+            return self._subset_area(llc, urc)
+
+    def write_image(self, df, z=None, lat_name='lat', lon_name='lon'):
+        """
+        Add data for multiple locations at a specific point in z (e.g. time stamp)
+
+        Parameters
+        ----------
+        z : int or float or str
+            Index in z-dimension (e.g. time stamp)
+        df : pd.DataFrame
+            DataFrame that contains image points.
+        lat_name : str, optional (default: 'lat')
+            Name of the latitude variable in the data frame.
+        lon_name : str, optional (default: 'lon')
+            Name of the longitude variable in the data frame.
+        """
+        if z not in self.ds[self.z_name].values:
+            raise ValueError('{} was not found in the {} dimension.'
+                             .format(z, self.z_name))
+
+        min_lon, max_lon = minmax(df[lon_name].values)
+        min_lat, max_lat = minmax(df[lat_name].values)
+
+        llc = Point(min_lon, min_lat)
+        urc = Point(max_lon, max_lat)
+
+        data, slice_lon, slice_lat = self._df2arr(df, llc, urc, lon_name, lat_name)
+
+        kwargs = {'lon' : slice_lon, 'lat' : slice_lat, self.z_name : z}
+        self._write_img(data, **kwargs)
+
+    def write_series(self, lon, lat, df):
+        """
+        Add data for a single location. Series is in z-dimension.
+
+        Parameters
+        ----------
+        lon : float
+            Longitude of point to write data for
+        lat : float
+            Latitude of point to write data for
+        df : pd.DataFrame
+            DataFrame with variables in columns and z-dimension values as index.
+        """
+
+        index = df.index.to_numpy()
+        data = {k : df[k].values for k in df.columns}
+
+        if not np.all(np.equal(index, self.ds[self.z_name].values)):
+            raise IndexError('Index in the passed data'
+                             ' frame do not correspond with z values of dataset')
+
+        self._write_ser(data, lon=lon, lat=lat)
+
+
+def usecase_time():
+    ### TS case
+    time_case = False
+
+    from smecv_grid import SMECV_Grid_v052
+    if time_case:
+        index = pd.date_range('2000-01-01', '2000-12-31', freq='D')
+        z = pd.to_datetime(index).to_pydatetime()
+    else:
+        index = np.array(list(range(1, 367)))
+        z = index
+
+    glob_grid = SMECV_Grid_v052(None)
+    land_grid = SMECV_Grid_v052('land')
+
+
+    ts_writer = RegularStackDataResultsManager(dx=0.25, dy=0.25, z=z, z_name='doy')
+
+    gpis, lons, lats, cells = land_grid.get_grid_points()
+    i=0
+    for lon, lat in zip(lons, lats):
+        if i > 1000: break
+        print(i)
+        data = pd.DataFrame(index=index,
+                            data={'var_{}'.format(i): np.random.rand(366) for i in range(5)})
+        ts_writer.write_series(lon, lat, data)
+        i+=1
+
+    import time
+    start = time.time()
+    ts_writer.store_files(r"C:\tmp\collect")
+    #writer.store_stack(r"C:\tmp\test.nc")
+    end = time.time()
+    print('Writing file took {} seconds'.format(end - start))
 
 if __name__ == '__main__':
-    path = r'C:\Temp\test_compress'
+    time_case = False
 
-    writer= NcResultsManager(save_path=path, zlib=True, buffr_size=None, force_points=None)
+    from smecv_grid import SMECV_Grid_v052
+    if time_case:
+        index = pd.date_range('2000-01-01', '2000-12-31', freq='D')
+        z = pd.to_datetime(index).to_pydatetime()
+    else:
+        index = np.array(list(range(1, 367)))
+        z = index
 
-    gpis = np.array(list(range(1,1000)))
-    lat = np.array(list(range(30,30+len(gpis),1)))
-    lon = np.array(list(range(-119,-119+len(gpis),1)))
-    n_obs = np.random.randint(0,1000,len(gpis))
-    data=  np.array([1] * len(gpis))
-    empty=  np.array([np.nan] * len(gpis))
-    #s = np.array(['s%i' %i for i in gpis])
-    n = np.random.random_sample(len(lon))
+    glob_grid = SMECV_Grid_v052(None)
+    land_grid = SMECV_Grid_v052('land')
 
 
-    results = {('test1','test2') :
-                   dict(lat=lat, lon=lon, gpi=gpis, n_obs=n_obs, n=n, data=data, empty=empty)}
+    ### AREA case
+    img_writer = RegularStackDataResultsManager(dx=0.25, dy=0.25, z=z, z_name='doy')
 
-    for name, result in results.items():
-        writer.add(name, result)
+    gpis, lons, lats, cells = land_grid.get_grid_points()
+    i=0
+    for cell in np.unique(cells):
+        print(cell)
+        cell_gpis, cell_lons, cell_lats = land_grid.grid_points_for_cell(cell)
+        df = pd.DataFrame(index=range(cell_gpis.size), data={'lon': cell_lons,
+                                                             'lat': cell_lats,
+                                                             'var1': np.random.rand(cell_gpis.size),
+                                                             'var2': np.random.rand(cell_gpis.size)})
+        img_writer.write_image(df, z=1)
+        i+=1
 
-    writer.close()
+    import time
+    start = time.time()
+    img_writer.store_stack(r"C:\tmp\test.nc")
+    #writer.store_stack(r"C:\tmp\test.nc")
+    end = time.time()
+    print('Writing file took {} seconds'.format(end - start))
 
-    # one = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\joined.nc"
-    # other = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\third.nc"
-    # out_file = r"\\project10\data-write\USERS\wpreimes\C3S_Prod_Intercomparison\with_ERA5\global\out\global.nc"
-    # ds1 = xr.open_dataset(one)
-    # df1 = ds1.to_dataframe().dropna(how='all')
-    # ds2 = xr.open_dataset(other)
-    # df2 = ds2.to_dataframe().dropna(how='all')
-    # df = df1.append(df2, sort=False)
-    # df.drop_duplicates().to_xarray().to_netcdf(out_file, mode='w', engine='scipy')
 
-    # gpis = np.array(list(range(1,10)))
-    # lat = np.array(list(range(30,30+len(gpis),1)))
-    # lon = np.array(list(range(-119,-119+len(gpis),1)))
-    # n_obs = np.random.randint(0,1000,len(gpis))
-    # s = np.array(['s%i' %i for i in gpis])
-    # n = np.random.random_sample(len(lon))
-    #
-    #
-    # results = {('test1','test2') :
-    #                dict(lat=lat, lon=lon, gpi=gpis, n_obs=n_obs, s=s, n=n)}
-    #
-    # path = r'C:\Temp\nc_compress'
-    #
-    # var_attrs = {'n_obs': {'name':'Number of Observations', 'smthg_else':1}}
-    # glob_attrs = {'test1':'test', 'test2': 'test'}
-    #
+

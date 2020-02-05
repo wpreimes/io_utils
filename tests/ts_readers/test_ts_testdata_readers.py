@@ -165,6 +165,50 @@ def test_cci_v044_reader():
     ts = reader.read(*test_loc)
     assert ts.empty
 
+def test_cci_v047_reader():
+    vers = 'v047'
+    force_path_group = '_test'
+
+    ## == active
+    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+                          exact_index=True,
+                          ioclass_kws={'read_bulk': True},
+                          parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
+                          scale_factors={'sm': 1.},
+                          force_path_group=force_path_group)
+    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
+    cell_data = reader.read_cells([165,166]) # all empty
+    for gpi, data in cell_data.items():
+        assert data.empty # all empty
+    ts = reader.read(*test_loc)
+    assert ts.empty
+
+    ## == combined
+    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+                          exact_index=True,
+                          ioclass_kws={'read_bulk': True},
+                          parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
+                          scale_factors={'sm': 1.},
+                          force_path_group=force_path_group)
+    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
+    cell_data = reader.read_cells([165,166]) # all empty
+    ts = reader.read(633697)
+    assert not ts.empty
+
+    ## == passive
+    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+                          exact_index=True,
+                          ioclass_kws={'read_bulk': True},
+                          parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
+                          scale_factors={'sm': 1.},
+                          force_path_group=force_path_group)
+    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
+    cell_data = reader.read_cells([165,166]) # all empty
+    for gpi, data in cell_data.items():
+        assert data.empty # all empty
+    ts = reader.read(*test_loc)
+    assert ts.empty
+
 def test_era5_reader():
     force_path_group = '_test'
     reader = GeoEra5Ts(dataset=('ERA5', 'core'),

@@ -19,6 +19,11 @@ import pandas as pd
 from matplotlib.dates import date2num
 
 
+def safe_arange(start, stop, step):
+    f_step = (1. / float(step))
+    vals = np.arange(float(start) * f_step, float(stop) * f_step , float(step) * f_step)
+    return vals / f_step
+
 def log(msg=None, lvl=0, error=False, printit=False):
     if not msg:
         msg = '-'*100
