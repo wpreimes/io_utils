@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib as mpl
 from smecv_grid.grid import SMECV_Grid_v042
 import matplotlib.ticker as ticker
+import warnings
 
 
 '''
@@ -235,9 +236,9 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
 def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                    llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0,1),
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
-                   gridspace=(60,20), grid_loc='1001', ocean=False, land=False,
-                   states=False, borders=False, scale_factor=1., show_cbar=True,
-                   **cbar_kwargs):
+                   gridspace=(60,20), grid_label_loc='1001', style=None,
+                   ocean=False, land='white', states=False, borders=False,
+                   scale_factor=1., show_cbar=True, **cbar_kwargs):
 
     '''
     Plot data as scatterplot on a map
@@ -270,15 +271,18 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     gridspace : tuple or None, optional (default: (60,20))
         (dx, dy) : Spacing in the x (lon) and y (lat) direction
         If this is None, no grid is plotted
-    grid_loc : str or None, optional (default: '0011')
+    grid_label_loc : str or None, optional (default: '0011')
         'top, right, bottom, left' : The 4 potential label elements (starting at
         the top), 1 means activated, 0 means deactivated.
         1111 to print all grids, 0011 to print the bottom and left grid etc.
         If this is None, no grid is plotted
+    style: str, optional (default: None)
+        Apply style backend.
+        Current options: 'seaborn_poster', ...
     ocean : bool, optional (default: False)
         Fill water bodies with light blue color before plotting data.
-    land : bool, optional (default: False)
-        Fill land with light brown color before plotting data.
+    land : str or None, optional (default: 'grey')
+        Fill land with this color before plotting data.
     states : bool, optional (default: False)
         Add state borders to the map (only interesting when plotting subsets)
     borders : bool, optional (default: False)
@@ -314,6 +318,14 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     im : plt.axes
         The plot ax
     '''
+    if style is None:
+        pass
+    elif style == 'seaborn_poster':
+        import seaborn as sns
+        sns.set_context("poster", font_scale=1.)
+        plt.style.use('seaborn-talk')
+    else:
+        warnings.warn('{} style is not supported.')
 
     values = values * scale_factor
     f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
@@ -321,12 +333,12 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     data_crs = ccrs.PlateCarree()
 
     imax = plt.axes(projection=projection)
-    imax.coastlines(resolution=coastline_size)
+    imax.coastlines(resolution=coastline_size, color='black', linewidth=0.25)
 
     if ocean:
         imax.add_feature(cartopy.feature.OCEAN, zorder=0)
     if land:
-        imax.add_feature(cartopy.feature.LAND, zorder=0)
+        imax.add_feature(cartopy.feature.LAND, zorder=0, facecolor=land)
     if states:
         imax.add_feature(cartopy.feature.STATES, linewidth=0.05, zorder=2)
     if borders:
@@ -336,13 +348,13 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
         imax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=data_crs)
 
     if gridspace is not None:
-        if grid_loc is None:
-            grid_loc = '0000'
-        if grid_loc == '0000':
+        if grid_label_loc is None:
+            grid_label_loc = '0000'
+        if grid_label_loc == '0000':
             draw_labels = False
         else:
             draw_labels = True
-        imax = map_add_grid(imax, projection, grid_loc, llc, urc, gridspace,
+        imax = map_add_grid(imax, projection, grid_label_loc, llc, urc, gridspace,
                             draw_labels=draw_labels)
 
     lon_interval = max([llc[0], urc[0]]) - min([llc[0], urc[0]])
@@ -382,14 +394,11 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
 
     return f, imax, im
 
-
-
-
-def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
+def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, llc=(-179.9999, -60.), urc=(179.9999, 80), flip_ud=False,
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
-           veg_mask=False, gridspace=(60,20), grid_loc='1001', ocean=False,
-           land=False, states=False, borders=False, scale_factor=1., watermark=None,
+           veg_mask=False, gridspace=(60,20), grid_label_loc='1001', style=None, ocean=False,
+           land='grey', states=False, borders=False, scale_factor=1., watermark=None,
            show_cbar=True, **cbar_kwargs):
 
     '''
@@ -397,13 +406,14 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
 
     Parameters
     ----------
-    df : pd.Dataframe
+    df : pd.Dataframe or pd.Series
         The DataFrame that contains the data to plot
-        The index must either be a multiindex (with lat in the first and lon in
-        the second index col) and sorted by lat or a list of ints, that are the
+        The index must either be a multiindex (with lat in the FIRST and lon in
+        the SECOND index col) and sorted by lat or a list of ints, that are the
         GPIs of the data.
-    col : str
-        The column in df that contains the data to plot
+    col : str, optional (default: None)
+        The column in df that contains the data to plot, not necessary if a
+        Series is passed.
     resxy : tuple, optional (default: (0.25,0.25))
         Resolution if the grid that the passed data is on
         First arg in lon direction, second one in lat direction.
@@ -430,17 +440,20 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
         Size of the coastlines to plot with cartopy
     veg_mask : bool, optional (default: False)
         Add the ESA CCI SM mask for dense vegetation to the dataset
-    gridspace : tuple, optional (default: (60,20))
+    gridspace : tuple or None, optional (default: (60,20))
         (dx, dy) : Spacing in the x (lon) and y (lat) direction
         Set this to None to not show a grid.
-    grid_loc : str or None, optional (default: '0011')
+    grid_label_loc : str or None, optional (default: '0011')
         'top, right, bottom, left' : The 4 potential label elements (starting at
         the top), 1 means activated, 0 means deactivated.
         1111 to print all grids, 0011 to print the bottom and left grid etc.
+    style: str, optional (default: None)
+        Apply style backend.
+        Current options: 'seaborn_poster', ...
     ocean : bool, optional (default: False)
         Fill water bodies with light blue color before plotting data.
-    land : bool, optional (default: False)
-        Fill land with light brown color before plotting data.
+    land : str or None, optional (default: 'grey')
+        Fill land with this color before plotting data.
     states : bool, optional (default: False)
         Add state borders to the map (only interesting when plotting subsets)
     borders : bool, optional (default: False)
@@ -479,6 +492,19 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
     im : plt.axes
         The plot ax
     '''
+    if style is None:
+        pass
+    elif style == 'seaborn_poster':
+        import seaborn as sns
+        sns.set_context("poster", font_scale=1.)
+        plt.style.use('seaborn-talk')
+    else:
+        warnings.warn('{} style is not supported.')
+
+    if isinstance(df, pd.Series):
+        dat = df
+    else:
+        dat = df[col]
 
     dy, dx = float(resxy[1]), float(resxy[0])
     offsetx, offsety = float(offset[0]), float(offset[1])
@@ -494,23 +520,24 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
     glob_df = pd.DataFrame(index=glob_index, data={'gpi': np.arange(glob_index.size)})
 
     if isinstance(df.index, pd.MultiIndex):
-        subset_lats = df.index.get_level_values(0)
-        subset_lons = df.index.get_level_values(1)
+        s_lats, s_lons = df.index.get_level_values(0), df.index.get_level_values(1)
 
-        index =pd.MultiIndex.from_arrays(np.array([subset_lats, subset_lons]),
-                                         names=['lats', 'lons'])
-        df = pd.DataFrame(index=index, data=df[col])
+        index =pd.MultiIndex.from_arrays(
+            np.array([s_lats, s_lons]), names=['lats', 'lons'])
+        df = pd.DataFrame(index=index, data={'dat': dat})
         df['gpi'] = np.arange(df.index.size)
     else:
+        df = dat.to_frame('dat')
         glob_df = glob_df.set_index('gpi')
 
-    glob_df[col] = df[col]
+    glob_df['dat'] = df['dat']
     df = None # clear memory
+    dat = None
 
     img = np.empty(glob_df.index.size, dtype='float32')
     img.fill(np.nan)
     index = np.array(range(glob_df.shape[0]))
-    img[index] = glob_df[col].values * scale_factor
+    img[index] = glob_df['dat'].values * scale_factor
     img_masked = np.ma.masked_invalid(img.reshape(180 * int(1. / dy),
                                                   360 * int(1. / dx)))
 
@@ -525,21 +552,21 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
 
     if ocean:
         imax.add_feature(cartopy.feature.OCEAN, zorder=0)
-    if land:
-        imax.add_feature(cartopy.feature.LAND, zorder=0)
+    if land is not None:
+        imax.add_feature(cartopy.feature.LAND, zorder=0, facecolor=land)
     if states:
         imax.add_feature(cartopy.feature.STATES, linewidth=0.05, zorder=2)
     if borders:
         imax.add_feature(cartopy.feature.BORDERS, linewidth=0.1, zorder=2)
 
     if gridspace is not None:
-        if grid_loc is None:
-            grid_loc = '0000'
-        if grid_loc == '0000':
+        if grid_label_loc is None:
+            grid_label_loc = '0000'
+        if grid_label_loc == '0000':
             draw_labels = False
         else:
             draw_labels = True
-        imax = map_add_grid(imax, projection, grid_loc, llc, urc, gridspace,
+        imax = map_add_grid(imax, projection, grid_label_loc, llc, urc, gridspace,
                             draw_labels=draw_labels)
 
 
@@ -568,14 +595,14 @@ def cp_map(df, col, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinso
         img[range(glob_df.index.size)] = glob_df['veg_mask'].values
         veg_img_masked = np.ma.masked_invalid(img.reshape((180 * 4, 360 * 4)))
 
-        colors = [(7. / 255., 79. / 255., 25. / 255.), (1., 1., 1.)]  # dark greeb
+        colors = [(7. / 255., 79. / 255., 25. / 255.), (1., 1., 1.)]  # dark green
         vegcmap = LinearSegmentedColormap.from_list('Veg', colors, N=2)
 
         imax.pcolormesh(glob_lons, glob_lats, veg_img_masked, cmap=vegcmap, transform=data_crs,
                         rasterized=True)
 
-    imax.coastlines(resolution=coastline_size)
-    imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)
+    imax.coastlines(resolution=coastline_size, color='black', linewidth=0.25)
+    #imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)
 
     if title:
         f.suptitle(title, fontsize=10)
@@ -597,7 +624,10 @@ def usecase_scatter():
     lats = np.linspace(90, -90, 160)
     values = np.random.rand(160)
 
-    cp_scatter_map(lons, lats, values)
+    f, imax, im = cp_scatter_map(lons, lats, values)
+
+    f.savefig(r'C:\Temp\test.png', dpi=200)
+
 
 def usecase_area_multiindex():
     lons = np.linspace(-20, 20, 41)
@@ -652,7 +682,7 @@ def usecase_sara_data():
     df = df.drop(columns=['lat', 'lon']) # drop the old data (copied as the index now)
 
     f, imax, im = cp_map(df, 'slp_combined', resxy=(0.25,0.25), cbrange=(-0.0004,0.0004), veg_mask=False,
-           projection=ccrs.PlateCarree(), title='Plot Title', ocean=False, land=False,
+           projection=ccrs.PlateCarree(), title='Plot Title', ocean=False, land=None,
            gridspace=(60,20), states=False, borders=False, llc=(45.,25.),  urc=(60.,40.),
             cblabel='slp_combined', cblabelsize=10,
            extend='both', ext_label_min=None, ext_label_max=None)
@@ -672,22 +702,24 @@ def usecase_adam():
     from netCDF4 import Dataset
     from smecv_grid.grid import SMECV_Grid_v052
 
-    resampled_image = r"R:\Datapool_processed\SMOS\L3_SMOS_IC_Soil_Moisture\resampled_quarter\ASC\2018\SMOS_IC_CCI_GRID_20180105T000000.nc"
-    ds = Dataset(resampled_image)
-    resampled_sm = ds.variables['smos_sm_resampled'][:]
-    resampled_sm_flat = resampled_sm.filled().flatten()
+    image = r"R:\Datapool_processed\ESA_CCI_SM\ESA_CCI_SM_v04.7\060_daily_images\combined\2019\ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-20190416000000-fv04.7.nc"
+    ds = Dataset(image)
+    dat = ds.variables['sm'][:]
+    dat = dat.filled(np.nan).flatten()
     _, resampled_lons, resampled_lats, _  = SMECV_Grid_v052(None).get_grid_points()
 
-    index =pd.MultiIndex.from_arrays(np.array([resampled_lats.filled(), resampled_lons.filled()]),
+    index =pd.MultiIndex.from_arrays(np.array([resampled_lats, resampled_lons]),
                                      names=['lats', 'lons'])
-    df = pd.DataFrame(index=index, data={'smos_sm_resampled': resampled_sm_flat})
+    df = pd.DataFrame(index=index, data={'sm': dat})
 
 
-    f, imax, im = cp_map(df, 'smos_sm_resampled', resxy=(0.25,0.25), cbrange=(0,0.5), veg_mask=False,
-           projection=ccrs.PlateCarree(), title=None, ocean=False, land=False,
-           gridspace=(60,20), states=False, borders=False,  llc=(-179.9999, -60.), urc=(179.9999, 80),
-            cblabel='SMOS IC Soil Moisture (QDEG) (m3/m3)', cblabelsize=10,
-           extend='both', ext_label_min=None, ext_label_max=None)
+    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,0.5), veg_mask=False,
+           projection=ccrs.Robinson(), title='testtitle', ocean=False, land='white',
+           gridspace=None, states=False, borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
+            cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=10, grid_label_loc='0000', coastline_size='110m',
+           extend='both', ext_label_min='MIN', ext_label_max='MAX')
+
+    f.savefig(r'C:\Temp\test.png', dpi=200)
 
 if __name__ == '__main__':
     usecase_adam()

@@ -35,13 +35,16 @@ def test_cells_for_continent():
 
 def test_read_cells_for_continents():
     path = os.path.abspath(__file__)
-    infile = r"src/io_utils/grid/continents_grid_cells/SMECV_v052_land_cells.py"
+    infile = r"src/io_utils/grid/continents_grid_cells/SMECV_v052_land_cells"
 
     cells = read_cells_for_continent(
         os.path.join(path, '..', '..', '..', infile), 'Europe', 'Oceania')
 
-    assert 1797 in cells
-    assert 2444 in cells
+    assert 1797 in cells['Europe']
+    assert 2444 in cells['Europe']
 
-    assert 2244 in cells
-    assert 2463 in cells
+    assert 2244 in cells['Oceania']
+    assert 2463 in cells['Oceania']
+
+if __name__ == '__main__':
+    test_read_cells_for_continents()
