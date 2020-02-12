@@ -339,15 +339,15 @@ def test_gldas21_ts_reader():
     #print(ts)
 
 if __name__ == '__main__':
-    test_smap_spl3_reader()
+    # test_smap_spl3_reader()
     # test_smosic_reader()
     # test_gldas21_ts_reader()
     # test_era5_land_ts_reader()
     # test_era5_ts_reader()
     #
-    # test_cci_v033_reader()
-    # test_cci_v044_reader()
-    # test_cci_v045_reader()
+    test_cci_v033_reader()
+    test_cci_v044_reader()
+    test_cci_v045_reader()
     #
     # test_merra2_ts_reader()
     #

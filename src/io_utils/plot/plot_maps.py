@@ -617,8 +617,6 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
 
     return f, imax, im
 
-
-
 def usecase_scatter():
     lons = np.linspace(-160, 160, 160)
     lats = np.linspace(90, -90, 160)
@@ -627,7 +625,6 @@ def usecase_scatter():
     f, imax, im = cp_scatter_map(lons, lats, values)
 
     f.savefig(r'C:\Temp\test.png', dpi=200)
-
 
 def usecase_area_multiindex():
     lons = np.linspace(-20, 20, 41)
@@ -716,7 +713,7 @@ def usecase_adam():
     f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,0.5), veg_mask=False,
            projection=ccrs.Robinson(), title='testtitle', ocean=False, land='white',
            gridspace=None, states=False, borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
-            cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=10, grid_label_loc='0000', coastline_size='110m',
+           cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=10, grid_label_loc='0000', coastline_size='110m',
            extend='both', ext_label_min='MIN', ext_label_max='MAX')
 
     f.savefig(r'C:\Temp\test.png', dpi=200)

@@ -13,7 +13,9 @@ class GeoSMAPTs(SMAPTs):
     # Reader implementation that uses the PATH configuration from above
 
     _ds_implemented = [('SMAP', 'SP3SMPv5', 'ASC'),
-                       ('SMAP', 'SP3SMPv5', 'DES')]
+                       ('SMAP', 'SP3SMPv5', 'DES'),
+                       ('SMAP', 'SP3SMPv6', 'ASC'),
+                       ('SMAP', 'SP3SMPv6', 'DES')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
         self.dataset = dataset
