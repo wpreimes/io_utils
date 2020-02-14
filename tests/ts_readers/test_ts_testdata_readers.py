@@ -20,7 +20,7 @@ def test_smosic_reader():
     ts = smos_reader.read(*test_loc)
     assert not ts.empty
 
-def test_smap_spl3_reader():
+def test_smap_spl3_v5_reader():
     force_path_group = '_test'
     smap_reader = GeoSMAPTs(dataset=('SMAP', 'SP3SMPv5', 'ASC'),
                          ioclass_kws={'read_bulk': True},
@@ -284,15 +284,17 @@ def test_C3S201812_single_readers():
     assert ts.empty # ATTENTION: passive data is empty here
     #print(ts)
 
-def test_gldas20_ts_reader():
+def test_C3S201912_single_readers():
     force_path_group = '_test'
-    reader = GeoGLDAS20Ts(dataset=('GLDAS20', 'core'),
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['SoilMoi0_10cm_inst'], scale_factors=None,
-                          force_path_group=force_path_group)
+
+    reader = GeoC3Sv201912Ts(dataset=('C3S', 'v201912', 'COMBINED', 'TCDR'),
+        grid_path=None, ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
+        force_path_group=force_path_group)
+    reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
-    #print(ts)
+    print(ts)
 
 def test_merra2_ts_reader():
     force_path_group = '_test'
@@ -328,7 +330,7 @@ def test_era5_ts_reader():
 
 def test_gldas21_ts_reader():
     force_path_group = '_test'
-    reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'testdata'),
+    reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'core'),
                           ioclass_kws={'read_bulk': True},
                           parameters=['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                           scale_factors={'SoilMoi0_10cm_inst': 0.01},
@@ -338,26 +340,62 @@ def test_gldas21_ts_reader():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
+def test_ismn_good_sm_ts_reader_masking():
+    reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
+                       parameters=('soil moisture', 'flag'),
+                       force_path_group='_test', scale_factors=None)
+    mreader = SelfMaskingAdapter(reader, '==', 'G', 'soil moisture_flag')
+
+    nearest = reader.find_nearest_station(-155.5, 19.9)
+    assert nearest.station == 'SilverSword'
+    ids = reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)
+    ts = mreader.read_ts(ids[0]) # read and mask
+    assert np.all(ts['soil moisture_flag'] == 'G')
+    df_drop = ts['soil moisture'].dropna()
+    assert not df_drop.empty
+
+def test_ismn_good_sm_ts_reader_no_masking():
+
+    reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
+                       parameters=('soil moisture'),
+                       force_path_group='_test', scale_factors=None)
+    nearest = reader.find_nearest_station(-155.5, 19.9)
+
+    # todO: here the mask adapter cannot be applied because if expect fct read_ts..
+    dat, station, dist = reader.read_sm_nearest_station(
+        lon=nearest.longitude, lat=nearest.latitude, min_depth=0, max_depth=0.2)
+    sm = dat['soil moisture', 'COSMOS', 'SilverSword', 0.0, 0.17,
+            'Cosmic-ray-Probe'].loc[
+             dat['soil moisture_flag', 'COSMOS', 'SilverSword', 0.0, 0.17,
+                 'Cosmic-ray-Probe'].isin(['G'])]
+
+    also_sm = station.read_variable('soil moisture').data
+    also_sm = also_sm['soil moisture'].loc[also_sm['soil moisture_flag'].isin(['G'])]
+
+    assert np.all(sm.values == also_sm.values)
+    assert not dat.dropna().empty
+
 if __name__ == '__main__':
-    # test_smap_spl3_reader()
-    # test_smosic_reader()
-    # test_gldas21_ts_reader()
-    # test_era5_land_ts_reader()
-    # test_era5_ts_reader()
-    #
+    test_ismn_good_sm_ts_reader_masking()
+    test_ismn_good_sm_ts_reader_no_masking()
+
+    test_smap_spl3_v5_reader()
+    test_smosic_reader()
+    test_era5_land_ts_reader()
+    test_era5_ts_reader()
+
     test_cci_v033_reader()
     test_cci_v044_reader()
     test_cci_v045_reader()
-    #
-    # test_merra2_ts_reader()
-    #
-    # test_C3S201706_single_readers()
-    #
-    # test_C3S201812_single_readers()
-    #
-    # test_gldas21_ts_reader()
-    # test_gldas20_ts_reader()
-    #
-    # test_era5_reader()
+
+    test_merra2_ts_reader()
+
+    test_C3S201706_single_readers()
+    test_C3S201812_single_readers()
+    test_C3S201912_single_readers()
+
+    test_gldas21_ts_reader()
+
+    test_era5_reader()
 
 

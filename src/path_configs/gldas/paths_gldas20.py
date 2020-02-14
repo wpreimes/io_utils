@@ -37,10 +37,5 @@ path_settings = \
                                             'datasets',
                                             'netcdf_reprocessed'),
                     }),
-                ('_test',
-                    {
-                        'win': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas20_ts'),
-                        'lin': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas20_ts'),
-                    })
         ]),
     }

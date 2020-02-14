@@ -17,8 +17,7 @@ from path_configs.gldas.paths_gldas21 import path_settings
 class GeoGLDAS21Ts(GLDASTs):
     # Reader implementation that uses the PATH configuration from above
 
-    _ds_implemented = [('GLDAS21', 'core'),
-                       ('GLDAS21', 'testdata')]
+    _ds_implemented = [('GLDAS21', 'core')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
         self.dataset = dataset

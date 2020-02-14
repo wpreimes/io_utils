@@ -1,14 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-Module description
-"""
-# TODO:
-#   (+) 
-#---------
-# NOTES:
-#   -
-
 from collections import OrderedDict
 import os
 from rsroot import root_path
@@ -48,14 +39,12 @@ path_settings = \
                                          'datasets',
                                          'netcdf'),
                  }),
-            ]),
-        ('ERA5', 'testdata'):
-        # paths will be tried in this order
-            OrderedDict([
                 ('_test',
                  {
-                     'win': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'sm_tmp'),
-                     'lin': os.path.join(get_test_root(), 'test_data', 'read', 'era5', 'sm_tmp')
+                     'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'era5', 'sm_tmp'),
+                     'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                         'era5', 'sm_tmp')
                  }),
             ]),
     }

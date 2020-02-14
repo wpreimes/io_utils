@@ -16,8 +16,7 @@ from path_configs.era.paths_era5 import path_settings
 class GeoEra5Ts(ERATs):
     # Reader implementation that uses the PATH configuration from above
 
-    _ds_implemented = [('ERA5', 'core'),
-                       ('ERA5', 'testdata')]
+    _ds_implemented = [('ERA5', 'core')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
         self.dataset = dataset

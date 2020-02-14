@@ -36,13 +36,12 @@ path_settings = \
                                             'datasets',
                                             'netcdf'),
                     }),
+                ('_test',
+                  {
+                      'win': os.path.join(get_test_root(), 'test_data', 'read',
+                                          'gldas', 'gldas21_ts'),
+                      'lin': os.path.join(get_test_root(), 'test_data', 'read',
+                                          'gldas', 'gldas21_ts'),
+                  })
         ]),
-
-        ('GLDAS21', 'testdata'):
-            ('_test',
-             {
-                 'win': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas21_ts'),
-                 'lin': os.path.join(get_test_root(), 'test_data', 'read', 'gldas', 'gldas21_ts'),
-             }),
-
     }

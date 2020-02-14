@@ -40,7 +40,7 @@ class GeoCCITs(CCITs):
     # fill values in the data columns
     _col_fillvalues = {'sm': [-9999.0],
                        'sm_uncertainty': [-9999.0],
-                       _t0_ref[0]: [-3440586.5]}
+                       }
 
     def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
 

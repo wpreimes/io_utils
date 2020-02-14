@@ -18,7 +18,7 @@ from datetime import datetime
 from path_configs.c3s_sm.paths_c3s_sm_v201706 import path_settings
 
 
-class GeoC3Sv201706Ts(base_reader.C3STs):
+class GeoC3Sv201706Ts(base_reader.GeoC3STs):
     # Reader implementation that uses the PATH configuration from above
     # Flagging should be done with the masking adapter from pytesmo
 
@@ -54,33 +54,6 @@ class GeoC3Sv201706Ts(base_reader.C3STs):
         self.exact_index = exact_index
         if exact_index and (self.parameters is not None):
             self.parameters.append(self._t0_ref[0])
-
-    def _replace_with_nan(self, df):
-        """
-        Replace the fill values in columns defined in __new__ with NaN
-        """
-        for col in df.columns:
-            if col in self._col_fillvalues.keys():
-                for fv in self._col_fillvalues[col]:
-                    if self.scale_factors is not None and \
-                            col in self.scale_factors.keys():
-                        fv = fv * self.scale_factors[col]
-                    df.loc[df[col] == fv, col] = np.nan
-        return df
-
-    def _add_time(self, df):
-        t0 = self._t0_ref[0]
-        if t0 in df.columns:
-            df[t0] = pd.Series(index=df.index, data=self._t0_ref[1]) + \
-                       pd.to_timedelta(df[t0], unit='d')
-        if self.exact_index:
-            df = df.set_index(t0)
-
-        return df
-
-    def read(self, *args, **kwargs):
-        return self._add_time(self._replace_with_nan(
-            super(GeoC3Sv201706Ts, self).read(*args, **kwargs)))
 
 
 class GeoC3Sv201706FullCDRTs(object):
