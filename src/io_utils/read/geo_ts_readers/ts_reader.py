@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-Adapter that
+Combines dataset config readers, adapters and some more features for all readers.
 """
-# TODO:
-#   (+) 
-#---------
-# NOTES:
-#   -
+
+# TODO: pass multiple selfmasking adapters that are applied sequentially?
 
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
-from datetime import datetime
 import matplotlib.pyplot as plt
 
 def load_settings(setts_file):
@@ -37,7 +33,7 @@ class GeoTsReader(object):
             A list of parameters that are read for the dataset
             e.g. ['sm', 'swvl1', 'flag']
         selfmaskingadapter_kwargs : dict, optional (default: None)
-            Dictionary that provides options to create a SelfMaskingAdapter
+            Dictionary that provides options to create ONE SelfMaskingAdapter
             for the dataset. Thas is applied after reading the params.
             e.g. dict(op='==', threshold=0, column_name='flag')}
         climadapter_kwargs : dict, optional (default: None)
@@ -63,7 +59,6 @@ class GeoTsReader(object):
 
         self.grid = cls.grid
 
-
         if selfmaskingadapter_kwargs is not None:
             cls = SelfMaskingAdapter(cls, **selfmaskingadapter_kwargs)
 
@@ -75,9 +70,11 @@ class GeoTsReader(object):
     def read(self, *args, **kwargs):
         df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
 
+        # Resampling is done AFTER reading the original data, masking, climadapt. etc
         if self.resample is not None:
             df = df.resample(self.resample[0]).apply(self.resample[1])
 
+        # Renaming is done last.
         if self.params_rename is not None:
             df = df.rename(columns=self.params_rename)
 
