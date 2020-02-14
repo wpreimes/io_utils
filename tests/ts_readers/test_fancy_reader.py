@@ -11,6 +11,10 @@ test_loc = (15, 45)
 
 @pytest.mark.geo_test_data
 def test_sat_data():
+    """
+    Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
+    sm anomalies based on 1991-2010 clim.
+    """
     reader_kwargs = {'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
                      'exact_index': True,
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
@@ -18,13 +22,15 @@ def test_sat_data():
 
     selfmaskingadapter_kwargs = {'op' : '==', 'threshold' : 0,
                                  'column_name' : 'flag'}
-    climadapter_kwargs = {'columns' : ['sm'], 'wraparound' : True,
+    climadapter_kwargs = {'columns' : ['sm'],
+                          'timespan': [datetime(1991, 1, 1), datetime(2010, 12, 31)],
+                          'wraparound' : True,
                           'moving_avg_clim' : 30}
     resample = ('10D', pd.DataFrame.mean)
     params_rename = {'sm': 'esa_cci_sm'}
 
     fancyreader = GeoTsReader(GeoCCISMv4Ts, reader_kwargs, selfmaskingadapter_kwargs,
-                             climadapter_kwargs, resample, params_rename)
+                              climadapter_kwargs, resample, params_rename)
 
     ts = fancyreader.read(*test_loc)
 
@@ -36,6 +42,10 @@ def test_sat_data():
 
 @pytest.mark.geo_test_data
 def test_model_data():
+    """
+    Read GLDAS 21 Sm and temp data, mask based on frozen soil and create
+    sm anomalies based on 2000-2010 clim.
+    """
     reader_kwargs = {'dataset': ('GLDAS21', 'core'),
                      'parameters': ['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                      'ioclass_kws': {'read_bulk': True}}
@@ -45,7 +55,7 @@ def test_model_data():
                                  'column_name' : 'SoilTMP0_10cm_inst'}
     climadapter_kwargs = {'columns' : ['SoilMoi0_10cm_inst'],
                           'wraparound' : True,
-                          'timespan': [datetime(2000,1,1), datetime(2010,1,1)],
+                          'timespan': [datetime(2000,1,1), datetime(2010,12,31)],
                           'moving_avg_clim' : 30}
     resample = ('1D', pd.DataFrame.mean)
     params_rename = {'SoilMoi0_10cm_inst': 'sm', 'SoilTMP0_10cm_inst': 'tmp'}
