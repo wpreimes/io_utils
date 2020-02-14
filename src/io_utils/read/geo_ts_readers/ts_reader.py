@@ -11,6 +11,11 @@ from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
 import matplotlib.pyplot as plt
 
+resample_method_lut = {'mean' : pd.DataFrame.mean,
+                       'max': pd.DataFrame.max,
+                       'min': pd.DataFrame.min,
+                       'median': pd.DataFrame.median}
+
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
     settings = eval(s)
@@ -42,7 +47,8 @@ class GeoTsReader(object):
             e.g. dict(columns=['sm'], timespan=[datetime(1991,1,1), datetime(2010,12,31)])
         resample : tuple, optional (default: None)
             A frequency and method to resample the read, masked, transformed, data
-            e.g. ('M', pd.DataFrame.mean)
+            e.g. ('M', pd.DataFrame.mean), method can also be a string then it will
+            be looked up.
         params_rename : dict, optional (default: None)
             A lookup table for renaming parameters. This is done at the very end.
             e.g. {'sm' : 'ESA CCI SM Soil Moisture'}
@@ -67,12 +73,22 @@ class GeoTsReader(object):
 
         self.reader = cls
 
+    @staticmethod
+    def _method_from_lut(name):
+        if name not in resample_method_lut.keys():
+            raise ValueError('Method {} not implemented in GeoTsReaders')
+        else:
+            return resample_method_lut[name]
+
     def read(self, *args, **kwargs):
         df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
 
         # Resampling is done AFTER reading the original data, masking, climadapt. etc
         if self.resample is not None:
-            df = df.resample(self.resample[0]).apply(self.resample[1])
+            method = self.resample[1]
+            if isinstance(method, str):
+                method = self._method_from_lut(method)
+            df = df.resample(self.resample[0]).apply(method)
 
         # Renaming is done last.
         if self.params_rename is not None:

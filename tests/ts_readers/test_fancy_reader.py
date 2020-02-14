@@ -57,7 +57,7 @@ def test_model_data():
                           'wraparound' : True,
                           'timespan': [datetime(2000,1,1), datetime(2010,12,31)],
                           'moving_avg_clim' : 30}
-    resample = ('1D', pd.DataFrame.mean)
+    resample = ('1D', 'mean')
     params_rename = {'SoilMoi0_10cm_inst': 'sm', 'SoilTMP0_10cm_inst': 'tmp'}
 
     fancyreader = GeoTsReader(GeoGLDAS21Ts, reader_kwargs, selfmaskingadapter_kwargs,
