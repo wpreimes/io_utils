@@ -44,23 +44,6 @@ def compress_nc(infile, replace=True, dtypes=np.float32):
         os.rename(outfile, infile)
 
 
-def join_files(tmp_dir, out_file, mfdataset=False):
-    if mfdataset:
-        cell_data = xr.open_mfdataset(os.path.join(tmp_dir, '*.nc'))
-        cell_data.to_netcdf(out_file)
-    else:
-        if len(os.listdir(tmp_dir)) == 0:
-            return
-    dfs = []
-    for filename in os.listdir(tmp_dir):
-        ds = xr.open_dataset(os.path.join(tmp_dir, filename))
-        dfs.append(ds.to_dataframe().dropna(how='all'))
-
-    df = pd.concat(dfs, axis=0)
-
-    df.to_xarray().to_netcdf(out_file, mode='w', engine='scipy')
-
-
 def build_filename(root, key):
     """
     Create savepath/filename that does not exceed 255 characters
@@ -123,7 +106,7 @@ def netcdf_results_manager(results, save_path, filename=None, zlib=True, fv=9999
             ncfile = netCDF4.Dataset(filename, 'w')
 
             global_attr = {}
-            s = "%Y-%m-%d %H:%M:%RegularStackDataResultsManager"
+            s = "%Y-%m-%d %H:%M:%NcRegGridStack"
             global_attr['date_created'] = datetime.now().strftime(s)
             ncfile.setncatts(global_attr)
 
@@ -222,7 +205,7 @@ class Results(object):
         ----------
         attrs : dict
         """
-        s = "%Y-%m-%d %H:%M:%RegularStackDataResultsManager"
+        s = "%Y-%m-%d %H:%M:%NcRegGridStack"
         attrs['date_created'] = datetime.now().strftime(s)
         self.__glob_attrs = attrs
 

@@ -9,9 +9,8 @@ Time series reader for C3S v201706 active, combined and passive data
 # NOTES:
 #   -
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.c3s_sm import base_reader
-import numpy as np
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from datetime import datetime
@@ -30,12 +29,12 @@ class GeoC3Sv201706Ts(base_reader.GeoC3STs):
                        'sm_uncertainty': [-9999.0],
                        _t0_ref[0]: [-9999.0]}
 
-    _ds_implemented = [('C3S', 'v201706', 'COMBINED', 'TCDR'),
-                       ('C3S', 'v201706', 'COMBINED', 'ICDR'),
-                       ('C3S', 'v201706', 'ACTIVE', 'TCDR'),
-                       ('C3S', 'v201706', 'ACTIVE', 'ICDR'),
-                       ('C3S', 'v201706', 'PASSIVE', 'TCDR'),
-                       ('C3S', 'v201706', 'PASSIVE', 'ICDR')]
+    _ds_implemented = [('C3S', 'v201706', 'COMBINED', 'DAILY', 'TCDR'),
+                       ('C3S', 'v201706', 'COMBINED', 'DAILY', 'ICDR'),
+                       ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'TCDR'),
+                       ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'ICDR'),
+                       ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'TCDR'),
+                       ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR')]
 
     def __init__(self, dataset, exact_index=False, force_path_group=None, **kwargs):
         """
@@ -59,9 +58,9 @@ class GeoC3Sv201706Ts(base_reader.GeoC3STs):
 class GeoC3Sv201706FullCDRTs(object):
     # combines the TCDR and ICDR readers and reads data at once
 
-    _ds_implemented = [('C3S', 'v201706', 'COMBINED'),
-                       ('C3S', 'v201706', 'ACTIVE'),
-                       ('C3S', 'v201706', 'PASSIVE')]
+    _ds_implemented = [('C3S', 'v201706', 'COMBINED', 'DAILY'),
+                       ('C3S', 'v201706', 'ACTIVE', 'DAILY'),
+                       ('C3S', 'v201706', 'PASSIVE', 'DAILY')]
 
     def __init__(self, dataset, exact_index=False, **kwargs):
         """
@@ -70,6 +69,9 @@ class GeoC3Sv201706FullCDRTs(object):
         dataset : tuple WITHOUT TCDR or ICDR
             e.g. ('C3S', 'v201706', 'COMBINED')
         """
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         tcdr_dataset = tuple(list(dataset) + ['TCDR'])
         icdr_dataset = tuple(list(dataset) + ['ICDR'])

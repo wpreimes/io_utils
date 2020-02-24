@@ -3,7 +3,7 @@
 import pytest
 from io_utils.read.geo_ts_readers.ts_reader import GeoTsReader
 import pandas as pd
-from io_utils.read.geo_ts_readers import GeoCCISMv4Ts, GeoGLDAS21Ts
+from io_utils.read.geo_ts_readers import GeoCCISMv4Ts, GeoGLDAS21Ts, GeoISMNTs
 import numpy as np
 from datetime import datetime
 
@@ -71,6 +71,41 @@ def test_model_data():
     assert not ts.empty
     print(ts)
 
+def test_insitu_data():
+    """
+    Read GLDAS 21 Sm and temp data, mask based on frozen soil and create
+    sm anomalies based on 2000-2010 clim.
+    """
+    reader_kwargs = {'dataset': ('ISMN', 'v20191211'),
+                     'network': 'COSMOS',
+                     'force_path_group': '_test',
+                     'parameters': ['soil moisture', 'flag']}
+
+    # keep only obs where temp >= 277.15°C
+    selfmaskingadapter_kwargs = {'op' : '==', 'threshold' : 'G',
+                                 'column_name' : 'soil moisture_flag'}
+    climadapter_kwargs = {'columns' : ['soil moisture'],
+                          'wraparound' : True,
+                          'timespan': [datetime(2010,1,1), datetime(2019,12,31)],
+                          'moving_avg_clim' : 30}
+    resample = ('1D', 'mean')
+    params_rename = {'soil moisture': 'initu_sm'}
+
+
+    fancyreader = GeoTsReader(GeoISMNTs, reader_kwargs, selfmaskingadapter_kwargs,
+                              climadapter_kwargs, resample, params_rename)
+
+    nearest, dist = fancyreader.reader.find_nearest_station(-155.5, 19.9, return_distance=True)
+    ids = fancyreader.reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)
+    ts = fancyreader.read(ids[0]) # read and mask
+    assert np.all(ts['soil moisture_flag'] == 'G')
+    df_drop = ts['soil moisture'].dropna()
+    assert not df_drop.empty
+
+
+
 if __name__ == '__main__':
     test_model_data()
     test_sat_data()
+    test_insitu_data()
+

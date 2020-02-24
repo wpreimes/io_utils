@@ -9,7 +9,7 @@ Time series reader for ERA5 and ERA5 Land data
 # NOTES:
 #   -
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.merra.base_reader import MERRATs
 from path_configs.merra.paths_merra2 import path_settings
 
@@ -20,6 +20,10 @@ class GeoMerra2Ts(MERRATs):
     _ds_implemented = [('MERRA2', 'core')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
         ts_path = self.path_config.load_path(force_path_group=force_path_group)

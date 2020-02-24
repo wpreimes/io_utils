@@ -9,7 +9,7 @@ test_data_path = os.path.join(get_test_root(), 'test_data', 'read', 'c3s', 'v201
 
 path_settings = \
     {
-        ('C3S', 'v201912', 'COMBINED', 'TCDR'):
+        ('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'):
         # paths will be tried in this order, there is no limit to the potential pathes here
             OrderedDict([
                 ('local',
@@ -57,7 +57,7 @@ path_settings = \
             ]),
 
 
-        ('C3S', 'v201912', 'ACTIVE', 'TCDR'):
+        ('C3S', 'v201912', 'ACTIVE', 'DAILY', 'TCDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',
@@ -99,7 +99,7 @@ path_settings = \
             ]),
 
 
-        ('C3S', 'v201912', 'PASSIVE', 'TCDR'):
+        ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',

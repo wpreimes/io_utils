@@ -12,6 +12,7 @@ import matplotlib as mpl
 from smecv_grid.grid import SMECV_Grid_v042
 import matplotlib.ticker as ticker
 import warnings
+import io_utils.plot.colormaps as my_colormaps
 
 
 '''
@@ -26,6 +27,16 @@ Optional: smecv_grid
 
 # NOTES # -
 
+
+def set_style(style):
+    if style is None:
+        pass
+    elif style == 'seaborn_poster':
+        import seaborn as sns
+        sns.set_context("poster", font_scale=1.)
+        plt.style.use('seaborn-talk')
+    else:
+        warnings.warn('{} style is not supported.')
 
 def is_spherical(projection):
     if projection in [ccrs.Robinson()]:
@@ -74,11 +85,11 @@ def add_grid_labels(ax, x0, x1, y0, y1, dx, dy,
         if top:
             ax.text(lon, y1, '{0}$^\circ$\n\n'.format(lon),
                     va='center', ha='center',
-                    transform=ccrs.PlateCarree())
+                    transform=ccrs.PlateCarree(), fontsize=5)
         if bot:
             ax.text(lon, y0, '\n\n{0}$^\circ$'.format(lon),
                     va='center', ha='center',
-                    transform=ccrs.PlateCarree())
+                    transform=ccrs.PlateCarree(), fontsize=5)
 
     lats = np.arange(y0, y1 + dy / 2., dy, dtype=dtype)
     for i, lat in enumerate(lats):
@@ -96,9 +107,11 @@ def add_grid_labels(ax, x0, x1, y0, y1, dx, dy,
             va = 'center'
 
         ax.text(x0, lat, '{0}$^\circ$  '.format(lat), va=va, ha='right',
-                transform=ccrs.PlateCarree(), alpha=0. if not lft else 1.)
+                transform=ccrs.PlateCarree(), alpha=0. if not lft else 1.,
+                fontsize=5)
         ax.text(x1, lat, '  {0}$^\circ$'.format(lat), va=va, ha='left',
-                transform=ccrs.PlateCarree(), alpha=0. if not rgt else 1.)
+                transform=ccrs.PlateCarree(), alpha=0. if not rgt else 1.,
+                fontsize=5)
 
 
 def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
@@ -134,8 +147,9 @@ def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
 
     return f, imax, im
 
-def map_add_cbar(f, imax, im, cblabel=None, cblabelsize=7, extend='both',
-                 n_ticks=None, ext_label_min=None, ext_label_max=None):
+def map_add_cbar(f, imax, im, cblabel=None, location='bottom',
+                 cblabelsize=7, extend='both', n_ticks=None, ext_label_min=None,
+                 ext_label_max=None):
     """
     Add a colorbar to the bottom of the map
 
@@ -149,6 +163,8 @@ def map_add_cbar(f, imax, im, cblabel=None, cblabelsize=7, extend='both',
         The data Axes
     cblabel : str, optional (default: None)
         Label that is shown below the colorbar
+    location : str, optional (default: bottom)
+        Location of the colorbar (bottom , left, right, top)
     cblabelsize : int, optional (default: 7)
         Size of the colorbar label in points.
     extend : str, optional (default: Both)
@@ -169,8 +185,8 @@ def map_add_cbar(f, imax, im, cblabel=None, cblabelsize=7, extend='both',
     else:
         exteme_labels = True
 
-    cax, kw = mpl.colorbar.make_axes(imax, location='bottom',
-        extend=extend, shrink=0.7,
+    cax, kw = mpl.colorbar.make_axes(imax, location=location,
+        extend=extend, shrink=0.7, use_gridspec=True,
         pad=0.07 if not exteme_labels else 0.08)
 
     cb = f.colorbar(im, cax=cax, **kw)
@@ -182,11 +198,20 @@ def map_add_cbar(f, imax, im, cblabel=None, cblabelsize=7, extend='both',
 
     if exteme_labels:
         if ext_label_min:
-            cb.ax.text(0, 1.1, ext_label_min , fontsize=5, rotation=0, ha='left',
-                       transform = cax.transAxes)
-        if ext_label_max:
-            cb.ax.text(1, 1.1, ext_label_max , fontsize=5, rotation=0, ha='right',
-                       transform=cax.transAxes)
+            if location in ['top', 'bottom']:
+                cb.ax.text(0, 1.1, ext_label_min, fontsize=5, rotation=0, ha='left',
+                           transform=cax.transAxes)
+            else:
+                cb.ax.text(0.5, 1.02, ext_label_min, fontsize=5, rotation=0, va='bottom',
+                           ha='center', transform=cax.transAxes)
+        if ext_label_min:
+            if location in ['top', 'bottom']:
+                cb.ax.text(1, 1.1, ext_label_max, fontsize=5, rotation=0, ha='right',
+                           transform=cax.transAxes)
+            else:
+                cb.ax.text(0.5, -0.025, ext_label_max, fontsize=5, rotation=0, va='top',
+                           ha='center', transform=cax.transAxes)
+
 
     cb.set_label(cblabel if cblabel is not None else '', fontsize=cblabelsize,
                  labelpad=5, color='k')
@@ -318,14 +343,8 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     im : plt.axes
         The plot ax
     '''
-    if style is None:
-        pass
-    elif style == 'seaborn_poster':
-        import seaborn as sns
-        sns.set_context("poster", font_scale=1.)
-        plt.style.use('seaborn-talk')
-    else:
-        warnings.warn('{} style is not supported.')
+
+    set_style(style)
 
     values = values * scale_factor
     f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
@@ -385,20 +404,23 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                         veg_img_masked, cmap=vegcmap, transform=data_crs, rasterized=True)
 
     if title:
-        f.suptitle(title, fontsize=10)
+        imax.set_title(title, fontsize=10)
+        #f.suptitle(title, fontsize=10)
 
     if show_cbar:
         map_add_cbar(f, imax, im, **cbar_kwargs)
     else:
         plt.tight_layout(pad=3)
 
+
+
     return f, imax, im
 
 def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
-           title=None, llc=(-179.9999, -60.), urc=(179.9999, 80), flip_ud=False,
+           title=None, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
-           veg_mask=False, gridspace=(60,20), grid_label_loc='1001', style=None, ocean=False,
-           land='grey', states=False, borders=False, scale_factor=1., watermark=None,
+           veg_mask=False, gridspace=(60,20), grid_label_loc='1001', style=None,
+           ocean=False, land='grey', states=False, borders=False, scale_factor=1., watermark=None,
            show_cbar=True, **cbar_kwargs):
 
     '''
@@ -447,7 +469,7 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
         'top, right, bottom, left' : The 4 potential label elements (starting at
         the top), 1 means activated, 0 means deactivated.
         1111 to print all grids, 0011 to print the bottom and left grid etc.
-    style: str, optional (default: None)
+    style: str, optional (default: 'seaborn_poster')
         Apply style backend.
         Current options: 'seaborn_poster', ...
     ocean : bool, optional (default: False)
@@ -492,14 +514,7 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     im : plt.axes
         The plot ax
     '''
-    if style is None:
-        pass
-    elif style == 'seaborn_poster':
-        import seaborn as sns
-        sns.set_context("poster", font_scale=1.)
-        plt.style.use('seaborn-talk')
-    else:
-        warnings.warn('{} style is not supported.')
+    set_style(style)
 
     if isinstance(df, pd.Series):
         dat = df
@@ -531,8 +546,7 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
         glob_df = glob_df.set_index('gpi')
 
     glob_df['dat'] = df['dat']
-    df = None # clear memory
-    dat = None
+    df = dat = None # clear memory
 
     img = np.empty(glob_df.index.size, dtype='float32')
     img.fill(np.nan)
@@ -605,7 +619,8 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     #imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)
 
     if title:
-        f.suptitle(title, fontsize=10)
+        imax.set_title(title, fontsize=10)
+        #f.suptitle(title, fontsize=10)
 
     if watermark:
         imax.text()
@@ -626,73 +641,6 @@ def usecase_scatter():
 
     f.savefig(r'C:\Temp\test.png', dpi=200)
 
-def usecase_area_multiindex():
-    lons = np.linspace(-20, 20, 41)
-    lats = np.linspace(20, -20, 41).transpose()
-
-    lons, lats = np.meshgrid(lons, lats)
-
-    # multiindex: lats, lons
-    index =pd.MultiIndex.from_arrays(np.array([lats.flatten(), lons.flatten()]),
-                                     names=['lats', 'lons'])
-    df = pd.DataFrame(index=index)
-    df['data'] = np.random.rand(df.index.size)
-    cp_map(df, 'data', resxy=(1,1), offset=(0,0))
-
-def usecase_area_gpi():
-
-    gpis = np.arange(346859, 374200)
-
-    df = pd.DataFrame(index=gpis)
-    df['data'] = np.random.rand(df.index.size)
-    cp_map(df, 'data', resxy=(0.25,0.25))
-
-def usecase_real_data():
-    from netCDF4 import Dataset
-    data_path = r"X:\staff\wpreimes\GLOBAL_basic_validation_full_period.nc"
-    ds = Dataset(data_path)
-    data = ds.variables['n_obs'][:].filled()
-    lons = ds.variables['lon'][:]
-    lats = ds.variables['lat'][:]
-
-    lons, lats = np.meshgrid(lons, lats)
-
-    # order matters [lat, lon]!!
-    index =pd.MultiIndex.from_arrays(np.array([lats.flatten(), lons.flatten()]),
-                                     names=['lats','lons'])
-    df = pd.DataFrame(index=index).sort_index()
-    df['n_obs'] = data.flatten()
-
-    cp_map(df, 'n_obs', resxy=(0.25,0.25), cbrange=(0,5000), veg_mask=True)
-
-def usecase_sara_data():
-    from cartopy.io.shapereader import Reader
-    from cartopy.feature import ShapelyFeature
-
-    data_path = r"C:\Temp\sara\csv\output.csv"
-    df = pd.read_csv(data_path, parse_dates=True, index_col=0)
-    lons, lats = df['lon'].values, df['lat'].values
-    # make a multiindex from the lat and lon columns of your data
-    index =pd.MultiIndex.from_arrays(np.array([lats.flatten(), lons.flatten()]),
-                                     names=['lats', 'lons'])
-    df.index = index
-    df = df.drop(columns=['lat', 'lon']) # drop the old data (copied as the index now)
-
-    f, imax, im = cp_map(df, 'slp_combined', resxy=(0.25,0.25), cbrange=(-0.0004,0.0004), veg_mask=False,
-           projection=ccrs.PlateCarree(), title='Plot Title', ocean=False, land=None,
-           gridspace=(60,20), states=False, borders=False, llc=(45.,25.),  urc=(60.,40.),
-            cblabel='slp_combined', cblabelsize=10,
-           extend='both', ext_label_min=None, ext_label_max=None)
-    # first argument is the data frame, second is the column in the df to plot
-    # third is the resolution of your data, llc is the lower left corner of you
-    # subplot (lon, lat) and urc the upper right corner.
-
-    shape_file = r"X:\guests\sazadi\csv\ZayandehRud\transformed\transformed_transparent.shp"
-
-    shape_feature = ShapelyFeature(Reader(shape_file).geometries(),
-                                   ccrs.PlateCarree(), edgecolor='black',
-                                   facecolor="none")
-    imax.add_feature(shape_feature, facecolor="none", alpha=.8)
 
 
 def usecase_adam():
@@ -709,12 +657,13 @@ def usecase_adam():
                                      names=['lats', 'lons'])
     df = pd.DataFrame(index=index, data={'sm': dat})
 
+    cmap = my_colormaps.cm_sm
 
     f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,0.5), veg_mask=False,
-           projection=ccrs.Robinson(), title='testtitle', ocean=False, land='white',
+                         cmap=cmap, projection=ccrs.Robinson(), title='testtitle', ocean=False, land='white',
            gridspace=None, states=False, borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
-           cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=10, grid_label_loc='0000', coastline_size='110m',
-           extend='both', ext_label_min='MIN', ext_label_max='MAX')
+           cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=7, grid_label_loc='0000', coastline_size='110m',
+           extend='both', ext_label_min='MIN', ext_label_max='MAX', location='right')
 
     f.savefig(r'C:\Temp\test.png', dpi=200)
 

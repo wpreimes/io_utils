@@ -18,7 +18,7 @@ test_data_root = os.path.join(get_test_root(), 'test_data', 'read', 'c3s', 'v201
 
 path_settings = \
     {
-        ('C3S', 'v201706', 'COMBINED', 'TCDR'):
+        ('C3S', 'v201706', 'COMBINED', 'DAILY', 'TCDR'):
         # paths will be tried in this order, there is no limit to the potential pathes here
             OrderedDict([
                 ('local',
@@ -64,7 +64,7 @@ path_settings = \
                  }),
             ]),
 
-        ('C3S', 'v201706', 'COMBINED', 'ICDR'):
+        ('C3S', 'v201706', 'COMBINED', 'DAILY', 'ICDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',
@@ -110,7 +110,7 @@ path_settings = \
                  }),
             ]),
 
-        ('C3S', 'v201706', 'ACTIVE', 'TCDR'):
+        ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'TCDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',
@@ -156,7 +156,7 @@ path_settings = \
                  }),
             ]),
 
-        ('C3S', 'v201706', 'ACTIVE', 'ICDR'):
+        ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'ICDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',
@@ -203,7 +203,7 @@ path_settings = \
             ]),
 
 
-        ('C3S', 'v201706', 'PASSIVE', 'TCDR'):
+        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'TCDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',
@@ -249,7 +249,7 @@ path_settings = \
                  }),
             ]),
 
-        ('C3S', 'v201706', 'PASSIVE', 'ICDR'):
+        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR'):
         # paths will be tried in this order
             OrderedDict([
                 ('local',

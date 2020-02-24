@@ -158,15 +158,15 @@ class NcVarCombPlotter(object):
         """
         We calculate 'variable1 *metric* variable2'
         """
-        if metric == '-':
+        if metric in ['-', 'Difference']:
             return s1 - s2, 'Difference'
         elif metric == 'AbsDiff':
             return (s1 - s2).abs(), 'AbsDiff'
-        elif metric == '+':
+        elif metric in ['+', 'Sum']:
             return s1 + s2, 'Sum'
-        elif metric == '/':
+        elif metric in ['/', 'Ratio']:
             return s1 / s2, 'Ratio'
-        elif metric == '*':
+        elif metric in ['*', 'Product']:
             return s1 * s2, 'Product'
         elif metric == 'Mask1': # remove all were s2 is NOT 1
             cs1 = s1.copy(True)
@@ -176,7 +176,7 @@ class NcVarCombPlotter(object):
             raise ValueError('Metric {} is not implemented'.format(metric))
 
     def plot_comb_variable(self, vards1, vards2, time1=None, time2=None,
-                           metric='-', interface=True, transparent=True,
+                           metric='-', interface=True, transparent=False,
                            plotfile_name=None, file_format='png',
                            **plot_kwargs):
         """

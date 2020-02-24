@@ -63,34 +63,31 @@ def dates_to_num(dates):
 
     return np.sort(date2num(timestamps, units, calendar))
 
-
 def datetime2matlabdn(dt):
     ord = dt.toordinal()
     mdn = dt + timedelta(days=366)
     frac = (dt - datetime(dt.year, dt.month, dt.day, 0, 0, 0)).seconds / (24.0 * 60.0 * 60.0)
     return mdn.toordinal() + frac
 
-
-
 def split(el, n):
-    '''
+    """
     Split list of elements in n approx. equal parts for multiprocessing
 
     Parameters
-    --------
+    ----------
     el : list
         List of elements to split
     n : int
         Number of lists to split input up into
 
     Returns
-    ---------
-    split : list
-        Lists of n parts of the input
-    '''
-
-    k, m = divmod(len(el), n)
+    -------
+    parts : Iterable
+        List of n lists of parts of the input
+    """
+    k, m = divmod(len(list(el)), n)
     parts = [el[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
+
     return parts
 
 
@@ -126,34 +123,6 @@ def split_cells_gpi_equal(all_cells, n, grid):
     rparts = tuple([np.array(parts[j][1]) for j in range(n)])
     return rparts
 
-
-def filter_grid(input_grid, filter_grid):
-    '''
-    Filter a grid with points from other grid, so that points from filter_grid
-    are excluded.
-    Grids must have the same resolution.
-
-    Parameters
-    -------
-    input_grid : pygeogrids.grids.CellGrid
-        Grid that will be filtered
-    filter_grid : pygeogrids.grids.CellGrid
-        Grid that is used to filter points from input_grid
-
-    Returns
-    -------
-    filtered_grid : pygeogrids.grids.CellGrid
-        Input_grid that was filtered to exclude filter_grid
-    '''
-    input_gpis = input_grid.get_grid_points()[0]
-    filter_gpis = filter_grid.get_grid_points()[0]
-
-    gpi_not_forest_mask = ~np.isin(input_gpis, filter_gpis)
-
-    filtered_input_gpis = input_gpis[np.where(gpi_not_forest_mask)]
-    filtered_input_grid = input_grid.subgrid_from_gpis(filtered_input_gpis)
-
-    return filtered_input_grid
 
 def create_workfolder(path, no_version_folder=False):
     i = 1

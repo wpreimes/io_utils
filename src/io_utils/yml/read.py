@@ -95,10 +95,10 @@ def read_settings(settings_file, *args):
         args = cfg.keys()
     for arg in args: params.update({arg: cfg[arg]})
 
+    # replace some elements
     for level, data in params.items():
-        if 'None' in data.values(): # Replace 'None' with real None
-            for i, v in data.items():
-                if v == 'None': params[level][i] = None
+        for i, v in data.items():
+            if v == 'None': params[level][i] = None
 
     return params
 

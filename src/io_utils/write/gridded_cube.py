@@ -5,6 +5,8 @@ Xarray Stacked Images Writer.
 Create 3D datasets, allows setting spatial and temporal subset (images and time
 series)
 """
+#TODO. File locking as option for multiple processes?
+# todo: Add Point data results manager (for ismn based results)
 
 import xarray as xr
 import numpy as np
@@ -15,9 +17,9 @@ import matplotlib.pyplot as plt
 import os
 from io_utils.utils import safe_arange
 from pygeogrids.grids import BasicGrid, CellGrid, lonlat2cell
+import copy
+from io_utils.write.utils import minmax
 
-def minmax(values):
-    return np.nanmin(values), np.nanmax(values)
 
 def to_reg_cell_grid(grid, cellsize=5.):
     """
@@ -175,13 +177,14 @@ class RegularArea(object):
         return slice(self.llc.lon, self.urc.lon, self.grid.dx if d else None), \
                slice(self.llc.lat, self.urc.lat, self.grid.dy if d else None)
 
-class RegularStackDataResultsManager(object):
+
+class NcRegGridStack(object):
 
     """ Store netcdf cubes with xarray and dask """
 
     def __init__(self, dx=0.25, dy=0.25, z=None, z_name='z',
                  llc=Point(-179.875, -89.875), urc=Point(179.875, 89.875),
-                 indexed=True, zlib=True, fill_value=9999., chunksize=5.):
+                 indexed=True, zlib=True, fill_value=9999.):
 
         """
         Parameters
@@ -205,6 +208,8 @@ class RegularStackDataResultsManager(object):
         fill_value : float, optional (default: 9999.)
             Fill value nans are replaced with
         """
+        if z is None:
+            z = [None]
 
         self.zlib = zlib
         self.z_name = z_name
@@ -217,10 +222,12 @@ class RegularStackDataResultsManager(object):
 
         gpis = self._gpis('ll') # origin is in the lower left
 
-        self.ds = xr.Dataset(data_vars={'gpi': (['lat', 'lon'], gpis)} if indexed else None,
-                             coords={'lon': lons, 'lat': lats, self.z_name: z})
+        self.ds = xr.Dataset(
+            data_vars={'gpi': (['lat', 'lon'], gpis)} if indexed else None,
+            coords={'lon': lons, 'lat': lats, self.z_name: z})
 
         self.grid = to_reg_cell_grid(self._grid(gpis), 5.)
+
 
     @property
     def subset(self):
@@ -318,6 +325,19 @@ class RegularStackDataResultsManager(object):
             dat[np.isnan(dat)] = self.fill_value
             self.ds[var].loc[dict(**kwargs)] = dat
 
+    def _write_pt(self, data, **kwargs):
+        # takes arrays of lon, lat, z and data dict of arrays
+        for var in data.keys():
+
+            if var not in self.ds.variables:
+                self._add_empty_3d(var)
+
+            dat = data[var]
+            dat[np.isnan(dat)] = self.fill_value
+
+            self.ds[var].loc[dict(**kwargs)] = dat
+
+
     def store_stack(self, filename=None, dtypes=np.float32):
         try:
             if self.zlib:
@@ -356,7 +376,7 @@ class RegularStackDataResultsManager(object):
             encoding = None
         datetime_obs = [np.datetime64, datetime]
         for z in self.ds[self.z_name]:
-            if any([isinstance(z, dt) for dt in datetime_obs]):
+            if any([isinstance(z.values, dt) for dt in datetime_obs]):
                 pydatetime=pd.to_datetime(z.values).to_pydatetime()
                 datestr = datetime.strftime(pydatetime, '%Y%m%d')
                 filename = filename_templ.format(datestr)
@@ -458,7 +478,7 @@ class RegularStackDataResultsManager(object):
 
     def write_series(self, lon, lat, df):
         """
-        Add data for a single location. Series is in z-dimension.
+        Add data for multiple z values, for a single location. Series is in z-dimension.
 
         Parameters
         ----------
@@ -479,78 +499,52 @@ class RegularStackDataResultsManager(object):
 
         self._write_ser(data, lon=lon, lat=lat)
 
+    def write_point(self, lon, lat, z, data):
+        """
+        Add data for a single point and a single z value.
 
-def usecase_time():
-    ### TS case
-    time_case = False
+        Parameters
+        ---------
+        lon : np.array or list (1d)
+            Longitude of the point to write, same size as lat and z
+        lat : np.array or list (1d)
+            Latitude of the point to write, same size as lon and z
+        z : np.array or list (1d)
+            3rd dimension value of the point to write, same size as lon and lat
+        data : dict
+            Dictionary of variables and values to write.
+            Values must have same size as lon, lat and z.
+        """
+        data = copy.deepcopy(data)
 
-    from smecv_grid import SMECV_Grid_v052
-    if time_case:
-        index = pd.date_range('2000-01-01', '2000-12-31', freq='D')
-        z = pd.to_datetime(index).to_pydatetime()
-    else:
-        index = np.array(list(range(1, 367)))
-        z = index
+        if not isinstance(lon, (np.ndarray, list)):
+            lon = np.array([lon])
+        if not isinstance(lat, (np.ndarray, list)):
+            lat = np.array([lat])
+        if not isinstance(z, (np.ndarray, list)):
+            z = np.array([z])
 
-    glob_grid = SMECV_Grid_v052(None)
-    land_grid = SMECV_Grid_v052('land')
+        if not lon.size == lat.size == z.size:
+            raise ValueError('Sizes of passed dimension dont match '
+                '(lon={}, lat={}, ref={})'.format(lon.size, lat.size, z.size))
+        else:
+            n = lon.size
 
+        for k, v in data.items():
+            if not isinstance(v, (np.ndarray, list)):
+                data[k] = np.array([v])
+            if data[k].size != n:
+                raise ValueError('Size of variable {}, does not match sizes of '
+                                 'dimensions: {} vs. {}'.format(k, data[k].size, n))
 
-    ts_writer = RegularStackDataResultsManager(dx=0.25, dy=0.25, z=z, z_name='doy')
+        # z values must already be in the dimension
+        assert np.all(i in self.ds[self.z_name] for i in z)
 
-    gpis, lons, lats, cells = land_grid.get_grid_points()
-    i=0
-    for lon, lat in zip(lons, lats):
-        if i > 1000: break
-        print(i)
-        data = pd.DataFrame(index=index,
-                            data={'var_{}'.format(i): np.random.rand(366) for i in range(5)})
-        ts_writer.write_series(lon, lat, data)
-        i+=1
-
-    import time
-    start = time.time()
-    ts_writer.store_files(r"C:\tmp\collect")
-    #writer.store_stack(r"C:\tmp\test.nc")
-    end = time.time()
-    print('Writing file took {} seconds'.format(end - start))
-
-if __name__ == '__main__':
-    time_case = False
-
-    from smecv_grid import SMECV_Grid_v052
-    if time_case:
-        index = pd.date_range('2000-01-01', '2000-12-31', freq='D')
-        z = pd.to_datetime(index).to_pydatetime()
-    else:
-        index = np.array(list(range(1, 367)))
-        z = index
-
-    glob_grid = SMECV_Grid_v052(None)
-    land_grid = SMECV_Grid_v052('land')
+        kwargs = {'lon': lon, 'lat': lat, self.z_name: z}
+        self._write_pt(data, **kwargs)
 
 
-    ### AREA case
-    img_writer = RegularStackDataResultsManager(dx=0.25, dy=0.25, z=z, z_name='doy')
 
-    gpis, lons, lats, cells = land_grid.get_grid_points()
-    i=0
-    for cell in np.unique(cells):
-        print(cell)
-        cell_gpis, cell_lons, cell_lats = land_grid.grid_points_for_cell(cell)
-        df = pd.DataFrame(index=range(cell_gpis.size), data={'lon': cell_lons,
-                                                             'lat': cell_lats,
-                                                             'var1': np.random.rand(cell_gpis.size),
-                                                             'var2': np.random.rand(cell_gpis.size)})
-        img_writer.write_image(df, z=1)
-        i+=1
-
-    import time
-    start = time.time()
-    img_writer.store_stack(r"C:\tmp\test.nc")
-    #writer.store_stack(r"C:\tmp\test.nc")
-    end = time.time()
-    print('Writing file took {} seconds'.format(end - start))
 
 
 

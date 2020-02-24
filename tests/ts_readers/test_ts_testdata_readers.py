@@ -230,7 +230,7 @@ def test_C3S201706_single_readers():
     force_path_group = '_test'
     for record in ['TCDR', 'ICDR']:
         dataset = 'ACTIVE'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, record),
+        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -238,7 +238,7 @@ def test_C3S201706_single_readers():
         assert not ts.dropna(how='all').empty
 
         dataset = 'COMBINED'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, record),
+        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -246,7 +246,7 @@ def test_C3S201706_single_readers():
         assert not ts.dropna(how='all').empty
 
         dataset = 'PASSIVE'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, record),
+        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -256,7 +256,7 @@ def test_C3S201706_single_readers():
 
 def test_C3S201812_single_readers():
     force_path_group = '_test'
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'ACTIVE', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -265,7 +265,7 @@ def test_C3S201812_single_readers():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'COMBINED', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'COMBINED', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -275,7 +275,7 @@ def test_C3S201812_single_readers():
     #print(ts)
 
     # no data for the passive c3s there
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'PASSIVE', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'PASSIVE', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -287,7 +287,7 @@ def test_C3S201812_single_readers():
 def test_C3S201912_single_readers():
     force_path_group = '_test'
 
-    reader = GeoC3Sv201912Ts(dataset=('C3S', 'v201912', 'COMBINED', 'TCDR'),
+    reader = GeoC3Sv201912Ts(dataset=('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -319,7 +319,7 @@ def test_era5_land_ts_reader():
 
 def test_era5_ts_reader():
     force_path_group = '_test'
-    reader = GeoEra5Ts(dataset=('ERA5', 'testdata'),
+    reader = GeoEra5Ts(dataset=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
                        parameters=['swvl1', 'stl1'], scale_factors={'swvl1': 100.},
                        force_path_group=force_path_group)
@@ -349,7 +349,7 @@ def test_ismn_good_sm_ts_reader_masking():
     nearest = reader.find_nearest_station(-155.5, 19.9)
     assert nearest.station == 'SilverSword'
     ids = reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)
-    ts = mreader.read_ts(ids[0]) # read and mask
+    ts = mreader.read(ids[0]) # read and mask
     assert np.all(ts['soil moisture_flag'] == 'G')
     df_drop = ts['soil moisture'].dropna()
     assert not df_drop.empty
@@ -374,6 +374,7 @@ def test_ismn_good_sm_ts_reader_no_masking():
 
     assert np.all(sm.values == also_sm.values)
     assert not dat.dropna().empty
+
 
 if __name__ == '__main__':
     test_ismn_good_sm_ts_reader_masking()

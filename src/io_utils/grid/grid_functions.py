@@ -7,37 +7,41 @@ import os
 
 import pygeogrids as pgg
 from pygeogrids.netcdf import load_grid
-from smecv_grid.grid import SMECV_Grid_v042
-
+from smecv_grid.grid import SMECV_Grid_v052
+from io_utils.grid.continents_cells import read_cells_for_continent
 
 '''
 Contains functions to process subsets of grid points. Works only for QDEG grid atm.
 Should be extended to work with any grid (subsets from latitude/longitudes) instead of GPIs.
 '''
 
-
-def cells_for_area(*areas):
-    '''
-    Load cells for the selected continent from the continents_cells.txt file
+def fract_grid(grid):
+    """
+    Fractionise grid into parts to reconstuct a similar grid.
+    E.g. to subsequently turn a land grid into a global grid.
 
     Parameters
     ----------
-    areas : str
-        Names of the continents or countries the cells are loaded for
-        eg. Australia, United_States
+    grid : pygeogrids.BasicGrid
 
     Returns
     -------
-    cells : list
-        List of cells for the selected area(s)
+    dx : float
+        minimum resolution in lon direction
+    dy : float
+        minimum resolution in lat direction
+    lons : np.array
+        Unique longitudes in the grid
+    lats : np.array
+        Unique latitudes in the grid
+    """
 
-    '''
-    from io_utils.grid.continents_cells import cells_lut
-    cells = []
+    gpis, lons, lats, _ = grid.get_grid_points()
+    lons, lats = sorted(np.unique(lons)), sorted(np.unique(lats))
 
-    for area in areas:
-        cells += cells_lut[area]
-    return cells
+    dx, dy = np.min(np.diff(lons)), np.min(np.diff(lats))
+
+    return dx, dy, lons, lats
 
 def grid_points_for_cells(areas_or_cells):
     '''
@@ -55,7 +59,7 @@ def grid_points_for_cells(areas_or_cells):
         List of grid points in the passed cells or in the cells for the passed
         area(s)
     '''
-    grid = SMECV_Grid_v042()
+    grid = SMECV_Grid_v052()
 
     grid_points = []
 
@@ -64,38 +68,36 @@ def grid_points_for_cells(areas_or_cells):
 
     for area in areas_or_cells:
         if isinstance(area, str):
-            cells = cells_for_area(area)
+            cells = read_cells_for_continent(area)
         else:
             cells = area
 
         grid_points += np.ndarray.tolist(grid.grid_points_for_cell(cells)[0])
     return np.array(grid_points)
 
-def cells_for_identifier(areas_or_cells, grid=None):
+def cells_for_identifier(areas_or_cells, grid=SMECV_Grid_v052()):
     '''
     Return cell numbers for the passed areas (or cells)
 
     Parameters
     ----------
     areas_or_cells : str or list
-        List of cells (trivial), list of area names or 'global'
+        List of cells (trivial case), list of area names or 'global'
+        Implemented areas:
 
     Returns
     -------
     cells: np.array
-        List of cells on the CCI Grid
+        List of cells on the selected grid
     '''
-    if grid is None:
-        grid = SMECV_Grid_v042()
-
     if isinstance(areas_or_cells, str):
-        if areas_or_cells == 'global':
+        if areas_or_cells.lower() == 'global':
             cells = grid.get_cells().tolist()
         else:
-            cells = cells_for_area(areas_or_cells)
+            cells = read_cells_for_continent(areas_or_cells)
     elif isinstance(areas_or_cells, list):
         if all((isinstance(i, str) for i in areas_or_cells)):
-            cells = cells_for_area(*areas_or_cells)
+            cells = read_cells_for_continent(*areas_or_cells)
         else:
             cells = areas_or_cells
     else:
@@ -139,3 +141,32 @@ if __name__ == '__main__':
     cells = cells_for_identifier('United_States')
     gpis = grid_points_for_cells(['United_States', 'Australia'])
     print(cells)
+
+
+def filter_grid(input_grid, filter_grid):
+    '''
+    Filter a grid with points from other grid, so that points from filter_grid
+    are excluded.
+    Grids must have the same resolution.
+
+    Parameters
+    -------
+    input_grid : pygeogrids.grids.CellGrid
+        Grid that will be filtered
+    filter_grid : pygeogrids.grids.CellGrid
+        Grid that is used to filter points from input_grid
+
+    Returns
+    -------
+    filtered_grid : pygeogrids.grids.CellGrid
+        Input_grid that was filtered to exclude filter_grid
+    '''
+    input_gpis = input_grid.get_grid_points()[0]
+    filter_gpis = filter_grid.get_grid_points()[0]
+
+    gpi_not_forest_mask = ~np.isin(input_gpis, filter_gpis)
+
+    filtered_input_gpis = input_gpis[np.where(gpi_not_forest_mask)]
+    filtered_input_grid = input_grid.subgrid_from_gpis(filtered_input_gpis)
+
+    return filtered_input_grid

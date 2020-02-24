@@ -29,6 +29,7 @@ class GeoTsReader(object):
         """
         Collects geopath-readers and calls them based on the dataset name,
         adds masking and climatology and allow resampling
+
         Parameters
         ----------
         cls : Object
@@ -57,21 +58,40 @@ class GeoTsReader(object):
         if reader_kwargs is None:
             reader_kwargs = {}
 
+        if 'network' in reader_kwargs.keys():
+            if isinstance(reader_kwargs['network'], str) and \
+                reader_kwargs['network'].lower() in ['all', 'none']:
+                reader_kwargs['network'] = None
+
         self.reader_kwargs = reader_kwargs
         self.params_rename = params_rename
         self.resample=resample
+
+        self.selfmaskingadapter_kwargs = selfmaskingadapter_kwargs
+        self.climadapter_kwargs = climadapter_kwargs
 
         cls = cls(**self.reader_kwargs)
 
         self.grid = cls.grid
 
-        if selfmaskingadapter_kwargs is not None:
-            cls = SelfMaskingAdapter(cls, **selfmaskingadapter_kwargs)
-
-        if climadapter_kwargs is not None:
-            cls = AnomalyClimAdapter(cls, **climadapter_kwargs)
-
         self.reader = cls
+
+
+    def __str__(self):
+        reader_class_str = self.reader.__class__.__name__
+
+        adapters = []
+        if self.selfmaskingadapter_kwargs is not None:
+            adapters.append('SelfMaskingAdapter')
+        if self.climadapter_kwargs is not None:
+            adapters.append('AnomalyClimAdapter')
+        if len(adapters) == 0:
+            adapters.append('no Adapters')
+
+        adapters_str = ', '.join(adapters)
+
+        return '{} with {}'.format(reader_class_str, adapters_str)
+
 
     @staticmethod
     def _method_from_lut(name):
@@ -80,8 +100,23 @@ class GeoTsReader(object):
         else:
             return resample_method_lut[name]
 
+    def _adapt(self):
+        """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
+        reader = self.reader
+
+        if self.selfmaskingadapter_kwargs is not None:
+            reader = SelfMaskingAdapter(reader, **self.selfmaskingadapter_kwargs)
+
+        if self.climadapter_kwargs is not None:
+            reader = AnomalyClimAdapter(reader, **self.climadapter_kwargs)
+
+        return reader
+
     def read(self, *args, **kwargs):
-        df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
+
+        reader = self._adapt()
+
+        df = reader.read(*args, **kwargs) # type: pd.DataFrame
 
         # Resampling is done AFTER reading the original data, masking, climadapt. etc
         if self.resample is not None:

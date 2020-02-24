@@ -9,7 +9,7 @@ Time series reader for GLDAS v2.0 data
 # NOTES:
 #   -
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.gldas.base_reader import GLDASTs
 from path_configs.gldas.paths_gldas20 import path_settings
 
@@ -20,6 +20,9 @@ class GeoGLDAS20Ts(GLDASTs):
     _ds_implemented = [('GLDAS20', 'core')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
 
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])

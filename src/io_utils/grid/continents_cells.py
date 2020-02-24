@@ -7,31 +7,44 @@ import numpy as np
 import pandas as pd
 import ast
 
-def read_cells_for_continent(infile, *continents):
+smecv52_5deg_cells = os.path.join(os.path.dirname(__file__), 'continents_grid_cells',
+                                  'SMECV_v052_land_cells')
+
+def read_cells_for_continent(continent, infile=smecv52_5deg_cells):
     """
     Read cells for passed continent(s) from a created text file.
 
     Parameters
     ----------
-    infile: str
-        Path to file to read
-    continents : str
+    continent : str or list
         One or multiple continents to read cells for.
+    infile: str, optional (default: CCI v5.2 5 deg cells)
+        Path to file to read
 
     Returns
     -------
-    cont_cells : OrderedDict
+    ret_cells : list
         Cells for the selected continent(s)
     """
+    if isinstance(continent, str):
+        continent = [continent]
 
     with open(infile, 'r') as f:
         s = f.read()
         cont_cells = ast.literal_eval(s)
 
-    if len(continents) > 0:
-        cont_cells = {k : cont_cells[k] for k in continents}
+    if len(continent) > 0:
+        ret_cells = []
+        for k in continent:
+            if k not in cont_cells.keys():
+                raise ValueError('{} not found in list, choose one of: {}'.format(
+                    k, ', '.join(cont_cells.keys())))
+            else:
+                ret_cells += cont_cells[k]
+    else:
+        ret_cells = None
 
-    return cont_cells
+    return ret_cells
 
 def create_cells_for_continents(grid, out_file=None):
     """
@@ -49,6 +62,7 @@ def create_cells_for_continents(grid, out_file=None):
     cont_cells : OrderedDict
         Cells per continent.
     """
+
     df = subgrid_for_polys(grid)
     cont_cells = dict()
 
@@ -175,18 +189,3 @@ class CountryShpReader(object):
             names = np.append(names, n)
 
         return names
-
-cells_lut = OrderedDict([
- ('AUS', [2247,2319,2283,2246,2318,2282,2210,2174,2354,2353,2245,2137,2209,2317,
-          2281,2173,2389,2208,2100,2172,2280,2244,2136,2352,2388,2316,2207,2315,
-          2135,2279,2243,2171,2387,2351,2314,2350,2278,2349,2101,2211,2313,2386,2355]),
- ('CONUS',[283,355,391,420,421,422,423,424,426,427,455,456,457,458,
-           459,462,463,490,491,492,493,494,495,497,525,526,527,528,
-           529,530,531,534,561,562,563,564,565,566,567,573,597,598,599,
-           600,601,602,603,607,632,633,634,635,636,637,638,639,643,669,
-           670,671,672,673,674,675,679,707,708,709,710,711,744,745,746,
-           750,753,754,781,782,783,787,790,818,819,855]),
- ('EU', []),
- ('SA', []),
- ('NA', []),
- ('AFR', [])])

@@ -144,7 +144,7 @@ def get_settings(version, parameter, cfg_path=None):
             ds[parameter][k[:-4]] = int(v)
         if k.endswith('_date'):
             del ds[parameter][k]
-            ds[parameter][k[:-5]] = datetime.strptime(v, '%Y-%m-%d %H:%M:%RegularStackDataResultsManager')
+            ds[parameter][k[:-5]] = datetime.strptime(v, '%Y-%m-%d %H:%M:%NcRegGridStack')
 
     return ds[parameter]
 

@@ -9,7 +9,7 @@ Time series reader for CCI SM v03 data
 # NOTES:
 #   -
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GeoCCITs
 from datetime import datetime
 from path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
@@ -31,6 +31,10 @@ class GeoCCISMv3Ts(GeoCCITs):
                        ('ESA_CCI_SM', 'v033', 'PASSIVE')]
 
     def __init__(self, dataset, exact_index=False, force_path_group=None, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
 
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])

@@ -9,7 +9,7 @@ Module description
 # NOTES:
 #   -
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 import pandas as pd
 from path_configs.ismn.paths_ismn import path_settings
 from ismn.interface import ISMN_Interface
@@ -39,6 +39,9 @@ class GeoISMNTs(ISMN_Interface):
         scale_factors : dict, optional (default:None)
             Apply the passed multiplicative scales to the selected columns
         """
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         self.parameters = parameters
         self.network = network
@@ -56,7 +59,7 @@ class GeoISMNTs(ISMN_Interface):
         shutil.rmtree(self.metapath)
         super(GeoISMNTs, self).activate_network(self.network)
 
-    def read_ts(self, idx):
+    def read(self, idx):
         df = super(GeoISMNTs, self).read_ts(idx)
         if self.scale_factors is not None:
             for n, s in self.scale_factors.items():

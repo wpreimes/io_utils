@@ -10,7 +10,7 @@ Time series reader for ERA Interim Land data
 #   -
 
 from io_utils.read.geo_ts_readers.era.base_reader import ERATs
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from path_configs.era.paths_eraint_land import path_settings
 
 class GeoEraIntGBG4Ts(ERATs):
@@ -18,6 +18,10 @@ class GeoEraIntGBG4Ts(ERATs):
     _ds_implemented = [('ERAINT-Land', 'GBG4', 'core')]
 
     def __init__(self, dataset, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
         ts_path = self.path_config.load_path()

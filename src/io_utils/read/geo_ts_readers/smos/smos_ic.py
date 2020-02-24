@@ -4,7 +4,7 @@
 Time series reader for SMOS data
 """
 
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.smos.base_reader import SMOSTs
 from path_configs.smos.paths_smos import path_settings
 from collections import OrderedDict
@@ -16,6 +16,10 @@ class GeoSMOSICTs(SMOSTs):
                        ('SMOS', 'IC', 'DES')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
         ts_path = self.path_config.load_path(force_path_group=force_path_group)

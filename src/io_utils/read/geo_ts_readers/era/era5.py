@@ -10,7 +10,7 @@ Time series reader for ERA5 and ERA5 Land data
 #   -
 
 from io_utils.read.geo_ts_readers.era.base_reader import ERATs
-from io_utils.read.geo_ts_readers.path_config import PathConfig
+from io_utils.read.path_config import PathConfig
 from path_configs.era.paths_era5 import path_settings
 
 class GeoEra5Ts(ERATs):
@@ -19,6 +19,10 @@ class GeoEra5Ts(ERATs):
     _ds_implemented = [('ERA5', 'core')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
+
+        if isinstance(dataset, list):
+            dataset = tuple(dataset)
+
         self.dataset = dataset
         self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
         ts_path = self.path_config.load_path(force_path_group=force_path_group)

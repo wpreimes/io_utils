@@ -1,0 +1,70 @@
+# -*- coding: utf-8 -*-
+
+"""
+Module description
+"""
+# TODO:
+#   (+) 
+#---------
+# NOTES:
+#   -
+
+import numpy as np
+from smecv_grid import SMECV_Grid_v052
+import pandas as pd
+import tempfile
+import os
+import time
+
+from io_utils.write.scattered_cube import NcScatterStack
+from tests.test_write.test_gridded_stack_writer import generate_random_data
+
+
+def test_write_point():
+    p = 10
+    out_root = tempfile.mkdtemp()
+    stack_out = os.path.join(out_root, 'stack')
+    imgs_out = os.path.join(out_root, 'imgs')
+
+    index = pd.date_range('2000-01-01', '2000-01-10', freq='D')
+    zs = pd.to_datetime(index).to_pydatetime()
+
+    img_writer = NcScatterStack(z=zs, z_name='time')
+
+    # write data for one loc at one time
+    for lon, lat in zip(np.random.uniform(-179, 179, p),
+                        np.random.uniform(-89, 89, p)):
+        for z in zs:
+            data = generate_random_data([z], size=1)
+            img_writer.write_point(lon, lat, z, data[z])
+
+    # write data for one loc at all times
+    for lon, lat in zip(np.random.uniform(-179, 179, p),
+                        np.random.uniform(-89, 89, p)):
+
+        data = generate_random_data([0], size=p)
+        img_writer.write_point(np.array([lon] * p),
+                               np.array([lat] * p),
+                               zs, data[0])
+
+    # write data for all locs at all times
+    data = generate_random_data([0], size=p*int(zs.size))
+    lons = np.random.uniform(-179, 179, p)
+    lats = np.random.uniform(-89, 89, p)
+    img_writer.write_point(np.repeat(lons, zs.size),
+                           np.repeat(lats, zs.size),
+                           np.repeat(zs, zs.size), data[0])
+
+    start = time.time()
+    os.makedirs(stack_out, exist_ok=True)
+    img_writer.store_stack(os.path.join(stack_out, 'stack.nc'))
+    os.makedirs(imgs_out, exist_ok=True)
+    img_writer.store_files(imgs_out)
+    end = time.time()
+    print('Writing file took {} seconds'.format(end - start))
+
+    assert os.path.isfile(os.path.join(stack_out, 'stack.nc'))
+    assert len(os.listdir(imgs_out)) == zs.size
+
+if __name__ == '__main__':
+    test_write_point()

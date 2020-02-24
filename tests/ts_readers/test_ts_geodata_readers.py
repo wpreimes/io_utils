@@ -78,7 +78,7 @@ def test_eraint_reader(verbose=False):
 
 @pytest.mark.geo_test_data
 def test_C3S201706_combined_readers(verbose=False):
-    dataset = ('C3S', 'v201706', 'COMBINED')
+    dataset = ('C3S', 'v201706', 'COMBINED',  'DAILY')
     force_path_group = '_test'
     if verbose: print_test_config(dataset, force_path_group)
 
@@ -93,7 +93,7 @@ def test_C3S201706_combined_readers(verbose=False):
 
 @pytest.mark.geo_test_data
 def test_C3S201912_single_readers(verbose=False):
-    dataset = ('C3S', 'v201912', 'COMBINED', 'TCDR')
+    dataset = ('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
     reader = GeoC3Sv201912Ts(dataset=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
@@ -103,7 +103,7 @@ def test_C3S201912_single_readers(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
-    dataset = ('C3S', 'v201912', 'ACTIVE', 'TCDR')
+    dataset = ('C3S', 'v201912', 'ACTIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
     reader = GeoC3Sv201912Ts(dataset=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
@@ -113,7 +113,7 @@ def test_C3S201912_single_readers(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
-    dataset = ('C3S', 'v201912', 'PASSIVE', 'TCDR')
+    dataset = ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
     reader = GeoC3Sv201912Ts(dataset=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
@@ -130,11 +130,11 @@ def test_SMAP_spl3_v6_reader(verbose=False):
 
     smap_reader = GeoSMAPTs(dataset=dataset,
                          ioclass_kws={'read_bulk': True},
-                         parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
+                         parameters=['soil_moisture', 'retrieval_qual_flag'],
                          scale_factors={'soil_moisture_pm': 1.})
     celldata = smap_reader.read_cells([166])
     assert any([not data.empty for gpi, data in celldata.items()])
-    smap_reader = SelfMaskingAdapter(smap_reader, '!=', 999, 'retrieval_qual_flag_pm')
+    smap_reader = SelfMaskingAdapter(smap_reader, '!=', 999, 'retrieval_qual_flag')
     ts = smap_reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.empty

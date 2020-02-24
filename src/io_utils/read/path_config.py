@@ -8,6 +8,10 @@ class PathNotFoundError(ValueError):
     def __init__(self, *args):
         super(PathNotFoundError, self).__init__(*args)
 
+class ConfigNotFoundError(ValueError):
+    def __init__(self, *args):
+        super(ConfigNotFoundError, self).__init__(*args)
+
 
 class PathConfig(object):
 
@@ -21,6 +25,9 @@ class PathConfig(object):
         path_config : OrderedDict
             Dict that holds the path information
         """
+        if isinstance(dataset_name, list):
+            dataset_name = tuple(dataset_name)
+
         self.name = dataset_name
         self.config = path_config
         self.os = self._curr_os()
@@ -60,7 +67,7 @@ class PathConfig(object):
                 print('OS: {}; PathGroup: {}; Dataset: {}'.format(
                     self.os, group, self.name))
             else:
-                raise PathNotFoundError('No configuration found for group {}'.
+                raise ConfigNotFoundError('No configuration found for group {}'.
                                         format(group))
             return path
         else:
