@@ -11,7 +11,7 @@ Time series reader for ERA5 and ERA5 Land data
 
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.merra.base_reader import MERRATs
-from path_configs.merra.paths_merra2 import path_settings
+from io_utils.path_configs.merra.paths_merra2 import path_settings
 
 
 class GeoMerra2Ts(MERRATs):

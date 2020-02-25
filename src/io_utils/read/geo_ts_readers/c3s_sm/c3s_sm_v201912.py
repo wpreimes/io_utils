@@ -5,7 +5,7 @@ Time series reader for C3S v201812 active, combined and passive data
 """
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.c3s_sm import base_reader
-from path_configs.c3s_sm.paths_c3s_sm_v201912 import path_settings
+from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201912 import path_settings
 from datetime import datetime
 
 class GeoC3Sv201912Ts(base_reader.GeoC3STs):

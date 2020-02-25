@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-from src.io_utils.yml.read import spaceify
+from io_utils.yml.read import spaceify
 import numpy as np
 import sys
+from io_utils.globals import test_root
 
 def test_read():
-    yml_path = os.path.join(
-        os.path.dirname(os.path.join(os.path.abspath(__file__))), 'test_data', 'yml', 'test_config.yml')
+    yml_path = os.path.join(test_root, '00_testdata', 'yml', 'test_config.yml')
     LEVEL1, OTHER = spaceify(yml_path)
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)

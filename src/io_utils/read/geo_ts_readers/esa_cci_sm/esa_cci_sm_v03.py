@@ -12,7 +12,7 @@ Time series reader for CCI SM v03 data
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GeoCCITs
 from datetime import datetime
-from path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
+from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
 
 class GeoCCISMv3Ts(GeoCCITs):
     # Reader implementation that uses the PATH configuration from above

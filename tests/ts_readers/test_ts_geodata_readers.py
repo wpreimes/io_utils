@@ -79,7 +79,7 @@ def test_eraint_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_C3S201706_combined_readers(verbose=False):
     dataset = ('C3S', 'v201706', 'COMBINED',  'DAILY')
-    force_path_group = '_test'
+    force_path_group = '__test'
     if verbose: print_test_config(dataset, force_path_group)
 
     reader = GeoC3Sv201706FullCDRTs(dataset=dataset,

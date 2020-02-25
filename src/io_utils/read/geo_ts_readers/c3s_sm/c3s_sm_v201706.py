@@ -14,7 +14,7 @@ from io_utils.read.geo_ts_readers.c3s_sm import base_reader
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from datetime import datetime
-from path_configs.c3s_sm.paths_c3s_sm_v201706 import path_settings
+from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201706 import path_settings
 
 
 class GeoC3Sv201706Ts(base_reader.GeoC3STs):

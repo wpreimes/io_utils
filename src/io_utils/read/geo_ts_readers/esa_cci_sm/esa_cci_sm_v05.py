@@ -13,7 +13,7 @@ from io_utils.read.path_config import PathConfig
 from datetime import datetime
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GeoCCITs
 
-from path_configs.esa_cci_sm.paths_esa_cci_sm_v04 import path_settings
+from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04 import path_settings
 
 class GeoCCISMv5Ts(GeoCCITs):
     # Reader implementation that uses the PATH configuration from above

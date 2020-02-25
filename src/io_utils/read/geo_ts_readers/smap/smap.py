@@ -6,7 +6,7 @@ Time series reader for SMAP SM data
 
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.smap.base_reader import SMAPTs
-from path_configs.smap.paths_smap import path_settings
+from io_utils.path_configs.smap.paths_smap import path_settings
 from collections import OrderedDict
 
 class GeoSMAPTs(SMAPTs):

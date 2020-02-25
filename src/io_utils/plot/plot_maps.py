@@ -202,14 +202,14 @@ def map_add_cbar(f, imax, im, cblabel=None, location='bottom',
                 cb.ax.text(0, 1.1, ext_label_min, fontsize=5, rotation=0, ha='left',
                            transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, 1.02, ext_label_min, fontsize=5, rotation=0, va='bottom',
+                cb.ax.text(0.5, -0.06, ext_label_min, fontsize=5, rotation=0, va='bottom',
                            ha='center', transform=cax.transAxes)
-        if ext_label_min:
+        if ext_label_max:
             if location in ['top', 'bottom']:
                 cb.ax.text(1, 1.1, ext_label_max, fontsize=5, rotation=0, ha='right',
                            transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, -0.025, ext_label_max, fontsize=5, rotation=0, va='top',
+                cb.ax.text(0.5, 1.05, ext_label_max, fontsize=5, rotation=0, va='top',
                            ha='center', transform=cax.transAxes)
 
 
@@ -239,7 +239,7 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
     miny, maxy = np.round(llc[1]), np.round(urc[1])
     dx, dy = gridspace[0], gridspace[1]
     gl = imax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False,
-                        linewidth=1, color='black', alpha=0.2, linestyle='--')
+                        linewidth=0.5, color='black', alpha=0.15, linestyle='--')
 
     xlocs = np.arange(minx, maxx + dx, dx)
     ylocs = np.arange(miny, maxy + dy, dy)
@@ -446,6 +446,8 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
         (1,1) means that it is in the bottom right etc.
     projection : ccrs.projection, optional (default: ccrs.Robinson())
         The projection of the map that is created
+        Not all projections from https://scitools.org.uk/cartopy/docs/latest/crs/projections.html
+        work properly yet, todo: improve that.
     title: str, optional (default: None)
         Title for the map.
     llc : tuple, optional (default: (-179.9999, -60.))
@@ -623,7 +625,8 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
         #f.suptitle(title, fontsize=10)
 
     if watermark:
-        imax.text()
+        # todo: add text to plot corner
+        raise NotImplementedError
     if show_cbar:
         map_add_cbar(f, imax, im, **cbar_kwargs)
     else:
@@ -631,46 +634,3 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
 
 
     return f, imax, im
-
-def usecase_scatter():
-    lons = np.linspace(-160, 160, 160)
-    lats = np.linspace(90, -90, 160)
-    values = np.random.rand(160)
-
-    f, imax, im = cp_scatter_map(lons, lats, values)
-
-    f.savefig(r'C:\Temp\test.png', dpi=200)
-
-
-
-def usecase_adam():
-    from netCDF4 import Dataset
-    from smecv_grid.grid import SMECV_Grid_v052
-
-    image = r"R:\Datapool_processed\ESA_CCI_SM\ESA_CCI_SM_v04.7\060_daily_images\combined\2019\ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-20190416000000-fv04.7.nc"
-    ds = Dataset(image)
-    dat = ds.variables['sm'][:]
-    dat = dat.filled(np.nan).flatten()
-    _, resampled_lons, resampled_lats, _  = SMECV_Grid_v052(None).get_grid_points()
-
-    index =pd.MultiIndex.from_arrays(np.array([resampled_lats, resampled_lons]),
-                                     names=['lats', 'lons'])
-    df = pd.DataFrame(index=index, data={'sm': dat})
-
-    cmap = my_colormaps.cm_sm
-
-    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,0.5), veg_mask=False,
-                         cmap=cmap, projection=ccrs.Robinson(), title='testtitle', ocean=False, land='white',
-           gridspace=None, states=False, borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
-           cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=7, grid_label_loc='0000', coastline_size='110m',
-           extend='both', ext_label_min='MIN', ext_label_max='MAX', location='right')
-
-    f.savefig(r'C:\Temp\test.png', dpi=200)
-
-if __name__ == '__main__':
-    usecase_adam()
-    #usecase_sara_data()
-    #usecase_real_data()
-    #usecase_area_gpi()
-    #usecase_area_multiindex()
-    #usecase_scatter()

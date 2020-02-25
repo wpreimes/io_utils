@@ -11,7 +11,7 @@ Module description
 
 from io_utils.read.path_config import PathConfig
 import pandas as pd
-from path_configs.ismn.paths_ismn import path_settings
+from io_utils.path_configs.ismn.paths_ismn import path_settings
 from ismn.interface import ISMN_Interface
 import os
 import shutil
@@ -189,7 +189,7 @@ assert sorted(list(path_settings.keys())) == sorted(GeoISMNTs._ds_implemented)
 
 if __name__ == '__main__':
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
-                       force_path_group='_test', scale_factors=None)
+                       force_path_group='__test', scale_factors=None)
     onestat = reader.find_nearest_station(-155.5, 19.9)
     assert onestat.station == 'SilverSword'
     ids = reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)

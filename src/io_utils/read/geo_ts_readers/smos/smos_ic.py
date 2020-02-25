@@ -6,7 +6,7 @@ Time series reader for SMOS data
 
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.smos.base_reader import SMOSTs
-from path_configs.smos.paths_smos import path_settings
+from io_utils.path_configs.smos.paths_smos import path_settings
 from collections import OrderedDict
 
 class GeoSMOSICTs(SMOSTs):

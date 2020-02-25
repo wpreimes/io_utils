@@ -8,7 +8,7 @@ from io_utils.read.geo_ts_readers import *
 test_loc = (-155.875, 19.625)
 
 def test_smosic_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     smos_reader = GeoSMOSICTs(dataset=('SMOS', 'IC', 'ASC'),
                               ioclass_kws={'read_bulk': True},
                               parameters=['Soil_Moisture', 'Quality_Flag'],
@@ -21,7 +21,7 @@ def test_smosic_reader():
     assert not ts.empty
 
 def test_smap_spl3_v5_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     smap_reader = GeoSMAPTs(dataset=('SMAP', 'SP3SMPv5', 'ASC'),
                          ioclass_kws={'read_bulk': True},
                          parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
@@ -35,7 +35,7 @@ def test_smap_spl3_v5_reader():
 
 def test_cci_v033_reader():
     vers = 'v033'
-    force_path_group = '_test'
+    force_path_group = '__test'
 
     ## == active
     reader = GeoCCISMv3Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
@@ -80,7 +80,7 @@ def test_cci_v033_reader():
 
 def test_cci_v045_reader():
     vers = 'v045'
-    force_path_group = '_test'
+    force_path_group = '__test'
     ## == active
     reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
@@ -123,7 +123,7 @@ def test_cci_v045_reader():
 
 def test_cci_v044_reader():
     vers = 'v044'
-    force_path_group = '_test'
+    force_path_group = '__test'
 
     ## == active
     reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
@@ -167,7 +167,7 @@ def test_cci_v044_reader():
 
 def test_cci_v047_reader():
     vers = 'v047'
-    force_path_group = '_test'
+    force_path_group = '__test'
 
     ## == active
     reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
@@ -210,7 +210,7 @@ def test_cci_v047_reader():
     assert ts.empty
 
 def test_era5_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoEra5Ts(dataset=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
                        parameters=['swvl1'], scale_factors={'swvl1': 1.},
@@ -227,7 +227,7 @@ def test_era5land_reader():
     #print(ts)
 
 def test_C3S201706_single_readers():
-    force_path_group = '_test'
+    force_path_group = '__test'
     for record in ['TCDR', 'ICDR']:
         dataset = 'ACTIVE'
         reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
@@ -255,7 +255,7 @@ def test_C3S201706_single_readers():
         #print(ts)
 
 def test_C3S201812_single_readers():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
@@ -285,7 +285,7 @@ def test_C3S201812_single_readers():
     #print(ts)
 
 def test_C3S201912_single_readers():
-    force_path_group = '_test'
+    force_path_group = '__test'
 
     reader = GeoC3Sv201912Ts(dataset=('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
@@ -297,7 +297,7 @@ def test_C3S201912_single_readers():
     print(ts)
 
 def test_merra2_ts_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoMerra2Ts(dataset=('MERRA2', 'core'),
                          ioclass_kws={'read_bulk': True},
                          parameters=['SFMC'], scale_factors={'SFMC': 100.},
@@ -307,7 +307,7 @@ def test_merra2_ts_reader():
     #print(ts)
 
 def test_era5_land_ts_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoEra5LandTs(group_vars={'testdata': ['swvl1', 'stl1']},
                            ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
@@ -318,7 +318,7 @@ def test_era5_land_ts_reader():
 
 
 def test_era5_ts_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoEra5Ts(dataset=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
                        parameters=['swvl1', 'stl1'], scale_factors={'swvl1': 100.},
@@ -329,7 +329,7 @@ def test_era5_ts_reader():
     # print(ts)
 
 def test_gldas21_ts_reader():
-    force_path_group = '_test'
+    force_path_group = '__test'
     reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'core'),
                           ioclass_kws={'read_bulk': True},
                           parameters=['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
@@ -343,7 +343,8 @@ def test_gldas21_ts_reader():
 def test_ismn_good_sm_ts_reader_masking():
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
                        parameters=('soil moisture', 'flag'),
-                       force_path_group='_test', scale_factors=None)
+                       force_path_group='__test', scale_factors=None)
+    reader.reset_python_metadata()
     mreader = SelfMaskingAdapter(reader, '==', 'G', 'soil moisture_flag')
 
     nearest = reader.find_nearest_station(-155.5, 19.9)
@@ -358,7 +359,7 @@ def test_ismn_good_sm_ts_reader_no_masking():
 
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
                        parameters=('soil moisture'),
-                       force_path_group='_test', scale_factors=None)
+                       force_path_group='__test', scale_factors=None)
     nearest = reader.find_nearest_station(-155.5, 19.9)
 
     # todO: here the mask adapter cannot be applied because if expect fct read_ts..

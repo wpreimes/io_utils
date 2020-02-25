@@ -11,7 +11,7 @@ Time series reader for ERA Interim Land data
 
 from io_utils.read.geo_ts_readers.era.base_reader import ERATs
 from io_utils.read.path_config import PathConfig
-from path_configs.era.paths_eraint_land import path_settings
+from io_utils.path_configs.era.paths_eraint_land import path_settings
 
 class GeoEraIntGBG4Ts(ERATs):
     # Reader implementation that uses the PATH configuration from above

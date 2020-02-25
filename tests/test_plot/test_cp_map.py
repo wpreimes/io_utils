@@ -1,12 +1,35 @@
 # -*- coding: utf-8 -*-
 
-from io_utils.plot.plot_maps import cp_map
+from io_utils.plot.plot_maps import cp_map, cp_scatter_map
 import numpy as np
 import pandas as pd
 import tempfile
 import os
-import matplotlib.pyplot as plt
+from io_utils.globals import test_root
+from netCDF4 import Dataset
+from smecv_grid.grid import SMECV_Grid_v052
+from io_utils.plot.colormaps import cm_sm
+import cartopy.crs as ccrs
+import shutil
 
+
+def test_scatter_map():
+    out_dir = tempfile.mkdtemp()
+
+    lons = np.linspace(-160, 160, 160)
+    lats = np.linspace(90, -90, 160)
+    values = np.random.rand(160)
+
+    f, imax, im = cp_scatter_map(lons, lats, values)
+
+    filename = 'plot_scatter.png'
+
+    f.savefig(os.path.join(out_dir, filename))
+    print('Stored plot in {}')
+    try:
+        assert os.path.isfile(os.path.join(out_dir, filename))
+    finally:
+        shutil.rmtree(out_dir)
 
 def test_area_multiindex():
     out_dir = tempfile.mkdtemp()
@@ -26,7 +49,10 @@ def test_area_multiindex():
     filename = 'plot_area_multiindex.png'
     f.savefig(os.path.join(out_dir, filename))
     print('Stored plot in {}')
-    assert os.path.isfile(os.path.join(out_dir, filename))
+    try:
+        assert os.path.isfile(os.path.join(out_dir, filename))
+    finally:
+        shutil.rmtree(out_dir)
 
 def test_area_gpi():
     out_dir = tempfile.mkdtemp()
@@ -39,9 +65,45 @@ def test_area_gpi():
     filename = 'plot_area_gpi.png'
     f.savefig(os.path.join(out_dir, filename))
 
-    assert os.path.isfile(os.path.join(out_dir, filename))
+    try:
+        assert os.path.isfile(os.path.join(out_dir, filename))
+    finally:
+        shutil.rmtree(out_dir)
+
+def test_pretty_plot():
+
+    image = os.path.join(test_root, '00_testdata', 'plot',
+        'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-20100701000000-fv04.5.nc')
+    ds = Dataset(image)
+    dat = ds.variables['sm'][:]
+    dat = dat.filled(np.nan).flatten()
+    _, resampled_lons, resampled_lats, _  = SMECV_Grid_v052(None).get_grid_points()
+
+    index =pd.MultiIndex.from_arrays(np.array([resampled_lats, resampled_lons]),
+                                     names=['lats', 'lons'])
+    df = pd.DataFrame(index=index, data={'sm': dat}).dropna()
+
+    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.), veg_mask=True,
+                         cmap=cm_sm, projection=ccrs.Sinusoidal(),
+                         title='Overloaded Plot with too much Information',
+                         ocean=True, land='grey', gridspace=(60,20), states=True,
+                         borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
+                         cblabel='ESA CCI SM [$m^3/m^3$]', cblabelsize=7, scale_factor=100,
+                         grid_label_loc='0111', coastline_size='110m', extend='both',
+                         ext_label_min='DRY', ext_label_max='WET', location='right')
+
+    out_dir = tempfile.mkdtemp()
+    try:
+        filename = 'pretty_plot.png'
+        f.savefig(os.path.join(out_dir, 'pretty_plot.png'), dpi=200)
+        assert os.path.isfile(os.path.join(out_dir, filename))
+    finally:
+        shutil.rmtree(out_dir)
+
 
 if __name__ == '__main__':
-    test_area_multiindex()
-    test_area_gpi()
+    # test_scatter_map()
+    test_pretty_plot()
+    # test_area_multiindex()
+    # test_area_gpi()
 

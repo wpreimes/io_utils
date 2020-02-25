@@ -16,6 +16,7 @@ def test_sat_data():
     sm anomalies based on 1991-2010 clim.
     """
     reader_kwargs = {'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
+                     'force_path_group': 'radar',
                      'exact_index': True,
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
                      'ioclass_kws': {'read_bulk': True}}
@@ -47,6 +48,7 @@ def test_model_data():
     sm anomalies based on 2000-2010 clim.
     """
     reader_kwargs = {'dataset': ('GLDAS21', 'core'),
+                     'force_path_group' : 'radar',
                      'parameters': ['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                      'ioclass_kws': {'read_bulk': True}}
 
@@ -78,7 +80,7 @@ def test_insitu_data():
     """
     reader_kwargs = {'dataset': ('ISMN', 'v20191211'),
                      'network': 'COSMOS',
-                     'force_path_group': '_test',
+                     'force_path_group': '__test',
                      'parameters': ['soil moisture', 'flag']}
 
     # keep only obs where temp >= 277.15°C
@@ -88,24 +90,26 @@ def test_insitu_data():
                           'wraparound' : True,
                           'timespan': [datetime(2010,1,1), datetime(2019,12,31)],
                           'moving_avg_clim' : 30}
-    resample = ('1D', 'mean')
+    resample = None
     params_rename = {'soil moisture': 'initu_sm'}
 
 
     fancyreader = GeoTsReader(GeoISMNTs, reader_kwargs, selfmaskingadapter_kwargs,
                               climadapter_kwargs, resample, params_rename)
+    fancyreader.reader.reset_python_metadata()
 
-    nearest, dist = fancyreader.reader.find_nearest_station(-155.5, 19.9, return_distance=True)
-    ids = fancyreader.reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)
+    nearest, dist = fancyreader.reader.find_nearest_station(-155.5, 19.9,
+                                                            return_distance=True)
+    ids = fancyreader.reader.get_dataset_ids('soil moisture',
+                                             min_depth=0, max_depth=0.17)
     ts = fancyreader.read(ids[0]) # read and mask
-    assert np.all(ts['soil moisture_flag'] == 'G')
-    df_drop = ts['soil moisture'].dropna()
+    assert all(ts['soil moisture_flag'].values == 'G')
+    df_drop = ts['initu_sm'].dropna()
     assert not df_drop.empty
 
 
-
 if __name__ == '__main__':
-    test_model_data()
-    test_sat_data()
+    #test_model_data()
+    #test_sat_data()
     test_insitu_data()
 

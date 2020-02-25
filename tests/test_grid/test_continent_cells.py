@@ -11,7 +11,7 @@ def test_read_cells_for_continent():
         assert False
 
     cells = read_cells_for_continent('Oceania')
-    assert 2244 in cells['Oceania']
+    assert 2244 in cells
 
 if __name__ == '__main__':
     test_read_cells_for_continent()

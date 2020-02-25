@@ -56,7 +56,24 @@ class PathConfig(object):
         group_config_os = group_config[self.os]
         return group_config_os
 
-    def load_path(self, ignore_path_groups=None, force_path_group=None):
+    def load_path(self, force_path_group=None, ignore_path_groups=('__test')):
+        """
+        Get a path from the path groups
+
+        Parameters
+        ----------
+        force_path_group : str, optional (default: None)
+            Use the path group of this name.
+        ignore_path_groups : list, optional (default: '__test')
+            Exclude these path groups from the search (if none are forced).
+
+        Returns
+        -------
+        path : str
+            Path where the data is stored, of the first valid path group (where
+            the folder was found).
+
+        """
         if ignore_path_groups is None:
             ignore_path_groups = []
 
@@ -64,8 +81,8 @@ class PathConfig(object):
             group = force_path_group
             path = self._load_path_group(group)
             if path is not None and os.path.exists(path):
-                print('OS: {}; PathGroup: {}; Dataset: {}'.format(
-                    self.os, group, self.name))
+                print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
+                    self.os, group, self.name, path))
             else:
                 raise ConfigNotFoundError('No configuration found for group {}'.
                                         format(group))
@@ -75,7 +92,7 @@ class PathConfig(object):
                 if group not in ignore_path_groups:
                     path = self._load_path_group(group)
                     if path is not None and os.path.exists(path):
-                        print('OS: {}; PathGroup: {}; Dataset: {}'.format(
-                            self.os, group, self.name))
+                        print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
+                            self.os, group, self.name, path))
                         return path
             raise PathNotFoundError('None of the paths in the configuration were found')

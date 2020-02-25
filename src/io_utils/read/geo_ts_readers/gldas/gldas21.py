@@ -11,7 +11,7 @@ Time series reader for GLDAS v2.1 data
 
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.gldas.base_reader import GLDASTs
-from path_configs.gldas.paths_gldas21 import path_settings
+from io_utils.path_configs.gldas.paths_gldas21 import path_settings
 
 
 class GeoGLDAS21Ts(GLDASTs):

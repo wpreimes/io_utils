@@ -3,6 +3,7 @@ from io_utils.grid.continents_cells import CountryShpReader, subgrid_for_polys
 from io_utils.grid.continents_cells import create_cells_for_continents, read_cells_for_continent
 from smecv_grid.grid import SMECV_Grid_v042
 import os
+from io_utils.globals import src_root
 
 def test_shp_reader():
     reader = CountryShpReader()
@@ -30,21 +31,23 @@ def test_subgrid_country_cont_names():
 
 def test_cells_for_continent():
     grid = SMECV_Grid_v042('land')
-    cells = create_cells_for_continents(grid, 'Seven seas (open ocean)')
-    assert [1808] in cells['Seven seas (open ocean)']
+    cells = create_cells_for_continents(grid, 'Seven seas (open ocean)',
+                                        out_file=None)
+    assert 1808 in cells['Seven seas (open ocean)']
 
 def test_read_cells_for_continents():
-    path = os.path.abspath(__file__)
-    infile = r"src/io_utils/grid/continents_grid_cells/SMECV_v052_land_cells"
+    infile = os.path.join(src_root, 'grid', 'continents_grid_cells', 'SMECV_v052_land_cells')
 
-    cells = read_cells_for_continent(
-        os.path.join(path, '..', '..', '..', infile), 'Europe', 'Oceania')
+    cells = read_cells_for_continent(['Europe', 'Oceania'], infile)
 
-    assert 1797 in cells['Europe']
-    assert 2444 in cells['Europe']
+    assert 1797 in cells # for europe
+    assert 2444 in cells # for europe
 
-    assert 2244 in cells['Oceania']
-    assert 2463 in cells['Oceania']
+    assert 2244 in cells # for oceania
+    assert 2463 in cells # for oceania
 
 if __name__ == '__main__':
     test_read_cells_for_continents()
+    test_shp_reader()
+    test_subgrid_country_cont_names()
+    test_cells_for_continent()

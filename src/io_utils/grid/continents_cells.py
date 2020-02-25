@@ -46,7 +46,7 @@ def read_cells_for_continent(continent, infile=smecv52_5deg_cells):
 
     return ret_cells
 
-def create_cells_for_continents(grid, out_file=None):
+def create_cells_for_continents(grid, continents=None, out_file=None):
     """
     Create a list of cells for all continents. Optionally save it as txt file.
 
@@ -54,6 +54,8 @@ def create_cells_for_continents(grid, out_file=None):
     ----------
     grid : pygeogrids.CellGrid
         Grid that is used to find the cell numbers
+    contintinents : list, optional (default: None)
+        Limit to these continents, if None is passed, all are used
     out_file : str, optional (default: None)
         If this path to a file is passed, the output is written there.
 
@@ -66,7 +68,14 @@ def create_cells_for_continents(grid, out_file=None):
     df = subgrid_for_polys(grid)
     cont_cells = dict()
 
-    for continent in np.sort(np.unique(df['continent'].values)):
+    all_conts = np.sort(np.unique(df['continent'].values))
+
+    if continents is None:
+        continents = all_conts
+
+    for continent in all_conts:
+        if continent not in continents:
+            continue
         print('--------------------------------------')
         print('Finding cells for {}'.format(continent))
         subgrid = subgrid_for_polys(grid, continent, silent=True)
@@ -76,7 +85,7 @@ def create_cells_for_continents(grid, out_file=None):
             cells = np.array([])
         cont_cells[continent] = cells.tolist()
 
-    if out_file:
+    if out_file is not None:
         with open(out_file, 'w') as f:
             f.write(str(cont_cells))
 
