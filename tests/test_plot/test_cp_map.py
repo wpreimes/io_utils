@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import tempfile
 import os
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
 from netCDF4 import Dataset
 from smecv_grid.grid import SMECV_Grid_v052
 from io_utils.plot.colormaps import cm_sm
@@ -72,7 +72,7 @@ def test_area_gpi():
 
 def test_pretty_plot():
 
-    image = os.path.join(test_root, '00_testdata', 'plot',
+    image = os.path.join(root_path.test_root, '00_testdata', 'plot',
         'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-20100701000000-fv04.5.nc')
     ds = Dataset(image)
     dat = ds.variables['sm'][:]

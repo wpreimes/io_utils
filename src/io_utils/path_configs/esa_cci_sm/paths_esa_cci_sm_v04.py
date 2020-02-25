@@ -11,9 +11,7 @@ Module description
 
 import os
 from collections import OrderedDict
-from rsroot import root_path
-from io_utils.globals import test_root
-
+import io_utils.root_path as root_path
 
 path_settings = \
     {
@@ -49,11 +47,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'combined'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'combined')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v047', 'ACTIVE'):
@@ -88,11 +86,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'active'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'active')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v047', 'PASSIVE'):
@@ -127,11 +125,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'passive'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v047', 'passive')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v045', 'COMBINED'):
@@ -166,11 +164,11 @@ path_settings = \
                     }),
                 ('__test',
                     {
-                        'win': os.path.join(test_root, '00_testdata', 'read',
+                        'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'esa_cci_sm', 'v045', 'combined'),
-                        'lin': os.path.join(test_root, '00_testdata', 'read',
+                        'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'esa_cci_sm', 'v045', 'combined')
-                    } if test_root is not None else None)
+                    } if root_path.test_root is not None else None)
         ]),
 
         ('ESA_CCI_SM', 'v045', 'ACTIVE'):
@@ -205,11 +203,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v045', 'active'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v045', 'active')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v045', 'PASSIVE'):
@@ -244,11 +242,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v045', 'passive'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v045', 'passive')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v044', 'COMBINED'):
@@ -283,11 +281,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'combined'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'combined')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v044', 'ACTIVE'):
@@ -322,11 +320,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'active'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'active')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v044', 'PASSIVE'):
@@ -361,10 +359,10 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'passive'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v044', 'passive')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
     }

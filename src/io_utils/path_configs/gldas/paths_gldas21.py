@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
-from rsroot import root_path
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
+
 
 path_settings = \
     {
@@ -38,10 +38,10 @@ path_settings = \
                     }),
                 ('__test',
                   {
-                      'win': os.path.join(test_root, '00_testdata', 'read',
+                      'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                           'gldas', 'gldas21_ts'),
-                      'lin': os.path.join(test_root, '00_testdata', 'read',
+                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                           'gldas', 'gldas21_ts'),
-                  } if test_root is not None else None)
+                  } if root_path.test_root is not None else None)
         ]),
     }

@@ -11,9 +11,7 @@ Module description
 
 import os
 from collections import OrderedDict
-from rsroot import root_path
-
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
 
 path_settings = \
     {
@@ -49,11 +47,11 @@ path_settings = \
                     }),
                 ('__test',
                     {
-                        'win': os.path.join(test_root,  '00_testdata', 'read',
+                        'win': os.path.join(root_path.test_root,  '00_testdata', 'read',
                                             'esa_cci_sm', 'v033', 'combined'),
-                        'lin': os.path.join(test_root, '00_testdata', 'read',
+                        'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'esa_cci_sm', 'v033', 'combined')
-                    } if test_root is not None else None)
+                    } if root_path.test_root is not None else None)
         ]),
 
         ('ESA_CCI_SM', 'v033', 'ACTIVE'):
@@ -88,11 +86,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'active'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'active')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
 
         ('ESA_CCI_SM', 'v033', 'PASSIVE'):
@@ -127,10 +125,10 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'passive'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'passive')
-                 } if test_root is not None else None)
+                 } if root_path.test_root is not None else None)
             ]),
     }

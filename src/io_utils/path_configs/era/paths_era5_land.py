@@ -11,8 +11,7 @@ Module description
 
 from collections import OrderedDict
 import os
-from rsroot import root_path
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
 
 path_settings = \
     {
@@ -144,10 +143,10 @@ path_settings = \
             OrderedDict([
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'era5_land', 'sm_tmp'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'era5_land', 'sm_tmp')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
     }

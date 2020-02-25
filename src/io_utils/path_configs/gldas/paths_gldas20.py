@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
 import os
-from rsroot import root_path
+import io_utils.root_path as root_path
 
 path_settings = \
     {

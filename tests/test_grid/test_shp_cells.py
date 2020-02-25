@@ -3,7 +3,7 @@ from io_utils.grid.continents_cells import CountryShpReader, subgrid_for_polys
 from io_utils.grid.continents_cells import create_cells_for_continents, read_cells_for_continent
 from smecv_grid.grid import SMECV_Grid_v042
 import os
-from io_utils.globals import src_root
+import io_utils.root_path as root_path
 
 def test_shp_reader():
     reader = CountryShpReader()
@@ -36,7 +36,7 @@ def test_cells_for_continent():
     assert 1808 in cells['Seven seas (open ocean)']
 
 def test_read_cells_for_continents():
-    infile = os.path.join(src_root, 'grid', 'continents_grid_cells', 'SMECV_v052_land_cells')
+    infile = os.path.join(root_path.src_root, 'grid', 'continents_grid_cells', 'SMECV_v052_land_cells')
 
     cells = read_cells_for_continent(['Europe', 'Oceania'], infile)
 

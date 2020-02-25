@@ -11,9 +11,8 @@ Paths for different subversions / paramter combinations of MERRA2 Time Series.
 
 import os
 from collections import OrderedDict
-from rsroot import root_path
+import io_utils.root_path as root_path
 
-from io_utils.globals import test_root
 
 path_settings = \
     {
@@ -49,10 +48,10 @@ path_settings = \
                     }),
                 ('__test',
                     {
-                        'win': os.path.join(test_root, '00_testdata', 'read',
+                        'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'merra2', 'core'),
-                        'lin': os.path.join(test_root, '00_testdata', 'read',
+                        'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'merra2', 'core'),
-                    } if test_root is not None else None),
+                    } if root_path.test_root is not None else None),
             ]),
     }

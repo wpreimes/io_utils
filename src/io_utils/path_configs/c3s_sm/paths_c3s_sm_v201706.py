@@ -11,11 +11,10 @@ Module description
 
 from collections import OrderedDict
 import os
-from rsroot import root_path
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
 
-if test_root is not None:
-    test_data_path = os.path.join(test_root, '00_testdata', 'read', 'c3s', 'v201706')
+if root_path.test_root is not None:
+    test_data_path = os.path.join(root_path.test_root, '00_testdata', 'read', 'c3s', 'v201706')
 else:
     test_data_path = None
 
@@ -64,7 +63,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'combined')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
         ('C3S', 'v201706', 'COMBINED', 'DAILY', 'ICDR'):
@@ -110,7 +109,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'icdr', 'combined')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
         ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'TCDR'):
@@ -156,7 +155,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'active'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'active')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
         ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'ICDR'):
@@ -202,7 +201,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'active'),
                      'lin': os.path.join(test_data_path, 'icdr', 'active')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
 
@@ -249,7 +248,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'passive'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'passive')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
         ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR'):
@@ -295,6 +294,6 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'passive'),
                      'lin': os.path.join(test_data_path, 'icdr', 'passive')
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
     }

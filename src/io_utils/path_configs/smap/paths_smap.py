@@ -6,9 +6,8 @@ Paths for different subversions / paramter combinations of SMAP Time Series.
 
 import os
 from collections import OrderedDict
-from rsroot import root_path
+import io_utils.root_path as root_path
 
-from io_utils.globals import test_root
 
 path_settings = \
     {
@@ -46,11 +45,11 @@ path_settings = \
                     }),
                 ('__test',
                     {
-                        'win': os.path.join(test_root, '00_testdata', 'read',
+                        'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                        'lin': os.path.join(test_root, '00_testdata', 'read',
+                        'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                    } if test_root is not None else None),
+                    } if root_path.test_root is not None else None),
             ]),
         ('SMAP', 'SP3SMPv5', 'DES'):
         # paths will be tried in this order
@@ -88,11 +87,11 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
 
         ('SMAP', 'SP3SMPv6', 'ASC'):
@@ -129,11 +128,11 @@ path_settings = \
                     }),
                 ('__test',
                     {
-                        'win': os.path.join(test_root, '00_testdata', 'read',
+                        'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                        'lin': os.path.join(test_root, '00_testdata', 'read',
+                        'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                    } if test_root is not None else None),
+                    } if root_path.test_root is not None else None),
             ]),
         ('SMAP', 'SP3SMPv6', 'DES'):
         # paths will be tried in this order
@@ -171,10 +170,10 @@ path_settings = \
                  }),
                 ('__test',
                  {
-                     'win': os.path.join(test_root, '00_testdata', 'read',
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                     'lin': os.path.join(test_root, '00_testdata', 'read',
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                 } if test_root is not None else None),
+                 } if root_path.test_root is not None else None),
             ]),
     }

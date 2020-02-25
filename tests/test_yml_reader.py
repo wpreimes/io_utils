@@ -4,10 +4,10 @@ import os
 from io_utils.yml.read import spaceify
 import numpy as np
 import sys
-from io_utils.globals import test_root
+import io_utils.root_path as root_path
 
 def test_read():
-    yml_path = os.path.join(test_root, '00_testdata', 'yml', 'test_config.yml')
+    yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
     LEVEL1, OTHER = spaceify(yml_path)
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)
