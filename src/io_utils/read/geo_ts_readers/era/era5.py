@@ -35,6 +35,6 @@ assert sorted(list(path_settings.keys())) == sorted(GeoEra5Ts._ds_implemented)
 if __name__ == '__main__':
     reader = GeoEra5Ts(dataset=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
-                       parameters=['swvl1'], scale_factors={'swvl1': 100.})
+                       parameters=['swvl1', 'stl1'], scale_factors={'swvl1': 1.})
     ts = reader.read(15,48)
     print(ts)
