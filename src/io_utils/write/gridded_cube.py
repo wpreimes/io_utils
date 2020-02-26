@@ -338,7 +338,22 @@ class NcRegGridStack(object):
             self.ds[var].loc[dict(**kwargs)] = dat
 
 
-    def store_stack(self, filename=None, dtypes=np.float32):
+    def store_stack(self, filename=None, global_attrs={}, dtypes=np.float32):
+        """
+        Write down xarray cute to netcdf file
+
+        Parameters
+        ----------
+        filename : str
+            Path to the stack file to write
+        global_attrs : dict, optional (default: {})
+            Global attributes
+        dtypes : np.float32
+            Data types of results, affects compression.
+        """
+
+        self.ds = self.ds.assign_attrs(global_attrs)
+
         try:
             if self.zlib:
                 encoding = {}

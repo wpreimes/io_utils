@@ -60,7 +60,7 @@ def build_filename(root, key):
 
     return os.path.join(root, '.'.join([fname, ext]))
 
-def netcdf_results_manager(results, fname, save_path, zlib=True):
+def netcdf_results_manager(results, fname, save_path, global_attr={}, zlib=True):
     """
     Function for writing the results of the validation process as NetCDF file.
 
@@ -71,13 +71,14 @@ def netcdf_results_manager(results, fname, save_path, zlib=True):
         Values: dict containing the results from metric_calculator
     save_path : string
         Path where the file/files will be saved.
+    global_attr : dict
+        Global attributes
     """
     for key in results.keys():
         filename = os.path.join(save_path, fname)
         if not os.path.exists(filename):
             ncfile = netCDF4.Dataset(filename, 'w')
 
-            global_attr = {}
             s = "%Y-%m-%d %H:%M:%S"
             global_attr['date_created'] = datetime.now().strftime(s)
             ncfile.setncatts(global_attr)
@@ -165,7 +166,22 @@ class NcScatterStack(object):
 
             self.ds[var].loc[dict(**kwargs)] = dat
 
-    def store_stack(self, filename=None, dtypes=np.float32):
+    def store_stack(self, filename=None, global_attrs={}, dtypes=np.float32):
+        """
+        Write down xarray cute to netcdf file
+
+        Parameters
+        ----------
+        filename : str
+            Path to the stack file to write
+        global_attrs : dict, optional (default: {})
+            Global attributes
+        dtypes : np.float32
+            Data types of results, affects compression.
+        """
+
+        self.ds = self.ds.assign_attrs(global_attrs)
+
         try:
             if self.zlib:
                 encoding = {}
