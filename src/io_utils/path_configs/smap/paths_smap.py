@@ -49,7 +49,7 @@ path_settings = \
                                             'SMAP', 'smap_spl3smpv5_asc'),
                         'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                    } if root_path.test_root is not None else None),
+                    } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
         ('SMAP', 'SP3SMPv5', 'DES'):
         # paths will be tried in this order
@@ -91,7 +91,7 @@ path_settings = \
                                          'SMAP', 'smap_spl3smpv5_asc'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
         ('SMAP', 'SP3SMPv6', 'ASC'):
@@ -132,7 +132,7 @@ path_settings = \
                                             'SMAP', 'smap_spl3smpv5_asc'),
                         'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMAP', 'smap_spl3smpv5_asc'),
-                    } if root_path.test_root is not None else None),
+                    } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
         ('SMAP', 'SP3SMPv6', 'DES'):
         # paths will be tried in this order
@@ -174,6 +174,6 @@ path_settings = \
                                          'SMAP', 'smap_spl3smpv5_asc'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'SMAP', 'smap_spl3smpv5_asc'),
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
     }

@@ -51,7 +51,7 @@ path_settings = \
                                             'esa_cci_sm', 'v033', 'combined'),
                         'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'esa_cci_sm', 'v033', 'combined')
-                    } if root_path.test_root is not None else None)
+                    } if root_path.test_root is not None else {'win' : None, 'lin' : None})
         ]),
 
         ('ESA_CCI_SM', 'v033', 'ACTIVE'):
@@ -90,7 +90,7 @@ path_settings = \
                                          'esa_cci_sm', 'v033', 'active'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'active')
-                 } if root_path.test_root is not None else None)
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
             ]),
 
         ('ESA_CCI_SM', 'v033', 'PASSIVE'):
@@ -129,6 +129,6 @@ path_settings = \
                                          'esa_cci_sm', 'v033', 'passive'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'esa_cci_sm', 'v033', 'passive')
-                 } if root_path.test_root is not None else None)
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
             ]),
     }

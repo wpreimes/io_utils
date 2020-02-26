@@ -42,6 +42,6 @@ path_settings = \
                                          'ismn', 'ISMN_TESTDATA_HAWAII'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'ismn', 'ISMN_TESTDATA_HAWAII'),
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
     ]),
     }

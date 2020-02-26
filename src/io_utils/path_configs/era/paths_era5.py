@@ -45,6 +45,6 @@ path_settings = \
                                          'era5', 'sm_tmp'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'era5', 'sm_tmp')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
     }

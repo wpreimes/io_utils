@@ -42,6 +42,6 @@ path_settings = \
                                           'gldas', 'gldas21_ts'),
                       'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                           'gldas', 'gldas21_ts'),
-                  } if root_path.test_root is not None else None)
+                  } if root_path.test_root is not None else {'win' : None, 'lin' : None})
         ]),
     }

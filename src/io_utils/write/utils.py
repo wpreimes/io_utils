@@ -17,7 +17,7 @@ import os
 from pygeogrids.grids import BasicGrid, CellGrid
 
 
-def join_files(tmp_dir, out_file, mfdataset=False):
+def join_files(tmp_dir, out_file, mfdataset=False, global_attrs=None):
     if mfdataset:
         cell_data = xr.open_mfdataset(os.path.join(tmp_dir, '*.nc'))
         cell_data.to_netcdf(out_file)
@@ -31,7 +31,12 @@ def join_files(tmp_dir, out_file, mfdataset=False):
 
     df = pd.concat(dfs, axis=0, sort=True)
 
-    df.to_xarray().to_netcdf(out_file, mode='w', engine='scipy')
+    ds = df.to_xarray()
+    if global_attrs is not None:
+        ds = ds.assign_attrs(global_attrs)
+
+    ds.to_netcdf(out_file, mode='w', engine='scipy')
+
 
 def minmax(values):
     return np.nanmin(values), np.nanmax(values)

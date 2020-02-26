@@ -147,6 +147,6 @@ path_settings = \
                                          'era5_land', 'sm_tmp'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'era5_land', 'sm_tmp')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
     }

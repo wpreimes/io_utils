@@ -52,6 +52,6 @@ path_settings = \
                                             'merra2', 'core'),
                         'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'merra2', 'core'),
-                    } if root_path.test_root is not None else None),
+                    } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
     }

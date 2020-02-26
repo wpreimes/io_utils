@@ -52,7 +52,7 @@ path_settings = \
                                             'SMOS', 'smos_ic_asc'),
                         'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
                                             'SMOS', 'smos_ic_asc'),
-                    } if root_path.test_root is not None else None),
+                    } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
         ('SMOS', 'IC', 'DES'):
         # paths will be tried in this order

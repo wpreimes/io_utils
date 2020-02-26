@@ -63,7 +63,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'combined')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
         ('C3S', 'v201706', 'COMBINED', 'DAILY', 'ICDR'):
@@ -109,7 +109,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'icdr', 'combined')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
         ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'TCDR'):
@@ -155,7 +155,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'active'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'active')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
         ('C3S', 'v201706', 'ACTIVE', 'DAILY', 'ICDR'):
@@ -201,7 +201,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'active'),
                      'lin': os.path.join(test_data_path, 'icdr', 'active')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
 
@@ -248,7 +248,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'passive'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'passive')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
         ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR'):
@@ -294,6 +294,6 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'icdr', 'passive'),
                      'lin': os.path.join(test_data_path, 'icdr', 'passive')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
     }

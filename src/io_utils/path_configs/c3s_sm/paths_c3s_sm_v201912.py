@@ -55,7 +55,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'combined')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
 
             ]),
 

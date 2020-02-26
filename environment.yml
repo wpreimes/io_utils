@@ -20,5 +20,4 @@ dependencies:
     - xarray
     - configparser
     - more_itertools
-    - rsroot # for path config
     - git+https://github.com/TUW-GEO/smecv-grid.git@master

@@ -64,7 +64,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'combined'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'combined')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
 
 ]),
 
@@ -112,7 +112,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'active'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'active')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
 
@@ -159,7 +159,7 @@ path_settings = \
                  {
                      'win': os.path.join(test_data_path, 'tcdr', 'passive'),
                      'lin': os.path.join(test_data_path, 'tcdr', 'passive')
-                 } if root_path.test_root is not None else None),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
             ]),
 
     }
