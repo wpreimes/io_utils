@@ -136,6 +136,4 @@ def create_workfolder(path, no_version_folder=False):
 
         if not os.path.exists(p): os.makedirs(p)
 
-    print('Create workfolder: %s' % str(p))
-
     return p

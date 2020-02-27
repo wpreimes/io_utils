@@ -282,7 +282,7 @@ class NcRegGridStack(object):
 
     def _add_empty_2d(self, name):
         # add a empty variable without z dimension of the passed name
-        print('Add empty 2D variable {}'.format(name))
+        #print('Add empty 2D variable {}'.format(name))
         shape = (self.shape[1], self.shape[2])
         self.ds[name] = \
             xr.DataArray(np.full(shape, self.fill_value), dims=['lat', 'lon'],
@@ -290,7 +290,7 @@ class NcRegGridStack(object):
 
     def _add_empty_3d(self, name):
         # add a empty variable with z dimension of the passed name
-        print('Add empty 3D variable {}'.format(name))
+        #print('Add empty 3D variable {}'.format(name))
         self.ds[name] = \
             xr.DataArray(np.full(self.shape, self.fill_value),
                          dims=[self.z_name, 'lat', 'lon'],
