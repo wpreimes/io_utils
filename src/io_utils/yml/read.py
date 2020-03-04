@@ -14,6 +14,7 @@ import sys
 import importlib
 import os
 from argparse import Namespace
+from collections import OrderedDict
 
 def read_settings(settings_file, *args):
     """

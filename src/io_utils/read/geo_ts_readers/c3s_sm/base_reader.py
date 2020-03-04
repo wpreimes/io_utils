@@ -93,5 +93,8 @@ class GeoC3STs(C3STs):
         return cell_data
 
 if __name__ == '__main__':
-    ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
-    ds.read(15,45)
+    # ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
+    # ds.read(15,45)
+
+    ds = GeoC3STs(r"R:\Datapool_processed\C3S\v201812\TCDR\063_images_to_ts\passive-monthly")
+    celldata = ds.read_cells([2244, 777])

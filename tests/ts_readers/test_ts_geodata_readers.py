@@ -92,7 +92,39 @@ def test_C3S201706_combined_readers(verbose=False):
     assert not ts.dropna(how='all').empty
 
 @pytest.mark.geo_test_data
-def test_C3S201912_single_readers(verbose=False):
+def test_C3S201912_single_monthly_readers(verbose=False):
+
+    dataset = ('C3S', 'v201912', 'COMBINED', 'MONTHLY', 'TCDR')
+    if verbose: print_test_config(dataset)
+    reader = GeoC3Sv201912Ts(dataset=dataset,
+        grid_path=None, ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
+    ts = reader.read(*test_loc)
+    if verbose: print(ts)
+    assert not ts.dropna(how='all').empty
+
+    dataset = ('C3S', 'v201912', 'ACTIVE', 'MONTHLY', 'TCDR')
+    if verbose: print_test_config(dataset)
+    reader = GeoC3Sv201912Ts(dataset=dataset,
+        grid_path=None, ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
+    ts = reader.read(*test_loc)
+    if verbose: print(ts)
+    assert not ts.dropna(how='all').empty
+
+    dataset = ('C3S', 'v201912', 'PASSIVE', 'MONTHLY', 'TCDR')
+    if verbose: print_test_config(dataset)
+    reader = GeoC3Sv201912Ts(dataset=dataset,
+        grid_path=None, ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
+    ts = reader.read(*test_loc)
+    if verbose: print(ts)
+    assert not ts.dropna(how='all').empty
+
+
+@pytest.mark.geo_test_data
+def test_C3S201912_single_daily_readers(verbose=False):
+
     dataset = ('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
     reader = GeoC3Sv201912Ts(dataset=dataset,
@@ -153,13 +185,14 @@ def test_gldas20_ts_reader(verbose=False):
 
 if __name__ == '__main__':
     v = True
-    test_SMAP_spl3_v6_reader(v)
-    test_gldas20_ts_reader(v)
-    test_cci_v045_reader(v)
-    test_cci_v044_reader(v)
-    test_era5land_merged_reader(v)
-    test_era5land_snow_reader(v)
-    test_eraint_reader(v)
-    test_C3S201706_combined_readers(v)
-    test_C3S201912_single_readers(v)
+    # test_SMAP_spl3_v6_reader(v)
+    # test_gldas20_ts_reader(v)
+    # test_cci_v045_reader(v)
+    # test_cci_v044_reader(v)
+    # test_era5land_merged_reader(v)
+    # test_era5land_snow_reader(v)
+    # test_eraint_reader(v)
+    # test_C3S201706_combined_readers(v)
+    test_C3S201912_single_monthly_readers(v)
+    test_C3S201912_single_daily_readers(v)
 

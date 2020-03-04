@@ -8,9 +8,12 @@ def setup(fname, level=logging.DEBUG, verbose=False):
     logging.basicConfig(filename=fname, level=level,
                         format='%(levelname)s %(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
+    logger = logging.getLogger()
     if verbose:
-        logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+        logger.addHandler(logging.StreamHandler(sys.stdout))
     logging.captureWarnings(True)
+
+    return logger
 
 def create(log_file_path, prefix='logfile', **kwargs):
     """
@@ -19,8 +22,7 @@ def create(log_file_path, prefix='logfile', **kwargs):
     """
     tnow = "_{:%Y%m%d%H%M%S.%f}".format(datetime.now())
     fname = prefix + tnow + ".log"
-    fname = os.path.join(log_file_path, fname) #t
-    # imestamp used as unique identifier
-    setup(fname, **kwargs) #sets up logging file
+    fname = os.path.join(log_file_path, fname) #timestamp used as unique identifier
+    logger = setup(fname, **kwargs) #sets up logging file
 
-    return fname
+    return fname, logger

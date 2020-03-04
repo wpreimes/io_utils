@@ -137,14 +137,8 @@ def intersect_grids(grids, out_path=None):
     return common_grid
 
 
-if __name__ == '__main__':
-    cells = cells_for_identifier('United_States')
-    gpis = grid_points_for_cells(['United_States', 'Australia'])
-    print(cells)
-
-
 def filter_grid(input_grid, filter_grid):
-    '''
+    """
     Filter a grid with points from other grid, so that points from filter_grid
     are excluded.
     Grids must have the same resolution.
@@ -160,7 +154,7 @@ def filter_grid(input_grid, filter_grid):
     -------
     filtered_grid : pygeogrids.grids.CellGrid
         Input_grid that was filtered to exclude filter_grid
-    '''
+    """
     input_gpis = input_grid.get_grid_points()[0]
     filter_gpis = filter_grid.get_grid_points()[0]
 
@@ -168,5 +162,8 @@ def filter_grid(input_grid, filter_grid):
 
     filtered_input_gpis = input_gpis[np.where(gpi_not_forest_mask)]
     filtered_input_grid = input_grid.subgrid_from_gpis(filtered_input_gpis)
+
+    # keep the shape information
+    filtered_input_grid.shape = input_grid.shape
 
     return filtered_input_grid

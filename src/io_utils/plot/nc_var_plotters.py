@@ -37,6 +37,8 @@ class NcVarPlotter(ReadNcImg):
     lon_var : str, optional (default: 'lon')
         The name of the variable in the netcdf file that refers to the longitude
         of the observation.
+    z_var : str, optional (default: 'time')
+        Name of the z dimension variable name in the netcdf file.
     cell_center_origin : bool, optional (default: True)
         Set True of the loc_var refers to the center of each pixel, otherwise False.
         This has no effect if resxy is False or if loc_var is not lat/lon.
@@ -49,10 +51,11 @@ class NcVarPlotter(ReadNcImg):
     """
 
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
-                 cell_center_origin=True, out_dir=None, dpi=300):
+                 z_var='time', cell_center_origin=True, out_dir=None, dpi=300):
 
         super(NcVarPlotter, self).__init__(filepath=filepath, resxy=resxy,
                                            lat_var=lat_var, lon_var=lon_var,
+                                           z_var=z_var,
                                            cell_center_origin=cell_center_origin)
 
         self.out_dir = out_dir if out_dir else self.parent_dir
@@ -100,7 +103,7 @@ class NcVarPlotter(ReadNcImg):
 
 class NcVarCombPlotter(object):
     def __init__(self, filepath1, filepath2, lat_var='lat', lon_var='lon',
-                 resxy=(0.25, 0.25), out_dir=None, dpi=300):
+                 z_var='time', resxy=(0.25, 0.25), out_dir=None, dpi=300):
         """
         Class to combine data from (one or multiple) files to a map.
         We always calculate !!File1*metric*File2!!
@@ -134,9 +137,11 @@ class NcVarCombPlotter(object):
         """
 
         self.ds1 = NcVarPlotter(filepath=filepath1, resxy=resxy,
-                                out_dir=out_dir, lat_var=lat_var, lon_var=lon_var)
+                                out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
+                                z_var=z_var)
         self.ds2 = NcVarPlotter(filepath=filepath2, resxy=resxy,
-                                out_dir=out_dir, lat_var=lat_var, lon_var=lon_var)
+                                out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
+                                z_var=z_var)
 
         # ds1 parent if out_dir is None, otherwise the correct one was passed to ds1
         self.out_dir = self.ds1.out_dir
@@ -188,10 +193,10 @@ class NcVarCombPlotter(object):
             Name of the variable to use in the first file
         vards2 : str
             Name of the variable to use in the second file
-        time1 : datetime, optional (default: None)
+        time1 : datetime or str, optional (default: None)
             Date of the variable in the first file to use. If there are no
             dates, pass None.
-        time2 : datetime, optional (default: None)
+        time2 : datetime or str, optional (default: None)
             Date of the variable in the second file to use. If there are no
             dates, pass None
         metric : str, optional (default: -)
@@ -239,8 +244,8 @@ class NcVarCombPlotter(object):
             if self.times in [[None, None], [datetime(1900, 1, 1), datetime(1900, 1, 1)]]:
                 pass
             else:
-                plotfile_name += '{t1}_{t2}'.format(t1=str(self.times[0].date()),
-                                                    t2=str(self.times[1].date()))
+                plotfile_name += 'at_{t1}_and_{t2}'.format(t1=str(self.times[0]),
+                                                    t2=str(self.times[1]))
 
         if not os.path.exists(self.out_dir):
             os.makedirs(self.out_dir)

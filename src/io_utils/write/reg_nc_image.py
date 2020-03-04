@@ -560,7 +560,7 @@ def test_ordered_adding(limit=None):
 
 class ReadNcImg(object):
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
-                 cell_center_origin=True):
+                 z_var='time', cell_center_origin=True):
         """
         Wrapper Class for reading 2D images at a certain time stamp from an nc file
 
@@ -580,6 +580,10 @@ class ReadNcImg(object):
         lon_var : str, optional (default: 'lon')
             The name of the variable in the netcdf file that refers to the longitude
             of the observation.
+        z_var : str, optional (default: 'time')
+            Name of the z dimension variable name in the netcdf file.
+        cell_center_origin : bool, optional (default: True)
+            Whether the origin of the point is in the middle of the pixel or not.
         """
         if resxy is None:
             self.irregular = True
@@ -588,6 +592,8 @@ class ReadNcImg(object):
         self.cell_center_origin = cell_center_origin
 
         self.index_name = [lat_var, lon_var]
+        self.z_var = z_var
+
         self.resxy = resxy
 
         self.filepath = filepath
@@ -626,7 +632,7 @@ class ReadNcImg(object):
         Load data from the xarray dataset at a time stamp as a pandas data frame.
         """
         if time is not None:
-            df_file = ds.sel(time=time) \
+            df_file = ds.sel({self.z_var : time}) \
                 .to_dataframe() \
                 .reset_index(inplace=False) \
                 .set_index(self.index_name)
@@ -648,7 +654,7 @@ class ReadNcImg(object):
 
         Parameters
         ----------
-        time : datetime.datetime, optional (default: None)
+        time : datetime.datetime or str, optional (default: None)
             Time of the variable to read
         vars : list or str, optional (default: None)
             Name of the variable(s) to load from the file.
@@ -670,11 +676,13 @@ class ReadNcImg(object):
 
         if not loaded_vars == vars:
             if time is None:
-                try:
+                try: # load as datetime
                     time = pd.to_datetime(self.ds.time.values[0])
-                except AttributeError:
-                    time = None
-
+                except ValueError:
+                    try: # load as anything
+                        time = self.ds.time.values[0]
+                    except AttributeError:
+                        time = None
 
             df_file = self._load(self.ds, time)
 

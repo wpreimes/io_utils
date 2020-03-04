@@ -4,6 +4,8 @@ LEVEL1:
   PATH<PATH><WIN> : ['D:\', 'data']
   PATH<PATH><LINUX> : ['/', 'data']
   A_MODULE<MODULE> : numpy.ma
+A_LEVEL2:
+  NOTHING: None
 OTHER:
   TEST_1: TEST1
   TEST_2: 2

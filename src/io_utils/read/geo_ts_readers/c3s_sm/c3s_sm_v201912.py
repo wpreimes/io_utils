@@ -19,7 +19,10 @@ class GeoC3Sv201912Ts(base_reader.GeoC3STs):
 
     _ds_implemented = [('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
                        ('C3S', 'v201912', 'ACTIVE', 'DAILY', 'TCDR'),
-                       ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR')]
+                       ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR'),
+                       ('C3S', 'v201912', 'COMBINED', 'MONTHLY', 'TCDR'),
+                        ('C3S', 'v201912', 'ACTIVE', 'MONTHLY', 'TCDR'),
+                        ('C3S', 'v201912', 'PASSIVE', 'MONTHLY', 'TCDR')]
 
     def __init__(self, dataset, force_path_group=None, **kwargs):
         """

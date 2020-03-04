@@ -8,7 +8,13 @@ import io_utils.root_path as root_path
 
 def test_read():
     yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
-    LEVEL1, OTHER = spaceify(yml_path)
+    SPACES = spaceify(yml_path)
+
+    LEVEL1 = SPACES[0]
+    A_LEVEL2 = SPACES[1]
+    OTHER = SPACES[2]
+
+    assert A_LEVEL2.NOTHING is None
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)
     assert(LEVEL1.A_FUNCTION == np.ma.unique)
@@ -23,3 +29,6 @@ def test_read():
     assert(OTHER.TEST_2 == 2)
     assert(OTHER.TEST_DICT == {'one':1})
     assert(OTHER.TEST_LIST == [1,2,3])
+
+if __name__ == '__main__':
+    test_read()

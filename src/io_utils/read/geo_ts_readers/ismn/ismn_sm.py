@@ -188,6 +188,20 @@ class GeoISMNTs(ISMN_Interface):
 assert sorted(list(path_settings.keys())) == sorted(GeoISMNTs._ds_implemented)
 
 if __name__ == '__main__':
+    networks =  ['AMMA-CATCH', 'CARBOAFRICA', 'DAHRA', 'CTP-SMTMN',
+                                      'MySMNet', 'OZNET', 'BIEBRZA-S-1', 'FMI', 'FR-Aqui',
+                                      'HOBE', 'REMEDHUS', 'RSMN', 'SMOSMANIA', 'TERENO',
+                                      'WEGENERNET', 'WSMN', 'BNZ-LTER', 'COSMOS',
+                                      'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
+                                      'SCAN', 'USCRN', 'LAB-net']
+
+    reader = GeoISMNTs(('ISMN', 'v20191211'), network=networks, scale_factors=None)
+
+    reader.plot_station_locations()
+
+
+
+
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
                        force_path_group='__test', scale_factors=None)
     onestat = reader.find_nearest_station(-155.5, 19.9)
