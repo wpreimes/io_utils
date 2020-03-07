@@ -280,14 +280,6 @@ class NcRegGridStack(object):
 
         return lons, lats
 
-    def _add_empty_2d(self, name):
-        # add a empty variable without z dimension of the passed name
-        #print('Add empty 2D variable {}'.format(name))
-        shape = (self.shape[1], self.shape[2])
-        self.ds[name] = \
-            xr.DataArray(np.full(shape, self.fill_value), dims=['lat', 'lon'],
-                         coords=[self.ds.lat, self.ds.lon])
-
     def _add_empty_3d(self, name):
         # add a empty variable with z dimension of the passed name
         #print('Add empty 3D variable {}'.format(name))
@@ -338,7 +330,7 @@ class NcRegGridStack(object):
             self.ds[var].loc[dict(**kwargs)] = dat
 
 
-    def store_stack(self, filename=None, global_attrs={}, dtypes=np.float32):
+    def store_stack(self, filename=None, global_attrs=None, dtypes=np.float32):
         """
         Write down xarray cute to netcdf file
 
@@ -346,11 +338,13 @@ class NcRegGridStack(object):
         ----------
         filename : str
             Path to the stack file to write
-        global_attrs : dict, optional (default: {})
+        global_attrs : dict, optional (default: None)
             Global attributes
         dtypes : np.float32
             Data types of results, affects compression.
         """
+        if global_attrs is None:
+            global_attrs = {}
 
         self.ds = self.ds.assign_attrs(global_attrs)
 

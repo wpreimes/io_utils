@@ -23,6 +23,7 @@ import numpy as np
 import copy
 import warnings
 import pandas as pd
+from netCDF4 import Dataset
 
 def build_filename(root, key):
     """
@@ -112,11 +113,32 @@ def netcdf_results_manager(results, fname, save_path, global_attr={}, zlib=True)
         ncfile.close()
 
 
-class NcScatterStack(object):
+class NcScatteredStack(object):
 
     """ Store netcdf cube of ungridded data """
 
-    def __init__(self, z=None, z_name='z', zlib=True, fill_value=9999.):
+    _loc_id_attr = {'long_name': 'location_id'}
+
+    _lon_attr = {'standard_name': 'longitude',
+                'long_name': 'location longitude',
+                'units': 'degrees_east',
+                'valid_range': (-180.0, 180.0)}
+
+    _lat_attr = {'standard_name': 'latitude',
+                'long_name': 'location latitude',
+                'units': 'degrees_north', 'valid_range': (-90.0, 90.0)}
+
+    _alt_attr = {'standard_name': 'height',
+                'long_name': 'vertical distance above the surface',
+                'units': 'm', 'positive': 'up', 'axis': 'Z'}
+
+    def __init__(self, filepath, z=None, z_name='z', zlib=True,
+                 fill_value=9999.):
+
+        if not os.path.isfile(filepath):
+            mode = 'w'
+        else:
+            mode = 'r'
 
         if z is None:
             z = [None]
@@ -124,12 +146,20 @@ class NcScatterStack(object):
         self.zlib = bool(zlib)
         self.z_name = str(z_name)
         self.fill_value = fill_value
-        self.ds = xr.Dataset(coords={'lon': np.array([]), 'lat': np.array([]),
-                                     self.z_name : z})
+
+        self.ds = Dataset(filepath, mode)
+
+        self._assign_attrs({'creation_date': datetime.now()},
+                           {'lon' : self._lon_attr, 'lat': self._lat_attr,
+                            'alt': self._alt_attr, 'loc_id': self._loc_id_attr})
+
+        self._store(filepath)
+
 
     @property
-    def shape(self):
-        return (self.ds['lon'].size, self.ds['lat'].size, self.ds[self.z_name].size)
+    def shape(self) -> tuple:
+        return (self.ds['lon'].size, self.ds['lat'].size, self.ds['alt'].size,
+                self.ds[self.z_name].size)
 
     def _add_empty_3d(self, lon, lat, name):
         # add a empty variable with z dimension of the passed name
@@ -166,7 +196,21 @@ class NcScatterStack(object):
 
             self.ds[var].loc[dict(**kwargs)] = dat
 
-    def store_stack(self, filename=None, global_attrs={}, dtypes=np.float32):
+    def _assign_attrs(self, global_attrs=None, var_attrs=None):
+        """ Assign global and variable attributes """
+        if global_attrs is None:
+            global_attrs = {}
+
+        if var_attrs is None:
+            var_attrs = {}
+
+        for var, attr in var_attrs.items():
+            self.ds.variables[var].assign_attrs(var_attrs)
+
+        self.ds = self.ds.assign_attrs(global_attrs)
+
+    def _store(self, filename=None, global_attrs=None, var_attrs=None,
+               dtypes=np.float32):
         """
         Write down xarray cute to netcdf file
 
@@ -174,13 +218,14 @@ class NcScatterStack(object):
         ----------
         filename : str
             Path to the stack file to write
-        global_attrs : dict, optional (default: {})
+        global_attrs : dict, optional (default: None)
             Global attributes
+        var_attrs : dict of dicts, optional (default: None)
+            Variables (keys) and the attributes (values) as dicts
         dtypes : np.float32
             Data types of results, affects compression.
         """
-
-        self.ds = self.ds.assign_attrs(global_attrs)
+        self._assign_attrs(global_attrs, var_attrs)
 
         try:
             if self.zlib:
@@ -197,9 +242,11 @@ class NcScatterStack(object):
             warnings.warn('Compression failed, store uncompressed results.')
             self.ds.to_netcdf(filename, engine='netcdf4')
 
+    def close(self):
         self.ds.close()
 
     def store_files(self, path, filename_templ='file_{}.nc',
+                    global_attrs=None, var_attrs=None,
                     dtypes=np.float32):
         """
         filename_templ :
@@ -207,6 +254,9 @@ class NcScatterStack(object):
         """
         # todo: add option to append to existing file (memory dump)
         # todo: integrate with the other function
+
+        self._assign_attrs(global_attrs, var_attrs)
+
 
         if self.zlib:
             encoding = {}
@@ -283,3 +333,9 @@ class NcScatterStack(object):
 
         kwargs = {self.z_name: z}
         self._write_pt(data, **kwargs)
+
+
+if __name__ == '__main__':
+    filepath = r'C:\Temp\cube.nc'
+    z = pd.date_range('2000-01-01', '2000-01-10', freq='D')
+    NcScatteredStack(filepath, z_name='time', z=z)

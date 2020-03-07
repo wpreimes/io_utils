@@ -15,8 +15,8 @@ import tempfile
 import os
 import time
 
-from io_utils.write.scattered_cube import NcScatterStack
-from tests.test_write.test_gridded_stack_writer import generate_random_data
+from io_utils.write.scattered_cube import NcScatteredStack
+from tests.test_write.test_regular_stack_writer import generate_random_data
 
 
 def test_write_point():
@@ -31,7 +31,9 @@ def test_write_point():
     index = pd.date_range('2000-01-01', '2000-01-10', freq='D')
     zs = pd.to_datetime(index).to_pydatetime()
 
-    img_writer = NcScatterStack(z=zs, z_name='time')
+    os.makedirs(stack_out, exist_ok=True)
+    filepath = os.path.join(stack_out, 'stack.nc')
+    img_writer = NcScatteredStack(filepath, z=zs, z_name='time')
 
     # write data for one loc at one time
     for lon, lat in zip(np.random.uniform(-179, 179, p),
@@ -58,8 +60,6 @@ def test_write_point():
                            np.repeat(zs, zs.size), data[0])
 
     start = time.time()
-    os.makedirs(stack_out, exist_ok=True)
-    img_writer.store_stack(os.path.join(stack_out, 'stack.nc'))
     os.makedirs(imgs_out, exist_ok=True)
     img_writer.store_files(imgs_out)
     end = time.time()

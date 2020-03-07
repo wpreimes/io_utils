@@ -5,6 +5,10 @@ import logging
 import sys
 
 def setup(fname, level=logging.DEBUG, verbose=False):
+
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
     logging.basicConfig(filename=fname, level=level,
                         format='%(levelname)s %(asctime)s %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
@@ -12,6 +16,8 @@ def setup(fname, level=logging.DEBUG, verbose=False):
     if verbose:
         logger.addHandler(logging.StreamHandler(sys.stdout))
     logging.captureWarnings(True)
+
+    assert os.path.exists(fname)
 
     return logger
 
