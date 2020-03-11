@@ -6,6 +6,7 @@ same way.
 """
 
 ## CCI version readers
+from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v04 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v03 import *
 

@@ -13,7 +13,7 @@ from io_utils.read.path_config import PathConfig
 from datetime import datetime
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GeoCCITs
 
-from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04 import path_settings
+from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v05 import path_settings
 
 class GeoCCISMv5Ts(GeoCCITs):
     # Reader implementation that uses the PATH configuration from above
@@ -24,7 +24,7 @@ class GeoCCISMv5Ts(GeoCCITs):
     # fill values in the data columns
     _col_fillvalues = {'sm': [-9999.0],
                        'sm_uncertainty': [-9999.0],
-                       _t0_ref[0]: [-3440586.5]}
+                       _t0_ref[0]: [-3440586.5, -9999.0]}
 
     # implememted subversion that have a set path configuration
     _ds_implemented = [('ESA_CCI_SM', 'v052', 'COMBINED'),

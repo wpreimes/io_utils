@@ -14,6 +14,7 @@ import pandas as pd
 import xarray as xr
 from datetime import datetime
 
+
 init_ds = xr.Dataset(coords={'time': [], 'loc': []})
 
 lons, lats = [10,11], [20,21]

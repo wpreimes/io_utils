@@ -15,7 +15,7 @@ def test_sat_data():
     Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
     sm anomalies based on 1991-2010 clim.
     """
-    reader_kwargs = {'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
+    reader_kwargs = {'dataset': ('ESA_CCI_SM', 'v047', 'COMBINED'),
                      'force_path_group': 'radar',
                      'exact_index': True,
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
@@ -110,6 +110,6 @@ def test_insitu_data():
 
 if __name__ == '__main__':
     #test_model_data()
-    #test_sat_data()
-    test_insitu_data()
+    test_sat_data()
+    #test_insitu_data()
 

@@ -147,9 +147,9 @@ def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
 
     return f, imax, im
 
-def map_add_cbar(f, imax, im, cblabel=None, location='bottom',
-                 cblabelsize=7, extend='both', n_ticks=None, ext_label_min=None,
-                 ext_label_max=None):
+def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom',
+                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None, cb_ext_label_min=None,
+                 cb_ext_label_max=None):
     """
     Add a colorbar to the bottom of the map
 
@@ -161,59 +161,59 @@ def map_add_cbar(f, imax, im, cblabel=None, location='bottom',
         The cartopy axes
     im : plt.Axes
         The data Axes
-    cblabel : str, optional (default: None)
+    cb_label : str, optional (default: None)
         Label that is shown below the colorbar
-    location : str, optional (default: bottom)
+    cb_loc : str, optional (default: bottom)
         Location of the colorbar (bottom , left, right, top)
-    cblabelsize : int, optional (default: 7)
+    cb_labelsize : int, optional (default: 7)
         Size of the colorbar label in points.
-    extend : str, optional (default: Both)
+    cb_extend : str, optional (default: Both)
         Which sides of the colorbar are shown as an arrow.
         One of: neither, both, max, min
         By default, both sides are arrows.
-    n_ticks : int, optional (default: None)
+    cb_n_ticks : int, optional (default: None)
         Override the default number of colobar ticks and use this many ticks
         instead. If None is passed, let matplotlib decide.
-    ext_label_min : str, optional (default: None)
+    cb_ext_label_min : str, optional (default: None)
         Additional label for the left side of the colorbar
-    ext_label_max : str, optional (default: None)
+    cb_ext_label_max : str, optional (default: None)
         Additional label for the right if the colorbar
     """
 
-    if not ext_label_min and not ext_label_max:
+    if not cb_ext_label_min and not cb_ext_label_max:
         exteme_labels = False
     else:
         exteme_labels = True
 
-    cax, kw = mpl.colorbar.make_axes(imax, location=location,
-        extend=extend, shrink=0.7, use_gridspec=True,
+    cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
+        extend=cb_extend, shrink=0.7, use_gridspec=True,
         pad=0.07 if not exteme_labels else 0.08)
 
     cb = f.colorbar(im, cax=cax, **kw)
     cb.ax.tick_params(labelsize=7)
-    if n_ticks:
-        tick_locator = ticker.MaxNLocator(nbins=n_ticks)
+    if cb_n_ticks:
+        tick_locator = ticker.MaxNLocator(nbins=cb_n_ticks)
         cb.locator = tick_locator
         cb.update_ticks()
 
     if exteme_labels:
-        if ext_label_min:
-            if location in ['top', 'bottom']:
-                cb.ax.text(0, 1.1, ext_label_min, fontsize=5, rotation=0, ha='left',
+        if cb_ext_label_min:
+            if cb_loc in ['top', 'bottom']:
+                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5, rotation=0, ha='left',
                            transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, -0.06, ext_label_min, fontsize=5, rotation=0, va='bottom',
+                cb.ax.text(0.5, -0.06, cb_ext_label_min, fontsize=5, rotation=0, va='bottom',
                            ha='center', transform=cax.transAxes)
-        if ext_label_max:
-            if location in ['top', 'bottom']:
-                cb.ax.text(1, 1.1, ext_label_max, fontsize=5, rotation=0, ha='right',
+        if cb_ext_label_max:
+            if cb_loc in ['top', 'bottom']:
+                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5, rotation=0, ha='right',
                            transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, 1.05, ext_label_max, fontsize=5, rotation=0, va='top',
+                cb.ax.text(0.5, 1.05, cb_ext_label_max, fontsize=5, rotation=0, va='top',
                            ha='center', transform=cax.transAxes)
 
 
-    cb.set_label(cblabel if cblabel is not None else '', fontsize=cblabelsize,
+    cb.set_label(cb_label if cb_label is not None else '', fontsize=cb_labelsize,
                  labelpad=5, color='k')
 
 
