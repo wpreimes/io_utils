@@ -263,7 +263,7 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
                    gridspace=(60,20), grid_label_loc='1001', style=None,
                    ocean=False, land='white', states=False, borders=False,
-                   scale_factor=1., show_cbar=True, **cbar_kwargs):
+                   scale_factor=1., watermark=None, show_cbar=True, **cbar_kwargs):
 
     '''
     Plot data as scatterplot on a map
@@ -406,7 +406,9 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     if title:
         imax.set_title(title, fontsize=10)
         #f.suptitle(title, fontsize=10)
-
+    if watermark:
+        # todo: add text to plot corner
+        raise NotImplementedError
     if show_cbar:
         map_add_cbar(f, imax, im, **cbar_kwargs)
     else:

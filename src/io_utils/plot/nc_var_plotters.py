@@ -225,8 +225,12 @@ class NcVarCombPlotter(object):
 
         self.times = self._load_times(time1, time2, vards1, vards2)
         # calc variable1 *metric* variable2
-        cds, smetric = self._usemetric(
-            self.ds1.df[vards1], self.ds2.df[vards2], metric)
+        s1 = self.ds1.df[vards1]
+        s2 = self.ds2.df[vards2]
+        # make sure the two have the same index names
+        if self.ds1.index_name != self.ds2.index_name:
+            s2.rename_axis(index=dict(zip(self.ds2.index_name, self.ds1.index_name)))
+        cds, smetric = self._usemetric(s1, s2, metric)
         name = '{}_between_{}_and_{}'.format(smetric, vards1, vards2)
 
         df = cds.to_frame(name)
@@ -236,7 +240,9 @@ class NcVarCombPlotter(object):
         if not self.ds1.irregular and not self.ds2.irregular:
             f, imax, im = cp_map(df, name, **plot_kwargs)
         else:
-            raise NotImplementedError('Comb plot for irregular grids not implemented')
+            f, imax, im = cp_scatter_map(lats=df.index.get_level_values(self.ds1.index_name[0]),
+                                         lons=df.index.get_level_values(self.ds1.index_name[1]),
+                                         values=df[name].values, **plot_kwargs)
 
         if not plotfile_name:
             plotfile_name = name

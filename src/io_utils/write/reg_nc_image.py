@@ -678,7 +678,7 @@ class ReadNcImg(object):
             if time is None:
                 try: # load as datetime
                     time = pd.to_datetime(self.ds.time.values[0])
-                except ValueError:
+                except AttributeError or ValueError:
                     try: # load as anything
                         time = self.ds.time.values[0]
                     except AttributeError:
