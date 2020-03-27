@@ -103,7 +103,8 @@ class NcVarPlotter(ReadNcImg):
 
 class NcVarCombPlotter(object):
     def __init__(self, filepath1, filepath2, lat_var='lat', lon_var='lon',
-                 z_var='time', resxy=(0.25, 0.25), out_dir=None, dpi=300):
+                 z_var='time', cell_center_origin=True, resxy=(0.25, 0.25),
+                 out_dir=None, dpi=300):
         """
         Class to combine data from (one or multiple) files to a map.
         We always calculate !!File1*metric*File2!!
@@ -138,10 +139,10 @@ class NcVarCombPlotter(object):
 
         self.ds1 = NcVarPlotter(filepath=filepath1, resxy=resxy,
                                 out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
-                                z_var=z_var)
+                                z_var=z_var, cell_center_origin=cell_center_origin)
         self.ds2 = NcVarPlotter(filepath=filepath2, resxy=resxy,
                                 out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
-                                z_var=z_var)
+                                z_var=z_var, cell_center_origin=cell_center_origin)
 
         # ds1 parent if out_dir is None, otherwise the correct one was passed to ds1
         self.out_dir = self.ds1.out_dir

@@ -16,6 +16,7 @@ from datetime import datetime
 import pandas as pd
 from collections import OrderedDict
 import numpy as np
+from datetime import timedelta
 
 class CCISWITs(GriddedNcOrthoMultiTs):
     # The basic CCI TS netcdf reader, with some features
@@ -26,10 +27,6 @@ class CCISWITs(GriddedNcOrthoMultiTs):
         grid = nc.load_grid(grid_path)
         super(CCISWITs, self).__init__(ts_path, grid, **kwargs)
 
-    def read_cell(self, *args):
-        for ts in self.iter_ts():
-            print(ts)
-
     def read_ts(self, *args, **kwargs):
         df = super(CCISWITs, self).read(*args, **kwargs)
         return df
@@ -38,19 +35,48 @@ class CCISWITs(GriddedNcOrthoMultiTs):
 class GeoCCISWITs(CCISWITs):
     # Reader implementation that uses the PATH configuration from above
 
-    # exact time variable (days) from reference date
-    _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
-
     # fill values in the data columns
     _col_fillvalues = {}
 
-    def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
+    def __init__(self, ts_path, grid_path=None, **kwargs):
 
         super(GeoCCISWITs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
-        self.exact_index = exact_index
 
     def read(self, *args, **kwargs):
         return super(GeoCCISWITs, self).read(*args, **kwargs)
+
+    def read_cell_file(self, cell, var):
+        """
+        Read a whole cell file
+
+        Parameters
+        ----------
+        cell : int
+            Cell / filename to read.
+        var : str
+            Name of the variable to extract from the cellfile.
+
+        Returns
+        -------
+        data : np.array
+            Data for var in cell
+        """
+
+        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
+        with nc.Dataset(file_path) as ncfile:
+            loc_id = ncfile.variables['location_id'][:]
+            time = ncfile.variables['time'][:]
+            unit_time = ncfile.variables['time'].units
+            delta = lambda t: timedelta(t)
+            vfunc = np.vectorize(delta)
+            since = pd.Timestamp(unit_time.split('since ')[1])
+            time = since + vfunc(time)
+            variable = ncfile.variables[var][:]
+            variable = np.transpose(variable)
+            data = pd.DataFrame(variable, columns=loc_id, index=time)
+            if var in self._col_fillvalues.keys():
+                data = data.replace(self._col_fillvalues[var], np.nan)
+            return data
 
     def read_cells(self, cells):
         cell_data = OrderedDict()
@@ -63,4 +89,4 @@ class GeoCCISWITs(CCISWITs):
 if __name__ == '__main__':
     ds = GeoCCISWITs(r'R:\Projects\G3P\07_data\SWI_CCI_04.7\SWI_CCI_v04.7_TS')
     ts = ds.read(15,45)
-    celldata = ds.read_cell(2244)
+    celldata = ds.read_cell_file(2244, 'SWI_005')

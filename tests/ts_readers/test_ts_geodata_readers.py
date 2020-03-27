@@ -16,6 +16,19 @@ def print_test_config(dataset, path_group=None):
     print('Test reading {} data from {}.'.format(ds, pg))
 
 @pytest.mark.geo_test_data
+def test_cciswi_v047_reader(verbose=False):
+    if verbose: print('Test reading CCI47 SWI from storage.')
+    vers = 'v047'
+    reader = GeoCCISWIv4Ts(dataset=('ESA_CCI_SWI', vers),
+                          ioclass_kws={'read_bulk': True},
+                          parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
+                          scale_factors={'SWI_001': 1.})
+    #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
+    ts = reader.read(*test_loc)
+    assert not ts.empty
+    if verbose: print(ts)
+
+@pytest.mark.geo_test_data
 def test_cci_v045_reader(verbose=False):
     if verbose: print('Test reading CCI45, Combined, passive from storage.')
     vers = 'v045'
@@ -185,6 +198,7 @@ def test_gldas20_ts_reader(verbose=False):
 
 if __name__ == '__main__':
     v = True
+    test_cciswi_v047_reader(v)
     # test_SMAP_spl3_v6_reader(v)
     # test_gldas20_ts_reader(v)
     # test_cci_v045_reader(v)
@@ -193,6 +207,6 @@ if __name__ == '__main__':
     # test_era5land_snow_reader(v)
     # test_eraint_reader(v)
     # test_C3S201706_combined_readers(v)
-    test_C3S201912_single_monthly_readers(v)
-    test_C3S201912_single_daily_readers(v)
+    # test_C3S201912_single_monthly_readers(v)
+    # test_C3S201912_single_daily_readers(v)
 

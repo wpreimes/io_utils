@@ -39,7 +39,8 @@ def fract_grid(grid):
     gpis, lons, lats, _ = grid.get_grid_points()
     lons, lats = sorted(np.unique(lons)), sorted(np.unique(lats))
 
-    dx, dy = np.min(np.diff(lons)), np.min(np.diff(lats))
+    dx = np.around(np.min(np.diff(lons)), 10)
+    dy = np.around(np.min(np.diff(lats)), 10)
 
     return dx, dy, lons, lats
 

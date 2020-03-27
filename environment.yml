@@ -20,4 +20,7 @@ dependencies:
     - xarray
     - configparser
     - more_itertools
+    - pytest-cov
+    - coverage==4.5.2
+    - pytest==3.8.2
     - git+https://github.com/TUW-GEO/smecv-grid.git@master

@@ -93,7 +93,8 @@ class RegularCellGrid(CellGrid):
     def _grid_space(self):
         # find the resolution of the grid and check if it is regular along x and y
         lons, lats = self.get_grid_points()[1], self.get_grid_points()[2]
-        diff_x, diff_y = np.diff(sorted(np.unique(lons))), np.diff(sorted(np.unique(lats)))
+        diff_x = np.around(np.diff(sorted(np.unique(lons))), 10)
+        diff_y = np.around(np.diff(sorted(np.unique(lats))), 10)
 
         dx = np.max(diff_x)
         assert np.min(diff_x) == dx

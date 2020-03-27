@@ -12,7 +12,7 @@ Reader for the ESA CCI SM time series data of different versions
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from collections import OrderedDict
 import numpy as np
@@ -74,6 +74,39 @@ class GeoCCITs(CCITs):
     def read(self, *args, **kwargs):
         return self._add_time(self._replace_with_nan(
              super(GeoCCITs, self).read(*args, **kwargs)))
+
+    def read_cell_file(self, cell, var):
+        """
+        Read a whole cell file
+
+        Parameters
+        ----------
+        cell : int
+            Cell / filename to read.
+        var : str
+            Name of the variable to extract from the cellfile.
+
+        Returns
+        -------
+        data : np.array
+            Data for var in cell
+        """
+
+        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
+        with nc.Dataset(file_path) as ncfile:
+            loc_id = ncfile.variables['location_id'][:]
+            time = ncfile.variables['time'][:]
+            unit_time = ncfile.variables['time'].units
+            delta = lambda t: timedelta(t)
+            vfunc = np.vectorize(delta)
+            since = pd.Timestamp(unit_time.split('since ')[1])
+            time = since + vfunc(time)
+            variable = ncfile.variables[var][:]
+            variable = np.transpose(variable)
+            data = pd.DataFrame(variable, columns=loc_id, index=time)
+            if var in self._col_fillvalues.keys():
+                data = data.replace(self._col_fillvalues[var], np.nan)
+            return data
 
     def read_cells(self, cells):
         cell_data = OrderedDict()
