@@ -110,6 +110,6 @@ def test_insitu_data():
 
 if __name__ == '__main__':
     #test_model_data()
-    test_sat_data()
-    #test_insitu_data()
+    #test_sat_data()
+    test_insitu_data()
 

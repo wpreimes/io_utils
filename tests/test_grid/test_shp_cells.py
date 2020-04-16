@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from io_utils.grid.continents_cells import CountryShpReader, subgrid_for_polys
-from io_utils.grid.continents_cells import create_cells_for_continents, read_cells_for_continent
+from io_utils.grid.continents_cells import CountryShpReader, GridShpAdapter
+from io_utils.grid.continents_cells import read_cells_for_continent
 from smecv_grid.grid import SMECV_Grid_v042
 import os
 import io_utils.root_path as root_path
@@ -13,14 +13,15 @@ def test_shp_reader():
     assert 'Austria' in counts
 
     ids_at_de = reader.country_ids('Austria', 'Germany')
-    assert ids_at_de == [114, 121]
+    assert ids_at_de == [115, 122]
 
-    poly_at = reader._geom(114)
+    poly_at = reader._geom(115)
     assert poly_at is not None
 
 def test_subgrid_country_cont_names():
     full_grid = SMECV_Grid_v042('land')
-    sgrid = subgrid_for_polys(full_grid, 'Austria', 'Seven seas (open ocean)', silent=True)
+    adp = GridShpAdapter(full_grid)
+    sgrid = adp.create_subgrid(names=['Austria', 'Seven seas (open ocean)'], verbose=False)
 
     gpis, lons, lats, cells = sgrid.get_grid_points()
     assert 795661 in gpis
@@ -30,9 +31,10 @@ def test_subgrid_country_cont_names():
     assert sgrid.gpi2lonlat(232835) == (68.875, -49.625)
 
 def test_cells_for_continent():
-    grid = SMECV_Grid_v042('land')
-    cells = create_cells_for_continents(grid, 'Seven seas (open ocean)',
-                                        out_file=None)
+    grid = SMECV_Grid_v042(None)
+    adp = GridShpAdapter(grid)
+
+    cells = adp.create_cells_for_continents(['Seven seas (open ocean)'], out_file=None)
     assert 1808 in cells['Seven seas (open ocean)']
 
 def test_read_cells_for_continents():
@@ -40,14 +42,14 @@ def test_read_cells_for_continents():
 
     cells = read_cells_for_continent(['Europe', 'Oceania'], infile)
 
-    assert 1797 in cells # for europe
-    assert 2444 in cells # for europe
+    assert 1468 in cells # for europe
+    assert 1250 in cells # for europe
 
     assert 2244 in cells # for oceania
     assert 2463 in cells # for oceania
 
 if __name__ == '__main__':
+    test_cells_for_continent()
     test_read_cells_for_continents()
     test_shp_reader()
     test_subgrid_country_cont_names()
-    test_cells_for_continent()

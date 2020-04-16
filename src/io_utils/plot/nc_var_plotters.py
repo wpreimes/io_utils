@@ -86,7 +86,9 @@ class NcVarPlotter(ReadNcImg):
         if not plotfile_name:
             if self.time not in [None, datetime(1900,1,1)]:
                 plotfile_name = '{var}_at_{time}_from_{file}'.format(
-                    var=variable, time=str(self.time.date()), file=self.filename)
+                    var=variable,
+                    time=str(self.time.date()) if not isinstance(self.time, str) else self.time,
+                    file=self.filename)
             else:
                 plotfile_name = '{var}_from_{file}'.format(
                     var=variable, file=self.filename)

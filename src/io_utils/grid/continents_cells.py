@@ -46,103 +46,104 @@ def read_cells_for_continent(continent, infile=smecv52_5deg_cells):
 
     return ret_cells
 
-def create_cells_for_continents(grid, continents=None, out_file=None):
-    """
-    Create a list of cells for all continents. Optionally save it as txt file.
+class GridShpAdapter(object):
+    def __init__(self, grid):
+        self.grid = grid
+        self.shp_reader = CountryShpReader()
+        self.country_names = sorted(np.unique(self.shp_reader.df['country'].values))
+        self.continent_names = sorted(np.unique(self.shp_reader.df['continent'].values))
 
-    Parameters
-    ----------
-    grid : pygeogrids.CellGrid
-        Grid that is used to find the cell numbers
-    contintinents : list, optional (default: None)
-        Limit to these continents, if None is passed, all are used
-    out_file : str, optional (default: None)
-        If this path to a file is passed, the output is written there.
+    def __str__(self):
+        county_names = ', '.join(self.country_names)
+        continent_names = ', '.join(self.continent_names)
+        return "Continent Names: {} \n \n Country Names: {}".format(
+            continent_names, county_names)
 
-    Returns
-    -------
-    cont_cells : OrderedDict
-        Cells per continent.
-    """
+    def create_subgrid(self, names, verbose=False):
+        """
+        Create a subgrid based on country names or continent names.
 
-    df = subgrid_for_polys(grid)
-    cont_cells = dict()
+        Parameters
+        ----------
+        names : list
+            List of countries and/or continents
+        verbose : bool, optional (default: False)
+            Show progress when creating subgrid
 
-    all_conts = np.sort(np.unique(df['continent'].values))
+        Returns
+        -------
+        subgrid : pygeogrids.Grid
+            Subgrid with gpis only for the selected countries/continents
+        """
 
-    if continents is None:
-        continents = all_conts
+        gpis = np.array([], dtype=int)
 
-    for continent in all_conts:
-        if continent not in continents:
-            continue
-        print('--------------------------------------')
-        print('Finding cells for {}'.format(continent))
-        subgrid = subgrid_for_polys(grid, continent, silent=True)
-        if subgrid is not None:
-            cells = subgrid.get_cells()
+        ids = []
+        ids += self.shp_reader.country_ids(*names)
+        ids += self.shp_reader.country_ids(*self.shp_reader.continent_countries(*names))
+
+        ids = np.unique(np.array([ids]))
+
+        for i, id in enumerate(ids):
+            if verbose:
+                print('Creating subset {} of {} ... to speed this up '
+                      'improve pygeogrids.grids.get_shp_grid_points()'.format(i + 1, ids.size))
+
+            subgrid = self.grid.get_shp_grid_points(self.shp_reader._geom(id))
+            if subgrid is not None:
+                poly_gpis = subgrid.activegpis
+                gpis = np.append(gpis, poly_gpis)
+            else:
+                pass
+
+        if gpis.size == 0:
+            return None
         else:
-            cells = np.array([])
-        cont_cells[continent] = cells.tolist()
+            return self.grid.subgrid_from_gpis(np.unique(gpis))
 
-    if out_file is not None:
-        with open(out_file, 'w') as f:
-            f.write(str(cont_cells))
+    def create_cells_for_continents(self, continents=None, out_file=None):
+        """
+        Create a list of cells for all continents. Optionally save it as txt file.
 
-    return cont_cells
+        Parameters
+        ----------
+        grid : pygeogrids.CellGrid
+            Grid that is used to find the cell numbers
+        contintinents : list, optional (default: None)
+            Limit to these continents, if None is passed, all are used
+        out_file : str, optional (default: None)
+            If this path to a file is passed, the output is written there.
 
-def subgrid_for_polys(grid, *names, silent=False):
-    """
-    Create a subgrid that contains only points that are within the passed
-    polygons.
+        Returns
+        -------
+        cont_cells : OrderedDict
+            Cells per continent.
+        """
+        df = self.shp_reader.df
+        cont_cells = dict()
 
-    Parameters
-    ----------
-    grid : pygeogrids.CellGrid
-        Input grid to subset, if no names are passed, print a list of options
-    silent : bool, optional (default: False)
-        Suppress printing progress
-    names : str
-        To see the options just pass nothing here
+        all_conts = np.sort(np.unique(df['continent'].values))
 
-    Returns
-    ---------
-    subgrid : pygeogrids.CellGrid | pd.DataFrame
-        Subgrid that contains only points that are withing the shapes of the passed
-        countries and/or continents.
-    """
-    shp_reader = CountryShpReader()
+        if continents is None:
+            continents = all_conts
 
-    if len(names) == 0:
-        print('Please pass country/continent names from:')
-        print(shp_reader.df)
-        return shp_reader.df
+        for continent in all_conts:
+            if continent not in continents:
+                continue
+            print('--------------------------------------')
+            print('Finding cells for {}'.format(continent))
+            subgrid = self.create_subgrid([continent], verbose=True)
+            if subgrid is not None:
+                cells = subgrid.get_cells()
+            else:
+                cells = np.array([])
+            cont_cells[continent] = cells.tolist()
 
-    gpis = np.array([], dtype=int)
+        if out_file is not None:
+            with open(out_file, 'w') as f:
+                f.write(str(cont_cells))
 
-    ids = []
-    ids += shp_reader.country_ids(*names)
-    ids += shp_reader.country_ids(*shp_reader.continent_countries(*names))
-
-    ids = np.unique(np.array([ids]))
-
-    for i, id in enumerate(ids):
-        if not silent:
-            print('Creating subset {} of {} ... to speed this up '
-                  'improve pygeogrids.grids.get_shp_grid_points()'.format(i+1, ids.size))
-
-        subgrid = grid.get_shp_grid_points(shp_reader._geom(id))
-        if subgrid is not None:
-            poly_gpis = subgrid.activegpis
-            gpis = np.append(gpis, poly_gpis)
-        else:
-            pass
-
-    if gpis.size == 0:
-        return None
-    else:
-        return grid.subgrid_from_gpis(np.unique(gpis))
-
+        return cont_cells
 
 class CountryShpReader(object):
 
@@ -164,11 +165,13 @@ class CountryShpReader(object):
 
         for n in range(n_features):
             feature = layer.GetFeature(n)
-            names.append(feature.GetField(self.name_field))
-            conts.append(feature.GetField(self.continent_field))
+            name = feature.GetField(self.name_field)
+            cont = feature.GetField(self.continent_field)
+            names.append(name)
+            conts.append(cont)
             ids.append(n)
 
-        self.df = pd.DataFrame(index=ids, data={'continent': conts, 'name': names})
+        self.df = pd.DataFrame(index=ids, data={'continent': conts, 'country': names})
 
     def _geom(self, id):
         shp = ogr.Open(self.path, 0)
@@ -182,7 +185,7 @@ class CountryShpReader(object):
             names = [names]
         ids = []
         for name in names:
-            country_ids = self.df.loc[self.df.name == name].index.values
+            country_ids = self.df.loc[self.df.country == name].index.values
             for id in country_ids:
                 ids.append(id)
 
@@ -194,7 +197,13 @@ class CountryShpReader(object):
 
         names = np.array([])
         for continent in continents:
-            n = self.df.loc[self.df.continent == continent, 'name'].values
+            n = self.df.loc[self.df.continent == continent, 'country'].values
             names = np.append(names, n)
 
         return names
+    
+if __name__ == '__main__':
+    from smecv_grid.grid import SMECV_Grid_v052
+    adapter = GridShpAdapter(SMECV_Grid_v052('land'))
+    print(adapter)
+    adapter.create_subgrid(['Austria', 'Oceania'])

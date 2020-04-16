@@ -10,6 +10,7 @@ import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
 import matplotlib.pyplot as plt
+import numpy as np
 
 resample_method_lut = {'mean' : pd.DataFrame.mean,
                        'max': pd.DataFrame.max,
@@ -123,6 +124,8 @@ class GeoTsReader(object):
             method = self.resample[1]
             if isinstance(method, str):
                 method = self._method_from_lut(method)
+
+            df = df.select_dtypes(np.number)
             df = df.resample(self.resample[0]).apply(method)
 
         # Renaming is done last.
