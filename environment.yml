@@ -10,7 +10,7 @@ dependencies:
   - netCDF4
   - matplotlib
   - cartopy
-  - gdal
+  - gdal<=2.4.3
   - pip
   - pip:
     - pytesmo
@@ -24,3 +24,5 @@ dependencies:
     - coverage==4.5.2
     - pytest==3.8.2
     - git+https://github.com/TUW-GEO/smecv-grid.git@master
+    - git+https://github.com/TUW-GEO/veranda.git@master
+    - git+https://github.com/TUW-GEO/yeoda.git@master
