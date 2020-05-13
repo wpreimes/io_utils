@@ -51,11 +51,12 @@ class NcVarPlotter(ReadNcImg):
     """
 
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
-                 z_var='time', cell_center_origin=True, out_dir=None, dpi=300):
+                 z_var='time', cell_center_origin=True, subgrid=None,
+                 out_dir=None, dpi=300):
 
         super(NcVarPlotter, self).__init__(filepath=filepath, resxy=resxy,
                                            lat_var=lat_var, lon_var=lon_var,
-                                           z_var=z_var,
+                                           z_var=z_var, subgrid=subgrid,
                                            cell_center_origin=cell_center_origin)
 
         self.out_dir = out_dir if out_dir else self.parent_dir

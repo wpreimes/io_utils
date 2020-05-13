@@ -137,3 +137,41 @@ def create_workfolder(path, no_version_folder=False):
         if not os.path.exists(p): os.makedirs(p)
 
     return p
+
+def filter_months(df, months, dropna=False):
+    """
+    Select only entries of a time series that are within certain month(s)
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Time series (index.month must exist) that is filtered
+    months : list
+        Months for which data is kept, e.g. [12,1,2] to keep data for winter
+    dropna : bool, optional (default: False)
+        Drop lines for months that are not to be kept, if this is false, the
+        original index is not changed, but filtered values are replaced with nan.
+
+    Returns
+    -------
+    df_filtered : pd.DataFrame
+        The filtered series
+    """
+
+    dat = df.copy(True)
+    dat['__index_month'] = dat.index.month
+    cond = ['__index_month == {}'.format(m) for m in months]
+    selection = dat.query(' | '.join(cond)).index
+    dat.drop('__index_month', axis=1, inplace=True)
+
+    if dropna:
+        return dat.loc[selection]
+    else:
+        dat.loc[dat.index.difference(selection)] = np.nan
+        return dat
+
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    ds = pd.DataFrame(index=pd.date_range(start='2000-01-01', end='2010-12-31', freq='D'),
+                   data={'data': range(4018), 'flag': np.full(4018, 1)})
+    fil = filter_months(ds, months=[12,1,2])

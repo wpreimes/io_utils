@@ -560,7 +560,7 @@ def test_ordered_adding(limit=None):
 
 class ReadNcImg(object):
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
-                 z_var='time', cell_center_origin=True):
+                 z_var='time', cell_center_origin=True, subgrid=None):
         """
         Wrapper Class for reading 2D images at a certain time stamp from an nc file
 
@@ -584,6 +584,8 @@ class ReadNcImg(object):
             Name of the z dimension variable name in the netcdf file.
         cell_center_origin : bool, optional (default: True)
             Whether the origin of the point is in the middle of the pixel or not.
+        subgrid : pygeogrids.BasicGrid, optional (default: NOne)
+            Only load data for that grid
         """
         if resxy is None:
             self.irregular = True
@@ -603,6 +605,8 @@ class ReadNcImg(object):
 
         self.time = None
         self.df = None # will be done when needed
+
+        self.subgrid = subgrid
 
     def _grid(self):
         """
@@ -627,6 +631,12 @@ class ReadNcImg(object):
 
         return ds
 
+    def _subset_with_grid(self, df) -> pd.DataFrame:
+        grid_lons = self.subgrid.activearrlon
+        grid_lats = self.subgrid.activearrlat
+        grid_gpis = self.subgrid.activegpis
+        return df.loc[zip(grid_lats, grid_lons)]
+
     def _load(self, ds, time):
         """
         Load data from the xarray dataset at a time stamp as a pandas data frame.
@@ -640,6 +650,9 @@ class ReadNcImg(object):
             df_file = ds.to_dataframe() \
                 .reset_index(inplace=False) \
                 .set_index(self.index_name)
+
+        if self.subgrid is not None:
+            df_file = self._subset_with_grid(df_file)
 
         if not self.irregular:
             df_file = df_file.loc[df_file.index.dropna()]

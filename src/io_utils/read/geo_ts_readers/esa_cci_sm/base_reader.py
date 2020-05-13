@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from collections import OrderedDict
 import numpy as np
+from pygeogrids import CellGrid
 
 class CCITs(GriddedNcOrthoMultiTs):
     # The basic CCI TS netcdf reader, with some features
@@ -44,8 +45,13 @@ class GeoCCITs(CCITs):
 
     def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
 
-        super(GeoCCITs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
         self.exact_index = exact_index
+
+        super(GeoCCITs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
+
+        if (self.parameters is not None) and self.exact_index and \
+                (self._t0_ref[0] not in self.parameters):
+            self.parameters.append(self._t0_ref[0])
 
     def _replace_with_nan(self, df):
         """
@@ -117,5 +123,7 @@ class GeoCCITs(CCITs):
         return cell_data
 
 if __name__ == '__main__':
-    ds = CCITs(r'D:\data-read\CCI_45_D_TS\combined')
-    ts = ds.read(15,45)
+
+
+    ds = GeoCCITs(r'D:\data-read\CCI_45_D_TS\combined', exact_index=Fals)
+    ts = ds.read(-104,38)

@@ -38,3 +38,6 @@ from io_utils.read.geo_ts_readers.smap.smap import *
 
 # ISMN version readers
 from io_utils.read.geo_ts_readers.ismn.ismn_sm import *
+
+# SCATSAR raders
+from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_cgls_equi7 import *

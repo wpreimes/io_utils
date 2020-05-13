@@ -11,7 +11,7 @@ Module description
 
 from io_utils.read.path_config import PathConfig
 import pandas as pd
-from io_utils.path_configs.ismn.paths_ismn import path_settings
+
 from ismn.interface import ISMN_Interface
 import os
 import shutil
@@ -21,6 +21,12 @@ import sys
 import matplotlib.pyplot as plt
 from io_utils.plot.plot_maps import cp_scatter_map
 
+try:
+    from io_utils.path_configs.ismn.paths_ismn import path_settings
+except ImportError:
+    path_settings = {}
+
+
 class GeoISMNTs(ISMN_Interface):
     """
     Modified ISMN Reader class, that reads good (G Flag) ISMN values and provides
@@ -28,14 +34,15 @@ class GeoISMNTs(ISMN_Interface):
     """
     _ds_implemented = [('ISMN', 'v20191211')]
 
-    def __init__(self, dataset, network=None, parameters=('soil moisture'),
+    def __init__(self, dataset_or_path, network=None, parameters=('soil moisture'),
                  force_path_group=None, scale_factors=None):
         """
         Initialize the reader for ISMN data
         Parameters
         ----------
-        dataset : tuple
-            Dataset that is implemented in a path config.
+        dataset_or_path : tuple or str
+            Dataset that is implemented in a path config. Or a path directly,
+            where the data is stored.
         network : string or list, optional
             Provide name of network to only load the given network
         force_path_group : str, optional (default: None)
@@ -43,13 +50,14 @@ class GeoISMNTs(ISMN_Interface):
         scale_factors : dict, optional (default:None)
             Apply the passed multiplicative scales to the selected columns
         """
-        if isinstance(dataset, list):
-            dataset = tuple(dataset)
+        if isinstance(dataset_or_path, list):
+            dataset_or_path = tuple(dataset_or_path)
 
-        self.dataset = dataset
+        self.dataset = dataset_or_path
         self.parameters = parameters
         self.network = network
-        self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
+        path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
+        self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
         self.scale_factors = scale_factors
@@ -288,25 +296,26 @@ class GeoISMNTs(ISMN_Interface):
         fig.set_size_inches([6, 3.5 + 0.25 * nrows])
         if filename is not None:
             fig.savefig(filename, bbox_extra_artists=(lgd, text), dpi=300)
-
-        return fig, ax
+            plt.close(fig)
+        else:
+            return fig, ax
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoISMNTs._ds_implemented)
 
 if __name__ == '__main__':
     networks = ['AMMA-CATCH', 'CARBOAFRICA', 'DAHRA', 'CTP-SMTMN',
-                'MySMNet', 'OZNET', 'BIEBRZA-S-1', 'FMI', 'FR-Aqui',
-                'HOBE', 'REMEDHUS', 'RSMN', 'SMOSMANIA', 'TERENO',
-                'WEGENERNET', 'WSMN', 'BNZ-LTER', 'COSMOS',
-                'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
-                'SCAN', 'USCRN', 'LAB-net']
+              'MySMNet', 'OZNET', 'BIEBRZA-S-1', 'FMI', 'FR-Aqui',
+              'HOBE', 'REMEDHUS', 'RSMN', 'SMOSMANIA', 'TERENO',
+              'WEGENERNET', 'WSMN', 'BNZ-LTER', 'COSMOS',
+              'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
+              'SCAN', 'USCRN', 'LAB-net']
 
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=networks, scale_factors=None)
     s = reader.read(0)
 
     #reader.plot_station_locations(min_depth=0, max_depth=.05, filename='C:\Temp\stations_cci_0.0_to_0.05.png')
-    reader.plot_station_locations(min_depth=0.05, max_depth=.1, filename='C:\Temp\stations_cci_0.05_to_0.1.png')
+    reader.plot_station_locations(min_depth=0.0, max_depth=.1, filename='C:\Temp\stations_cci_0.0_to_0.1.png')
     # reader.plot_station_locations(min_depth=0, max_depth=.051, filename='C:\Temp\stations_0.0_to_0.051.png')
     # reader.plot_station_locations(min_depth=.05, max_depth=.1, filename='C:\Temp\stations_0.05_to_0.1.png')
     # reader.plot_station_locations(min_depth=.051, max_depth=.1, filename='C:\Temp\stations_0.051_to_0.1.png')

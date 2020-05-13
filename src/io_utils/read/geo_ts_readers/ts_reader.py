@@ -11,11 +11,9 @@ from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
 import matplotlib.pyplot as plt
 import numpy as np
-
-resample_method_lut = {'mean' : pd.DataFrame.mean,
-                       'max': pd.DataFrame.max,
-                       'min': pd.DataFrame.min,
-                       'median': pd.DataFrame.median}
+from io_utils.utils import filter_months
+import warnings
+from collections import Iterable
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
@@ -25,7 +23,8 @@ def load_settings(setts_file):
 class GeoTsReader(object):
 
     def __init__(self, cls, reader_kwargs=None, selfmaskingadapter_kwargs=None,
-                 climadapter_kwargs=None, resample=None, params_rename=None):
+                 climadapter_kwargs=None, resample=None, filter_months=None,
+                 params_rename=None):
 
         """
         Collects geopath-readers and calls them based on the dataset name,
@@ -49,8 +48,12 @@ class GeoTsReader(object):
             e.g. dict(columns=['sm'], timespan=[datetime(1991,1,1), datetime(2010,12,31)])
         resample : tuple, optional (default: None)
             A frequency and method to resample the read, masked, transformed, data
-            e.g. ('M', pd.DataFrame.mean), method can also be a string then it will
-            be looked up.
+            e.g. ('M', 'mean'), calls resample('M').mean(), other predefined methods
+            are mean, median, min, max etc. Can also be a generic method, then
+            resample('M').apply(method) is called, but this might be slower!!
+        filter_months : list, optional (default: None)
+            List of months (1-12) that are kept, data for other months is replaced
+            by nan. We select month via index.month.
         params_rename : dict, optional (default: None)
             A lookup table for renaming parameters. This is done at the very end.
             e.g. {'sm' : 'ESA CCI SM Soil Moisture'}
@@ -66,6 +69,7 @@ class GeoTsReader(object):
 
         self.reader_kwargs = reader_kwargs
         self.params_rename = params_rename
+        self.filter_months = filter_months
         self.resample=resample
 
         self.selfmaskingadapter_kwargs = selfmaskingadapter_kwargs
@@ -75,7 +79,8 @@ class GeoTsReader(object):
 
         self.grid = cls.grid
 
-        self.reader = cls
+        self.base_reader = cls # the unadaptered input reader
+        self._adapt(self.base_reader) # the adapted reader to use
 
 
     def __str__(self):
@@ -94,16 +99,8 @@ class GeoTsReader(object):
         return '{} with {}'.format(reader_class_str, adapters_str)
 
 
-    @staticmethod
-    def _method_from_lut(name):
-        if name not in resample_method_lut.keys():
-            raise ValueError('Method {} not implemented in GeoTsReaders')
-        else:
-            return resample_method_lut[name]
-
-    def _adapt(self):
+    def _adapt(self, reader):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
-        reader = self.reader
 
         if self.selfmaskingadapter_kwargs is not None:
             reader = SelfMaskingAdapter(reader, **self.selfmaskingadapter_kwargs)
@@ -111,59 +108,131 @@ class GeoTsReader(object):
         if self.climadapter_kwargs is not None:
             reader = AnomalyClimAdapter(reader, **self.climadapter_kwargs)
 
-        return reader
+        self.reader = reader
 
     def read(self, *args, **kwargs):
+        """ Read data for a location, by gpi or by lonlat """
+        df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
 
-        reader = self._adapt()
+        # filtering is done after adapting
+        if self.filter_months is not None:
+            df = filter_months(df, months=self.filter_months, dropna=False)
 
-        df = reader.read(*args, **kwargs) # type: pd.DataFrame
-
-        # Resampling is done AFTER reading the original data, masking, climadapt. etc
+        # Resampling is done AFTER reading the original data, masking, climadapt.etc
         if self.resample is not None:
             method = self.resample[1]
-            if isinstance(method, str):
-                method = self._method_from_lut(method)
-
             df = df.select_dtypes(np.number)
-            df = df.resample(self.resample[0]).apply(method)
+            if isinstance(method, str):
+                df = eval('df.resample(self.resample[0]).{}()'.format(method)) # todo: ?? better solution?
+            else:
+                warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
+                df = df.resample(self.resample[0]).apply(method, axis=0)
+            df.freq = self.resample[0]
 
         # Renaming is done last.
         if self.params_rename is not None:
-            df = df.rename(columns=self.params_rename)
+            df.rename(columns=self.params_rename, inplace=True)
 
         return df
+
+    def read_multiple(self, locs, var='sm'):
+        """
+        Read a list of locations, either from gpis, from lonlats or from a grid.
+        Applies all the filtering and conversion from the reader generation.
+        This simply orders the locs by cells for bulk reading and take the selected
+        column received from the read() function for each location.
+
+        Parameters
+        ----------
+        locs : list
+            Either a set of locations [gpi,...] or [(lon, lat), ...]
+        var : str, optional (default: 'sm')
+            Variable to take from the dataframe that the read() function returns.
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Dataframe of time series for the var of all locs, named by gpi.
+        """
+
+        gpis = {}
+
+        for loc in locs:
+            if isinstance(loc, Iterable):
+                gpi = self.grid.find_nearest_gpi(*loc)[0]
+            else:
+                gpi = loc
+
+            cell = self.grid.gpi2cell(gpi)
+            if cell not in gpis.keys():
+                gpis[cell] = []
+            else:
+                gpis[cell].append(gpi)
+
+        print(f'Read {len(locs)} locations in {len(list(gpis.keys()))} cells')
+
+        data = []
+
+        i = 0
+        for cell, cell_gpis in gpis.items():
+            for gpi in cell_gpis:
+                print(f'Reading loc {i} of {len(locs)}')
+                df = self.read(gpi)[[var]].rename(columns={var: gpi})
+                data.append(df)
+                i += 1
+
+        return pd.concat(data, axis=1)
 
 if __name__ == '__main__':
     from io_utils.read.geo_ts_readers import GeoMerra2Ts
     from io_utils.read.geo_ts_readers import GeoCCISMv4Ts
-    merrareader = GeoTsReader(GeoMerra2Ts,
-                reader_kwargs={'dataset': ('MERRA2', 'core'),
-                               'parameters': ['SFMC'],
-                               'ioclass_kws': {'read_bulk': True}},
-                resample=('1D', pd.DataFrame.mean), params_rename={'SFMC': 'MERRA2 SFMC'})
+    from datetime import datetime
+
 
     ccireader = GeoTsReader(GeoCCISMv4Ts,
                 reader_kwargs={'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
-                               'parameters': ['sm'],
+                               'parameters': ['sm', 'flag'],
+                               'exact_index': True,
                                'ioclass_kws': {'read_bulk': True}},
-                resample=('1D', pd.DataFrame.mean), params_rename={'sm': 'ESA CCI SM'})
+                selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
+                                 'column_name': 'flag'},
+                climadapter_kwargs={'columns': ['sm'],
+                                    'wraparound': True,
+                                    'timespan': [datetime(1991, 1, 1), datetime(2018, 12, 31)],
+                                    'moving_avg_clim': 30},
+                resample=('1D', 'mean'), params_rename={'sm': 'cci_sm'})
+    from io_utils.grid.grid_shp_adapter import GridShpAdapter
+    from smecv_grid.grid import SMECV_Grid_v052
+    adapter = GridShpAdapter(SMECV_Grid_v052('land'))
+    subgrid = adapter.create_subgrid(['Senegal']) # type: CellGrid
+    df = ccireader.read_multiple(var='cci_sm', locs=list(zip(subgrid.activearrlon,
+                                                             subgrid.activearrlat)))
+    print(df)
 
-    ts_merra = merrareader.read(46.375, 18.625)
-    ts_cci = ccireader.read(46.375, 18.625)
 
-    df = pd.concat([ts_merra, ts_cci], axis=1)
-    df_mean = df.rolling(30, min_periods=10).mean().dropna()
-
-    from pytesmo.scaling import scale
-    df_mean= scale(df_mean, 'mean_std', reference_index=1)
-
-    df_mean['$\Delta$(CAN,REF)'] = df_mean['ESA CCI SM'] - df_mean['MERRA2 SFMC']
-
-    df_mean = df_mean.loc['2007-01-01': '2018-12-31']
-    ax = df_mean.plot()
-    ax.hlines(0, df_mean.index[0], df_mean.index[-1])
-    ax.vlines('2012-07-01', -0.05, 0.17, color='red', linewidth=5)
-    from matplotlib.legend import _get_legend_handles
-    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
-               ncol=3, mode="expand", borderaxespad=0.)
+    # ccireader.read_multiple(var='sm', *zip(subgrid.activearrlon, subgrid.activearrlat))
+    # merrareader = GeoTsReader(GeoMerra2Ts,
+    #             reader_kwargs={'dataset': ('MERRA2', 'core'),
+    #                            'parameters': ['SFMC'],
+    #                            'ioclass_kws': {'read_bulk': True}},
+    #             resample=('1D', pd.DataFrame.mean),
+    #             params_rename={'SFMC': 'MERRA2 SFMC'})
+    #
+    # ts_merra = merrareader.read(46.375, 18.625)
+    # ts_cci = ccireader.read(46.375, 18.625)
+    #
+    # df = pd.concat([ts_merra, ts_cci], axis=1)
+    # df_mean = df.rolling(30, min_periods=10).mean().dropna()
+    #
+    # from pytesmo.scaling import scale
+    # df_mean= scale(df_mean, 'mean_std', reference_index=1)
+    #
+    # df_mean['$\Delta$(CAN,REF)'] = df_mean['ESA CCI SM'] - df_mean['MERRA2 SFMC']
+    #
+    # df_mean = df_mean.loc['2007-01-01': '2018-12-31']
+    # ax = df_mean.plot()
+    # ax.hlines(0, df_mean.index[0], df_mean.index[-1])
+    # ax.vlines('2012-07-01', -0.05, 0.17, color='red', linewidth=5)
+    # from matplotlib.legend import _get_legend_handles
+    # plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
+    #            ncol=3, mode="expand", borderaxespad=0.)

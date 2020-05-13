@@ -4,11 +4,12 @@ import functools
 
 import numpy as np
 import os
+import ast
 
 import pygeogrids as pgg
 from pygeogrids.netcdf import load_grid
 from smecv_grid.grid import SMECV_Grid_v052
-from io_utils.grid.continents_cells import read_cells_for_continent
+from io_utils.grid.grid_shp_adapter import GridShpAdapter
 
 '''
 Contains functions to process subsets of grid points. Works only for QDEG grid atm.
@@ -44,6 +45,45 @@ def fract_grid(grid):
 
     return dx, dy, lons, lats
 
+smecv52_5deg_cells = os.path.join(os.path.dirname(__file__), 'continents_grid_cells',
+                                  'SMECV_v052_land_cells')
+
+def read_cells_for_continent(continent, infile=smecv52_5deg_cells):
+    """
+    Read cells for passed continent(s) from a created text file.
+
+    Parameters
+    ----------
+    continent : str or list
+        One or multiple continents to read cells for.
+    infile: str, optional (default: CCI v5.2 5 deg cells)
+        Path to file to read
+
+    Returns
+    -------
+    ret_cells : list
+        Cells for the selected continent(s)
+    """
+    if isinstance(continent, str):
+        continent = [continent]
+
+    with open(infile, 'r') as f:
+        s = f.read()
+        cont_cells = ast.literal_eval(s)
+
+    if len(continent) > 0:
+        ret_cells = []
+        for k in continent:
+            if k not in cont_cells.keys():
+                raise ValueError('{} not found in list, choose one of: {}'.format(
+                    k, ', '.join(cont_cells.keys())))
+            else:
+                ret_cells += cont_cells[k]
+    else:
+        ret_cells = None
+
+    return ret_cells
+
 def grid_points_for_cells(areas_or_cells):
     '''
     Load the grid points on the grid for the passed area or cells
@@ -76,7 +116,7 @@ def grid_points_for_cells(areas_or_cells):
         grid_points += np.ndarray.tolist(grid.grid_points_for_cell(cells)[0])
     return np.array(grid_points)
 
-def cells_for_identifier(areas_or_cells, grid=SMECV_Grid_v052()):
+def cells_for_identifier(names, grid=SMECV_Grid_v052()):
     '''
     Return cell numbers for the passed areas (or cells)
 
@@ -91,21 +131,13 @@ def cells_for_identifier(areas_or_cells, grid=SMECV_Grid_v052()):
     cells: np.array
         List of cells on the selected grid
     '''
-    if isinstance(areas_or_cells, str):
-        if areas_or_cells.lower() == 'global':
-            cells = grid.get_cells().tolist()
+    if isinstance(names, str):
+        if names.lower() == 'global':
+            return grid.get_cells().tolist()
         else:
-            cells = read_cells_for_continent(areas_or_cells)
-    elif isinstance(areas_or_cells, list):
-        if all((isinstance(i, str) for i in areas_or_cells)):
-            cells = read_cells_for_continent(*areas_or_cells)
-        else:
-            cells = areas_or_cells
-    else:
-        raise ValueError(areas_or_cells, 'Unexpected input format')
-
-    return np.array(cells)
-
+            names = [names]
+    adp = GridShpAdapter(grid)
+    return adp.create_subgrid(names)
 
 def intersect_grids(grids, out_path=None):
     """

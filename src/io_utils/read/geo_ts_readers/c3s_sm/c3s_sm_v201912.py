@@ -5,7 +5,10 @@ Time series reader for C3S v201812 active, combined and passive data
 """
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.c3s_sm import base_reader
-from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201912 import path_settings
+try:
+    from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201912 import path_settings
+except ImportError:
+    path_settings = {}
 from datetime import datetime
 
 class GeoC3Sv201912Ts(base_reader.GeoC3STs):
@@ -27,22 +30,23 @@ class GeoC3Sv201912Ts(base_reader.GeoC3STs):
                        ('C3S', 'v201912', 'ACTIVE', 'DEKADAL', 'TCDR'),
                        ('C3S', 'v201912', 'PASSIVE', 'DEKADAL', 'TCDR')]
 
-    def __init__(self, dataset, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, force_path_group=None, **kwargs):
         """
         Parameters
         ----------
-        dataset : tuple
+        dataset : tuple or string
             e.g. ('C3S', 'v201812', 'COMBINED', 'TCDR')
         force_path_group : str, optional (default: None)
             Select a specific path group from the path config to read.
         kwargs :
             kwargs that are passed to load_path and to initialise the reader.
         """
-        if isinstance(dataset, list):
-            dataset = tuple(dataset)
+        if isinstance(dataset_or_path, list):
+            dataset_or_path = tuple(dataset_or_path)
 
-        self.dataset = tuple(dataset)
-        self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
+        self.dataset = dataset_or_path
+        path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
+        self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
         super(GeoC3Sv201912Ts, self).__init__(ts_path, **kwargs)

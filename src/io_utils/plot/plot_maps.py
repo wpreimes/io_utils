@@ -186,11 +186,12 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom',
         exteme_labels = True
 
     cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
-        extend=cb_extend, shrink=0.7, use_gridspec=True,
-        pad=0.07 if not exteme_labels else 0.08)
+                                     aspect=35 if cb_loc in ['top', 'bottom'] else 20,
+                                     extend=cb_extend, shrink=0.7, use_gridspec=True,
+                                     pad=0.07 if not exteme_labels else 0.08)
 
     cb = f.colorbar(im, cax=cax, **kw)
-    cb.ax.tick_params(labelsize=7)
+    cb.ax.tick_params(labelsize=int(cb_labelsize*0.66))
     if cb_n_ticks:
         tick_locator = ticker.MaxNLocator(nbins=cb_n_ticks)
         cb.locator = tick_locator
@@ -490,6 +491,9 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
         Add this text to the corner of the plot.
     show_cbar : bool, optional (default: True)
         Add visualization of the colorbar at the bottom
+    poly_masks : dict, optional (default: None)
+        shapes (keys) that are used and colors to fill them with or None as color
+        to mask everything BUT the masked data.
     -------------------------
     Optional keywords that are passed when making the colorbar
     -------------------------
@@ -528,8 +532,8 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     dy, dx = float(resxy[1]), float(resxy[0])
     offsetx, offsety = float(offset[0]), float(offset[1])
 
-    glob_lons = (np.arange(360 * int(1. / dx)) * dx) - (180. - (dx * offsetx))
-    glob_lats = (np.arange(180 * int(1. / dy)) * dy) - (90. - (dy * offsety))
+    glob_lons = (np.arange(360 * int(1. / dx), dtype=np.float32) * dx) - (180. - (dx * offsetx))
+    glob_lats = (np.arange(180 * int(1. / dy),  dtype=np.float32) * dy) - (90. - (dy * offsety))
 
     glob_lons, glob_lats = np.meshgrid(glob_lons, glob_lats)
 

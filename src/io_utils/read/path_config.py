@@ -15,25 +15,42 @@ class ConfigNotFoundError(ValueError):
 
 class PathConfig(object):
 
-    def __init__(self, dataset_name, path_config):
+    def __init__(self, dataset_name_or_path, path_config=None):
         """
 
         Parameters
         ----------
-        dataset_name : str or tuple
-            The name of the dataset that this config is valid for
+        dataset_name_or_path : tuple or str
+            The name of the dataset that this config is valid for (tuple) or
+            a single path to the data directly (string).
         path_config : OrderedDict
             Dict that holds the path information
         """
-        if isinstance(dataset_name, list):
-            dataset_name = tuple(dataset_name)
+        if isinstance(dataset_name_or_path, str):
+            print('No path config available, use path directly.')
+            self.pathdirect = True
+        else:
+            if isinstance(dataset_name_or_path, list):
+                dataset_name_or_path = tuple(dataset_name_or_path)
+            self.pathdirect = False
 
-        self.name = dataset_name
+        self.name_path = dataset_name_or_path
         self.config = path_config
         self.os = self._curr_os()
-        self._assert_path_config()
+
+        if not self.pathdirect:
+            self._assert_path_config()
+        else:
+            self._assert_path()
+
+    def _assert_path(self):
+        if not os.path.exists(self.name_path):
+            raise IOError('Passed path does not exist', self.name_path)
 
     def _assert_path_config(self):
+        if self.config is None:
+            raise IOError('Configuratin for paths not set, either add it, '
+                          'or pass a valid path')
         if not isinstance(self.config, OrderedDict):
             raise IOError('Configuration must be an ordered Dictionary')
         for group, ospaths in self.config.items():
@@ -74,6 +91,9 @@ class PathConfig(object):
             the folder was found).
 
         """
+        if self.pathdirect:
+            return self.name_path
+
         if ignore_path_groups is None:
             ignore_path_groups = []
 
@@ -82,7 +102,7 @@ class PathConfig(object):
             path = self._load_path_group(group)
             if path is not None and os.path.exists(path):
                 print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
-                    self.os, group, self.name, path))
+                    self.os, group, self.name_path, path))
             else:
                 raise ConfigNotFoundError('No configuration found for group {}'.
                                         format(group))
@@ -93,6 +113,6 @@ class PathConfig(object):
                     path = self._load_path_group(group)
                     if path is not None and os.path.exists(path):
                         print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
-                            self.os, group, self.name, path))
+                            self.os, group, self.name_path, path))
                         return path
             raise PathNotFoundError('None of the paths in the configuration were found')

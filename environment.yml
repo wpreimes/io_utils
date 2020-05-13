@@ -11,6 +11,7 @@ dependencies:
   - matplotlib
   - cartopy
   - gdal<=2.4.3
+  - geopandas
   - pip
   - pip:
     - pytesmo
@@ -23,6 +24,9 @@ dependencies:
     - pytest-cov
     - coverage==4.5.2
     - pytest==3.8.2
+    - Equi7Grid
+    - pytileproj
     - git+https://github.com/TUW-GEO/smecv-grid.git@master
     - git+https://github.com/TUW-GEO/veranda.git@master
+    - git+https://github.com/TUW-GEO/geopathfinder.git@master
     - git+https://github.com/TUW-GEO/yeoda.git@master

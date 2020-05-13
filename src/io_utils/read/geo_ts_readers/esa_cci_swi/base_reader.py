@@ -87,6 +87,6 @@ class GeoCCISWITs(CCISWITs):
         return cell_data
 
 if __name__ == '__main__':
-    ds = GeoCCISWITs(r'R:\Projects\G3P\07_data\SWI_CCI_04.7\SWI_CCI_v04.7_TS')
-    ts = ds.read(15,45)
+    ds = GeoCCISWITs(r'R:\Projects\G3P\07_data\SWI_CCI_v04.7_contUSA_TS')
+    ts = ds.read(-105,37)
     celldata = ds.read_cell_file(2244, 'SWI_005')

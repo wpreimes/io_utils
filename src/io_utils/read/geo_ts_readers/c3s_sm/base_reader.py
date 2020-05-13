@@ -26,7 +26,7 @@ class C3STs(GriddedNcOrthoMultiTs):
             grid_path = os.path.join(ts_path, "grid.nc")
 
         grid = nc.load_grid(grid_path)
-        super(C3STs, self).__init__(ts_path, grid, **kwargs)
+        super(C3STs, self).__init__(ts_path, grid, automask=True, **kwargs)
 
     def read(self, *args, **kwargs):
         df = super(C3STs, self).read(*args, **kwargs)
@@ -40,9 +40,9 @@ class GeoC3STs(C3STs):
 
     _col_fillvalues = {'sm': [-9999.0],
                        'sm_uncertainty': [-9999.0],
-                       _t0_ref[0]: [-3440586.5]}
+                       _t0_ref[0]: [-3440586.5, -9999.]}
 
-    def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
+    def __init__(self, ts_path, grid_path=None, exact_index=True, **kwargs):
         """
         Parameters
         ----------
@@ -53,8 +53,13 @@ class GeoC3STs(C3STs):
         kwargs :
             kwargs that are passed to load_path and to initialise the reader.
         """
-        super(GeoC3STs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
         self.exact_index = exact_index
+
+        super(GeoC3STs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
+
+        if (self.parameters is not None) and self.exact_index and \
+                (self._t0_ref[0] not in self.parameters):
+            self.parameters.append(self._t0_ref[0])
 
     def _replace_with_nan(self, df):
         """
@@ -81,8 +86,8 @@ class GeoC3STs(C3STs):
         return df
 
     def read(self, *args, **kwargs):
-        return self._replace_with_nan(
-            super(GeoC3STs, self).read(*args, **kwargs))
+        return self._add_time(self._replace_with_nan(
+            super(GeoC3STs, self).read(*args, **kwargs)))
 
     def read_cell_file(self, cell, var):
         """
@@ -129,5 +134,11 @@ if __name__ == '__main__':
     # ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
     # ds.read(15,45)
 
-    ds = GeoC3STs(r"R:\Datapool_processed\C3S\v201812\TCDR\063_images_to_ts\passive-monthly")
-    celldata = ds.read_cells([2244, 777])
+    ds_old = C3STs(r"R:\Datapool\C3S\02_processed\v201812\TCDR\063_images_to_ts\combined-daily")
+    ts_old = ds_old.read(659123).replace(-9999., np.nan)
+    ts_old['sm'].plot(style='.')
+
+    ds_new = C3STs(r"R:\Datapool\C3S\02_processed\v201912\TCDR\063_images_to_ts\combined-daily")
+    ts_new = ds_new.read(659123).replace(-9999., np.nan)
+    (ts_new['sm']+1).plot(style='.')
+

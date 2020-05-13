@@ -14,8 +14,11 @@ from io_utils.read.geo_ts_readers.c3s_sm import base_reader
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from datetime import datetime
-from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201706 import path_settings
 
+try:
+    from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201706 import path_settings
+except ImportError:
+    path_settings = {}
 
 class GeoC3Sv201706Ts(base_reader.GeoC3STs):
     # Reader implementation that uses the PATH configuration from above
@@ -36,16 +39,20 @@ class GeoC3Sv201706Ts(base_reader.GeoC3STs):
                        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'TCDR'),
                        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR')]
 
-    def __init__(self, dataset, exact_index=False, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None, **kwargs):
         """
         Parameters
         ----------
-        dataset : tuple
-            e.g. ('C3S', 'v201706', 'COMBINED', 'TCDR')
+        dataset : tuple or str
+            e.g. ('C3S', 'v201706', 'COMBINED', 'TCDR') or path as string
         kwargs
         """
-        self.dataset = tuple(dataset)
-        self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
+        if isinstance(dataset_or_path, list):
+            dataset_or_path = tuple(dataset_or_path)
+
+        self.dataset = dataset_or_path
+        path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
+        self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
         super(GeoC3Sv201706Ts, self).__init__(ts_path, **kwargs)
