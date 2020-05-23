@@ -111,13 +111,14 @@ def read_settings(settings_file, groups=None, override=None):
     for level, data in params.items():
         for i, v in data.items():
             if v == 'None': params[level][i] = None
-    for k, v in override.items():
-        for kv, vv in v.items():
-            try:
-                params[k][kv] = vv
-            except KeyError:
-                warnings.warn('Could not find line {} in group {} to override. Continue.'
-                             .format(k, kv))
+    if override is not None:
+        for k, v in override.items():
+            for kv, vv in v.items():
+                try:
+                    params[k][kv] = vv
+                except KeyError:
+                    warnings.warn('Could not find line {} in group {} to override. Continue.'
+                                 .format(k, kv))
 
     return params
 

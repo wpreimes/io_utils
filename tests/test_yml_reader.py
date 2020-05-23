@@ -6,10 +6,8 @@ import numpy as np
 import sys
 import io_utils.root_path as root_path
 import yaml
-import tempfile
 
 yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
-
 
 def test_read_yml():
     SPACES = spaceify(yml_path)
@@ -38,8 +36,8 @@ def test_override_yml_settings():
     settings = read_settings(yml_path, groups=['LEVEL1', 'A_LEVEL2'],
                              override={'A_LEVEL2':{'NOTHING': 1}})
     assert settings['A_LEVEL2']['NOTHING'] == 1
-    yaml.dump(settings, os.path.join(r"C:\Temp\yml_over",
-                                     'settings_overridden.yml'))
+
 
 if __name__ == '__main__':
     test_override_yml_settings()
+    test_read_yml()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from io_utils.grid.continents_cells import read_cells_for_continent
+from io_utils.grid.grid_functions import read_cells_for_continent
 
 
 def test_read_cells_for_continent():

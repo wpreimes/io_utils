@@ -12,7 +12,10 @@ Time series reader for CCI SM v03 data
 from io_utils.read.path_config import PathConfig
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GeoCCITs
 from datetime import datetime
-from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
+try:
+    from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
+except ImportError:
+    path_settings = {}
 
 class GeoCCISMv3Ts(GeoCCITs):
     # Reader implementation that uses the PATH configuration from above
@@ -30,14 +33,15 @@ class GeoCCISMv3Ts(GeoCCITs):
                        ('ESA_CCI_SM', 'v033', 'ACTIVE'),
                        ('ESA_CCI_SM', 'v033', 'PASSIVE')]
 
-    def __init__(self, dataset, exact_index=False, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None, **kwargs):
 
-        if isinstance(dataset, list):
-            dataset = tuple(dataset)
+        if isinstance(dataset_or_path, list):
+            dataset_or_path = tuple(dataset_or_path)
 
-        self.dataset = dataset
+        self.dataset = dataset_or_path
 
-        self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
+        path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
+        self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
         super(GeoCCISMv3Ts, self).__init__(ts_path, **kwargs)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from io_utils.grid.continents_cells import CountryShpReader, GridShpAdapter
-from io_utils.grid.continents_cells import read_cells_for_continent
+from io_utils.grid.grid_functions import read_cells_for_continent
+from io_utils.grid.grid_shp_adapter import CountryShpReader, GridShpAdapter
 from smecv_grid.grid import SMECV_Grid_v042
 import os
 import io_utils.root_path as root_path

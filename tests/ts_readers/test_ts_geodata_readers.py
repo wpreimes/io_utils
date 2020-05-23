@@ -18,7 +18,7 @@ def print_test_config(dataset, path_group=None):
 def test_cciswi_v047_reader(verbose=False):
     if verbose: print('Test reading CCI47 SWI from storage.')
     vers = 'v047'
-    reader = GeoCCISWIv4Ts(dataset=('ESA_CCI_SWI', vers),
+    reader = GeoCCISWIv4Ts(dataset_or_path=('ESA_CCI_SWI', vers),
                           ioclass_kws={'read_bulk': True},
                           parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
                           scale_factors={'SWI_001': 1.})
@@ -32,7 +32,7 @@ def test_cci_v045_reader(verbose=False):
     if verbose: print('Test reading CCI45, Combined, passive from storage.')
     vers = 'v045'
     for prod in ['COMBINED', 'ACTIVE', 'PASSIVE']:
-        reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, prod),
+        reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, prod),
                               exact_index=True,
                               ioclass_kws={'read_bulk': True},
                               parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
@@ -48,7 +48,7 @@ def test_cci_v044_reader(verbose=False):
     for prod in ['COMBINED', 'ACTIVE', 'PASSIVE']:
         dataset = ('ESA_CCI_SM', vers, prod)
         if verbose: print_test_config(dataset)
-        reader = GeoCCISMv4Ts(dataset=dataset,
+        reader = GeoCCISMv4Ts(dataset_or_path=dataset,
                               exact_index=True,
                               ioclass_kws={'read_bulk': True},
                               parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
@@ -81,7 +81,7 @@ def test_era5land_snow_reader(verbose=False):
 def test_eraint_reader(verbose=False):
     dataset = ('ERAINT-Land', 'GBG4', 'core')
     if verbose: print_test_config(dataset)
-    reader = GeoEraIntGBG4Ts(dataset=dataset,
+    reader = GeoEraIntGBG4Ts(dataset_or_path=dataset,
                            ioclass_kws={'read_bulk': True},
                            parameters=['39'], scale_factors={'39': 1.})
     ts = reader.read(*test_loc)
@@ -108,7 +108,7 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'COMBINED', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
@@ -117,7 +117,7 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'ACTIVE', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
@@ -126,7 +126,7 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'PASSIVE', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
@@ -139,7 +139,7 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -149,7 +149,7 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'ACTIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -159,7 +159,7 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset=dataset,
+    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -172,7 +172,7 @@ def test_SMAP_spl3_v6_reader(verbose=False):
     dataset = ('SMAP', 'SP3SMPv6', 'ASC')
     if verbose: print_test_config(dataset)
 
-    smap_reader = GeoSMAPTs(dataset=dataset,
+    smap_reader = GeoSMAPTs(dataset_or_path=dataset,
                          ioclass_kws={'read_bulk': True},
                          parameters=['soil_moisture', 'retrieval_qual_flag'],
                          scale_factors={'soil_moisture_pm': 1.})
@@ -186,7 +186,7 @@ def test_SMAP_spl3_v6_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_gldas20_ts_reader(verbose=False):
     dataset = ('GLDAS20', 'core')
-    reader = GeoGLDAS20Ts(dataset=dataset,
+    reader = GeoGLDAS20Ts(dataset_or_path=dataset,
                           ioclass_kws={'read_bulk': True},
                           parameters=['SoilMoi0_10cm_inst'], scale_factors=None)
     ts = reader.read(*test_loc)
@@ -196,9 +196,9 @@ def test_gldas20_ts_reader(verbose=False):
 
 @pytest.mark.geo_test_data
 @pytest.mark.parametrize('mode', ['ASC', 'DESC'])
-def test_amsr2lprm_ts_reader(mode='ASC', verbose=False):
+def test_amsr2lprm_ts_reader(mode, verbose=False):
     dataset = ('AMSR2', 'LPRM', 'v6', mode)
-    reader = GeoAmsr2LPRMv6Ts(dataset=dataset,
+    reader = GeoAmsr2LPRMv6Ts(dataset_or_path=dataset,
                               ioclass_kws={'read_bulk': True},
                               parameters=['SM_069'], scale_factors=None)
     ts = reader.read(*test_loc)
@@ -208,16 +208,16 @@ def test_amsr2lprm_ts_reader(mode='ASC', verbose=False):
 
 if __name__ == '__main__':
     v = True
-    #test_amsr2lprm_ts_reader(verbose=v)
-    #test_cciswi_v047_reader(v)
-    # test_SMAP_spl3_v6_reader(v)
-    # test_gldas20_ts_reader(v)
-    # test_cci_v045_reader(v)
-    # test_cci_v044_reader(v)
-    # test_era5land_merged_reader(v)
-    # test_era5land_snow_reader(v)
-    # test_eraint_reader(v)
-    # test_C3S201706_combined_readers(v)
-    # test_C3S201912_single_monthly_readers(v)
-    # test_C3S201912_single_daily_readers(v)
+    test_amsr2lprm_ts_reader(verbose=v)
+    test_cciswi_v047_reader(v)
+    test_SMAP_spl3_v6_reader(v)
+    test_gldas20_ts_reader(v)
+    test_cci_v045_reader(v)
+    test_cci_v044_reader(v)
+    test_era5land_merged_reader(v)
+    test_era5land_snow_reader(v)
+    test_eraint_reader(v)
+    test_C3S201706_combined_readers(v)
+    test_C3S201912_single_monthly_readers(v)
+    test_C3S201912_single_daily_readers(v)
 

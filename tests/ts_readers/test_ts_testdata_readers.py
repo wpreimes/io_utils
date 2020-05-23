@@ -9,7 +9,7 @@ test_loc = (-155.875, 19.625)
 
 def test_smosic_reader():
     force_path_group = '__test'
-    smos_reader = GeoSMOSICTs(dataset=('SMOS', 'IC', 'ASC'),
+    smos_reader = GeoSMOSICTs(dataset_or_path=('SMOS', 'IC', 'ASC'),
                               ioclass_kws={'read_bulk': True},
                               parameters=['Soil_Moisture', 'Quality_Flag'],
                               scale_factors={'sm': 1.},
@@ -22,7 +22,7 @@ def test_smosic_reader():
 
 def test_smap_spl3_v5_reader():
     force_path_group = '__test'
-    smap_reader = GeoSMAPTs(dataset=('SMAP', 'SP3SMPv5', 'ASC'),
+    smap_reader = GeoSMAPTs(dataset_or_path=('SMAP', 'SP3SMPv5', 'ASC'),
                          ioclass_kws={'read_bulk': True},
                          parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
                          scale_factors={'soil_moisture_pm': 1.},
@@ -38,7 +38,7 @@ def test_cci_v033_reader():
     force_path_group = '__test'
 
     ## == active
-    reader = GeoCCISMv3Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -51,7 +51,7 @@ def test_cci_v033_reader():
     assert not ts.empty
 
     ## == combined
-    reader = GeoCCISMv3Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+    reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -64,7 +64,7 @@ def test_cci_v033_reader():
     assert not ts.empty
 
     ## == passive
-    reader = GeoCCISMv3Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+    reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -82,7 +82,7 @@ def test_cci_v045_reader():
     vers = 'v045'
     force_path_group = '__test'
     ## == active
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -96,7 +96,7 @@ def test_cci_v045_reader():
     assert ts.empty
 
     ## == combined
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -108,7 +108,7 @@ def test_cci_v045_reader():
     assert not ts.empty
 
     ## == passive
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -126,7 +126,7 @@ def test_cci_v044_reader():
     force_path_group = '__test'
 
     ## == active
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -140,7 +140,7 @@ def test_cci_v044_reader():
     assert ts.empty
 
     ## == combined
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -152,7 +152,7 @@ def test_cci_v044_reader():
     assert not ts.empty
 
     ## == passive
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -170,7 +170,7 @@ def test_cci_v047_reader():
     force_path_group = '__test'
 
     ## == active
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -184,7 +184,7 @@ def test_cci_v047_reader():
     assert ts.empty
 
     ## == combined
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -196,7 +196,7 @@ def test_cci_v047_reader():
     assert not ts.empty
 
     ## == passive
-    reader = GeoCCISMv4Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -214,7 +214,7 @@ def test_cci_v052_reader():
     force_path_group = '__test'
 
     ## == active
-    reader = GeoCCISMv5Ts(dataset=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -228,7 +228,7 @@ def test_cci_v052_reader():
     assert ts.empty
 
     ## == combined
-    reader = GeoCCISMv5Ts(dataset=('ESA_CCI_SM', vers, 'COMBINED'),
+    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -240,7 +240,7 @@ def test_cci_v052_reader():
     assert not ts.empty
 
     ## == passive
-    reader = GeoCCISMv5Ts(dataset=('ESA_CCI_SM', vers, 'PASSIVE'),
+    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
@@ -256,7 +256,7 @@ def test_cci_v052_reader():
 
 def test_era5_reader():
     force_path_group = '__test'
-    reader = GeoEra5Ts(dataset=('ERA5', 'core'),
+    reader = GeoEra5Ts(dataset_or_path=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
                        parameters=['swvl1'], scale_factors={'swvl1': 1.},
                        force_path_group=force_path_group)
@@ -275,7 +275,7 @@ def test_C3S201706_single_readers():
     force_path_group = '__test'
     for record in ['TCDR', 'ICDR']:
         dataset = 'ACTIVE'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
+        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -283,7 +283,7 @@ def test_C3S201706_single_readers():
         assert not ts.dropna(how='all').empty
 
         dataset = 'COMBINED'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
+        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -291,7 +291,7 @@ def test_C3S201706_single_readers():
         assert not ts.dropna(how='all').empty
 
         dataset = 'PASSIVE'
-        reader = GeoC3Sv201706Ts(dataset=('C3S', 'v201706', dataset, 'DAILY', record),
+        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
             grid_path=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
@@ -301,7 +301,7 @@ def test_C3S201706_single_readers():
 
 def test_C3S201812_single_readers():
     force_path_group = '__test'
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -310,7 +310,7 @@ def test_C3S201812_single_readers():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'COMBINED', 'DAILY', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'COMBINED', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -320,7 +320,7 @@ def test_C3S201812_single_readers():
     #print(ts)
 
     # no data for the passive c3s there
-    reader = GeoC3Sv201812Ts(dataset=('C3S', 'v201812', 'PASSIVE', 'DAILY', 'TCDR'),
+    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'PASSIVE', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -332,7 +332,7 @@ def test_C3S201812_single_readers():
 def test_C3S201912_single_readers():
     force_path_group = '__test'
 
-    reader = GeoC3Sv201912Ts(dataset=('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
+    reader = GeoC3Sv201912Ts(dataset_or_path=('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
         grid_path=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
@@ -343,7 +343,7 @@ def test_C3S201912_single_readers():
 
 def test_merra2_ts_reader():
     force_path_group = '__test'
-    reader = GeoMerra2Ts(dataset=('MERRA2', 'core'),
+    reader = GeoMerra2Ts(dataset_or_path=('MERRA2', 'core'),
                          ioclass_kws={'read_bulk': True},
                          parameters=['SFMC'], scale_factors={'SFMC': 100.},
                          force_path_group=force_path_group)
@@ -364,7 +364,7 @@ def test_era5_land_ts_reader():
 
 def test_era5_ts_reader():
     force_path_group = '__test'
-    reader = GeoEra5Ts(dataset=('ERA5', 'core'),
+    reader = GeoEra5Ts(dataset_or_path=('ERA5', 'core'),
                        ioclass_kws={'read_bulk': True},
                        parameters=['swvl1', 'stl1'], scale_factors={'swvl1': 100.},
                        force_path_group=force_path_group)
@@ -375,7 +375,7 @@ def test_era5_ts_reader():
 
 def test_gldas21_ts_reader():
     force_path_group = '__test'
-    reader = GeoGLDAS21Ts(dataset=('GLDAS21', 'core'),
+    reader = GeoGLDAS21Ts(dataset_or_path=('GLDAS21', 'core'),
                           ioclass_kws={'read_bulk': True},
                           parameters=['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                           scale_factors={'SoilMoi0_10cm_inst': 0.01},
@@ -423,27 +423,27 @@ def test_ismn_good_sm_ts_reader_no_masking():
 
 
 if __name__ == '__main__':
-    # test_ismn_good_sm_ts_reader_masking()
-    # test_ismn_good_sm_ts_reader_no_masking()
-    #
-    # test_smap_spl3_v5_reader()
-    # test_smosic_reader()
-    # test_era5_land_ts_reader()
-    # test_era5_ts_reader()
-    #
-    # test_cci_v033_reader()
-    # test_cci_v044_reader()
-    # test_cci_v045_reader()
-    # test_cci_v052_reader()
-    #
-    # test_merra2_ts_reader()
-    #
+    test_ismn_good_sm_ts_reader_masking()
+    test_ismn_good_sm_ts_reader_no_masking()
+
+    test_smap_spl3_v5_reader()
+    test_smosic_reader()
+    test_era5_land_ts_reader()
+    test_era5_ts_reader()
+
+    test_cci_v033_reader()
+    test_cci_v044_reader()
+    test_cci_v045_reader()
+    test_cci_v052_reader()
+
+    test_merra2_ts_reader()
+
     test_C3S201706_single_readers()
     test_C3S201812_single_readers()
     test_C3S201912_single_readers()
-    #
-    # test_gldas21_ts_reader()
-    #
-    # test_era5_reader()
+
+    test_gldas21_ts_reader()
+
+    test_era5_reader()
 
 

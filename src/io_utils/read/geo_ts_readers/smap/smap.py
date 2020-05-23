@@ -5,9 +5,13 @@ Time series reader for SMAP SM data
 """
 
 from io_utils.read.path_config import PathConfig
+
 from io_utils.read.geo_ts_readers.smap.base_reader import SMAPTs
-from io_utils.path_configs.smap.paths_smap import path_settings
 from collections import OrderedDict
+try:
+    from io_utils.path_configs.smap.paths_smap import path_settings
+except ImportError:
+    path_settings = {}
 
 class GeoSMAPTs(SMAPTs):
     # Reader implementation that uses the PATH configuration from above
@@ -17,13 +21,15 @@ class GeoSMAPTs(SMAPTs):
                        ('SMAP', 'SP3SMPv6', 'ASC'),
                        ('SMAP', 'SP3SMPv6', 'DES')]
 
-    def __init__(self, dataset, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, force_path_group=None, **kwargs):
 
-        if isinstance(dataset, list):
-            dataset = tuple(dataset)
+        if isinstance(dataset_or_path, list):
+            dataset_or_path = tuple(dataset_or_path)
 
-        self.dataset = dataset
-        self.path_config = PathConfig(self.dataset, path_settings[self.dataset])
+        self.dataset = dataset_or_path
+
+        path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
+        self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
         super(GeoSMAPTs, self).__init__(ts_path, **kwargs)
 

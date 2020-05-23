@@ -15,7 +15,7 @@ def test_sat_data():
     Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
     sm anomalies based on 1991-2010 clim.
     """
-    reader_kwargs = {'dataset': ('ESA_CCI_SM', 'v047', 'COMBINED'),
+    reader_kwargs = {'dataset_or_path': ('ESA_CCI_SM', 'v047', 'COMBINED'),
                      'force_path_group': 'radar',
                      'exact_index': True,
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
@@ -31,7 +31,8 @@ def test_sat_data():
     params_rename = {'sm': 'esa_cci_sm'}
 
     fancyreader = GeoTsReader(GeoCCISMv4Ts, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, params_rename)
+                              climadapter_kwargs, resample, filter_months=None,
+                              params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
 
@@ -47,7 +48,7 @@ def test_model_data():
     Read GLDAS 21 Sm and temp data, mask based on frozen soil and create
     sm anomalies based on 2000-2010 clim.
     """
-    reader_kwargs = {'dataset': ('GLDAS21', 'core'),
+    reader_kwargs = {'dataset_or_path': ('GLDAS21', 'core'),
                      'force_path_group' : 'radar',
                      'parameters': ['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                      'ioclass_kws': {'read_bulk': True}}
@@ -63,7 +64,8 @@ def test_model_data():
     params_rename = {'SoilMoi0_10cm_inst': 'sm', 'SoilTMP0_10cm_inst': 'tmp'}
 
     fancyreader = GeoTsReader(GeoGLDAS21Ts, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, params_rename)
+                              climadapter_kwargs, resample, filter_months=None,
+                              params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
 
@@ -78,7 +80,7 @@ def test_insitu_data():
     Read GLDAS 21 Sm and temp data, mask based on frozen soil and create
     sm anomalies based on 2000-2010 clim.
     """
-    reader_kwargs = {'dataset': ('ISMN', 'v20191211'),
+    reader_kwargs = {'dataset_or_path': ('ISMN', 'v20191211'),
                      'network': 'COSMOS',
                      'force_path_group': '__test',
                      'parameters': ['soil moisture', 'flag']}
@@ -95,12 +97,13 @@ def test_insitu_data():
 
 
     fancyreader = GeoTsReader(GeoISMNTs, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, params_rename)
-    fancyreader.reader.reset_python_metadata()
+                              climadapter_kwargs, resample, filter_months=None,
+                              params_rename=params_rename)
+    fancyreader.base_reader.reset_python_metadata()
 
-    nearest, dist = fancyreader.reader.find_nearest_station(-155.5, 19.9,
+    nearest, dist = fancyreader.base_reader.find_nearest_station(-155.5, 19.9,
                                                             return_distance=True)
-    ids = fancyreader.reader.get_dataset_ids('soil moisture',
+    ids = fancyreader.base_reader.get_dataset_ids('soil moisture',
                                              min_depth=0, max_depth=0.17)
     ts = fancyreader.read(ids[0]) # read and mask
     assert all(ts['soil moisture_flag'].values == 'G')
@@ -109,7 +112,7 @@ def test_insitu_data():
 
 
 if __name__ == '__main__':
-    #test_model_data()
-    #test_sat_data()
+    test_model_data()
+    test_sat_data()
     test_insitu_data()
 
