@@ -15,6 +15,7 @@ try:
     from io_utils.path_configs.c3s_sm.paths_c3s_sm_v201812 import path_settings
 except ImportError:
     path_settings = {}
+
 from datetime import datetime
 
 class GeoC3Sv201812Ts(base_reader.GeoC3STs):

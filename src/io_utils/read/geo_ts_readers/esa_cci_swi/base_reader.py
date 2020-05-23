@@ -87,6 +87,10 @@ class GeoCCISWITs(CCISWITs):
         return cell_data
 
 if __name__ == '__main__':
-    ds = GeoCCISWITs(r'R:\Projects\G3P\07_data\SWI_CCI_v04.7_contUSA_TS')
-    ts = ds.read(-105,37)
-    celldata = ds.read_cell_file(2244, 'SWI_005')
+    ds = GeoCCISWITs(r'R:\Projects\G3P\07_data\SWI\SWI_CCI_v04.7_contUSA_TS')
+    for offsetx in [0.,0.25,-0.25]:
+        for offsety in [0.,0.25,-0.25]:
+            loc = (-119.875+offsetx, 43.625+offsety)
+            ts = ds.read(*loc)
+            print(loc)
+            print(ts.loc['2011-06-13', 'SSM'])

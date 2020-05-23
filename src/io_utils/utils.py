@@ -17,7 +17,32 @@ from pprint import pprint
 import numpy as np
 import pandas as pd
 from matplotlib.dates import date2num
+from pygeogrids.grids import CellGrid
+from io_utils.grid.grid_shp_adapter import GridShpAdapter
 
+def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array:
+
+    if not isinstance(ref_grid, CellGrid):
+        ref_grid = ref_grid.to_cell_grid(5.)
+
+    if isinstance(cells_identifier, str) and \
+            cells_identifier.lower() == 'global':
+        cells = split_cells_gpi_equal(ref_grid.get_cells(),
+                                      n=n_proc, grid=ref_grid)
+    else:
+        if isinstance(cells_identifier, str):
+            cells_identifier = [cells_identifier]
+
+        if isinstance(cells_identifier[0], int):
+            cells = split_cells_gpi_equal(cells_identifier, n=n_proc,
+                                          grid=ref_grid)
+        else:
+            adapter = GridShpAdapter(ref_grid)
+            ref_grid = adapter.create_subgrid(cells_identifier)
+            cells = split_cells_gpi_equal(ref_grid.get_cells(),
+                                          n=n_proc, grid=ref_grid)
+
+    return ref_grid, cells
 
 def safe_arange(start, stop, step):
     f_step = (1. / float(step))

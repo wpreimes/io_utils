@@ -4,7 +4,10 @@
 Collects all the GeoTsReaders that have a path implementation and work in the
 same way.
 """
+import warnings
 
+# LPRM readers
+from io_utils.read.geo_ts_readers.amsr2.amsr2_lprm import *
 # CCI SWI readers
 from io_utils.read.geo_ts_readers.esa_cci_swi.esa_cci_swi_v04 import *
 
@@ -39,5 +42,8 @@ from io_utils.read.geo_ts_readers.smap.smap import *
 # ISMN version readers
 from io_utils.read.geo_ts_readers.ismn.ismn_sm import *
 
-# SCATSAR raders
-from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_cgls_equi7 import *
+try:
+    # SCATSAR reading uses many other packages, therefore it's optional here
+    from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_cgls_equi7 import *
+except ImportError:
+    warnings.warn('Could not import SAR reader')

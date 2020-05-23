@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-from io_utils.yml.read import spaceify
+from io_utils.yml.read import spaceify, read_settings
 import numpy as np
 import sys
 import io_utils.root_path as root_path
+import yaml
+import tempfile
 
-def test_read():
-    yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
+yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
+
+
+def test_read_yml():
     SPACES = spaceify(yml_path)
 
     LEVEL1 = SPACES[0]
@@ -30,5 +34,12 @@ def test_read():
     assert(OTHER.TEST_DICT == {'one':1})
     assert(OTHER.TEST_LIST == [1,2,3])
 
+def test_override_yml_settings():
+    settings = read_settings(yml_path, groups=['LEVEL1', 'A_LEVEL2'],
+                             override={'A_LEVEL2':{'NOTHING': 1}})
+    assert settings['A_LEVEL2']['NOTHING'] == 1
+    yaml.dump(settings, os.path.join(r"C:\Temp\yml_over",
+                                     'settings_overridden.yml'))
+
 if __name__ == '__main__':
-    test_read()
+    test_override_yml_settings()

@@ -42,7 +42,7 @@ class GeoC3STs(C3STs):
                        'sm_uncertainty': [-9999.0],
                        _t0_ref[0]: [-3440586.5, -9999.]}
 
-    def __init__(self, ts_path, grid_path=None, exact_index=True, **kwargs):
+    def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
         """
         Parameters
         ----------

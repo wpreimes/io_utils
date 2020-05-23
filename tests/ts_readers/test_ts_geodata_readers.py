@@ -6,7 +6,6 @@ readers will use the shared datapool.
 """
 
 import pytest
-import matplotlib.pyplot as plt
 from io_utils.read.geo_ts_readers import *
 test_loc = (15, 45)
 
@@ -195,10 +194,22 @@ def test_gldas20_ts_reader(verbose=False):
     assert not ts.dropna(how='all').empty
     # print(ts)
 
+@pytest.mark.geo_test_data
+@pytest.mark.parametrize('mode', ['ASC', 'DESC'])
+def test_amsr2lprm_ts_reader(mode='ASC', verbose=False):
+    dataset = ('AMSR2', 'LPRM', 'v6', mode)
+    reader = GeoAmsr2LPRMv6Ts(dataset=dataset,
+                              ioclass_kws={'read_bulk': True},
+                              parameters=['SM_069'], scale_factors=None)
+    ts = reader.read(*test_loc)
+    if verbose: print(ts)
+    assert not ts.dropna(how='all').empty
+
 
 if __name__ == '__main__':
     v = True
-    test_cciswi_v047_reader(v)
+    #test_amsr2lprm_ts_reader(verbose=v)
+    #test_cciswi_v047_reader(v)
     # test_SMAP_spl3_v6_reader(v)
     # test_gldas20_ts_reader(v)
     # test_cci_v045_reader(v)

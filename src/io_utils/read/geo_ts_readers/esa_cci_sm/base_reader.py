@@ -69,9 +69,9 @@ class GeoCCITs(CCITs):
     def _add_time(self, df):
         t0 = self._t0_ref[0]
         if t0 in df.columns:
-            dt = pd.to_timedelta(df[t0], unit='d')
-            df['t0'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
             if self.exact_index:
+                dt = pd.to_timedelta(df[t0], unit='d')
+                df['t0'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
                 df = df.set_index('t0')
                 df = df[df.index.notnull()]
 

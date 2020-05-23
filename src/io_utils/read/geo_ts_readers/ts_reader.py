@@ -190,9 +190,9 @@ if __name__ == '__main__':
 
 
     ccireader = GeoTsReader(GeoCCISMv4Ts,
-                reader_kwargs={'dataset': ('ESA_CCI_SM', 'v045', 'COMBINED'),
-                               'parameters': ['sm', 'flag'],
-                               'exact_index': True,
+                reader_kwargs={'dataset_or_path': ('ESA_CCI_SM', 'v045', 'COMBINED'),
+                               'parameters': ['sm', 'flag', 't0'],
+                               'exact_index': False,
                                'ioclass_kws': {'read_bulk': True}},
                 selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
                                  'column_name': 'flag'},

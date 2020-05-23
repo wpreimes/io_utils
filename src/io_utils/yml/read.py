@@ -14,9 +14,14 @@ import sys
 import importlib
 import os
 from argparse import Namespace
-from collections import OrderedDict
+import warnings
 
-def read_settings(settings_file, *args):
+def kwargs_to_csv(path, kwargs):
+    with open(os.path.join(path, 'proc_override_kwargs.csv'), 'w') as f:
+        for key, v in kwargs.items():
+            f.write("%s,%s\n" % (key, kwargs[key]))
+
+def read_settings(settings_file, groups=None, override=None):
     """
     Parser for reading settings from the settings-yaml file.
     Parse <OS-identifiers> and <PATH> automatically to return correct path strings
@@ -26,8 +31,14 @@ def read_settings(settings_file, *args):
     -------
     settings_file : str
         Path to the settings yml file to read
-    args: str
+    groups: liss
         Name(s) of parameter groups to read. If none are passed, all are read.
+    override : dict of dicts
+        Keys and values that are replaced from the loaded file
+        First key is the group, second key the group element, value the new
+        values for that element
+    out_path : str, optional (default: None)
+        A place where the loaded and overridden file is dumped to.
 
     Returns
     -------
@@ -92,14 +103,21 @@ def read_settings(settings_file, *args):
         cfg[level] = new_data
 
     params = {}
-    if not args:
-        args = cfg.keys()
-    for arg in args: params.update({arg: cfg[arg]})
+    if not groups:
+        groups = cfg.keys()
+    for group in groups: params.update({group: cfg[group]})
 
     # replace some elements
     for level, data in params.items():
         for i, v in data.items():
             if v == 'None': params[level][i] = None
+    for k, v in override.items():
+        for kv, vv in v.items():
+            try:
+                params[k][kv] = vv
+            except KeyError:
+                warnings.warn('Could not find line {} in group {} to override. Continue.'
+                             .format(k, kv))
 
     return params
 
@@ -141,3 +159,5 @@ def spaceify(settings, *sections):
         return nspacs[0]
     else:
         return tuple(nspacs)
+
+
