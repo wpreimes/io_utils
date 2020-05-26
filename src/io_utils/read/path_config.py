@@ -49,7 +49,7 @@ class PathConfig(object):
 
     def _assert_path_config(self):
         if self.config is None:
-            raise IOError('Configuratin for paths not set, either add it, '
+            raise IOError('Configuration for paths not set, either add it, '
                           'or pass a valid path')
         if not isinstance(self.config, OrderedDict):
             raise IOError('Configuration must be an ordered Dictionary')

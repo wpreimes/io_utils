@@ -13,7 +13,7 @@ try:
 except ImportError:
     path_settings = {}
 
-class GeoSMAPTs(SMAPTs):
+class GeoSpl3smpTs(SMAPTs):
     # Reader implementation that uses the PATH configuration from above
 
     _ds_implemented = [('SMAP', 'SP3SMPv5', 'ASC'),
@@ -31,7 +31,7 @@ class GeoSMAPTs(SMAPTs):
         path_config = path_settings[self.dataset] if self.dataset in path_settings.keys() else None
         self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
-        super(GeoSMAPTs, self).__init__(ts_path, **kwargs)
+        super(GeoSpl3smpTs, self).__init__(ts_path, **kwargs)
 
     def read_cells(self, cells):
         cell_data = OrderedDict()
@@ -42,4 +42,4 @@ class GeoSMAPTs(SMAPTs):
         return cell_data
 
 # check if datasets in reader and in dict match
-assert sorted(list(path_settings.keys())) == sorted(GeoSMAPTs._ds_implemented)
+assert sorted(list(path_settings.keys())) == sorted(GeoSpl3smpTs._ds_implemented)

@@ -172,7 +172,7 @@ def test_SMAP_spl3_v6_reader(verbose=False):
     dataset = ('SMAP', 'SP3SMPv6', 'ASC')
     if verbose: print_test_config(dataset)
 
-    smap_reader = GeoSMAPTs(dataset_or_path=dataset,
+    smap_reader = GeoSpl3smpTs(dataset_or_path=dataset,
                          ioclass_kws={'read_bulk': True},
                          parameters=['soil_moisture', 'retrieval_qual_flag'],
                          scale_factors={'soil_moisture_pm': 1.})
@@ -195,12 +195,12 @@ def test_gldas20_ts_reader(verbose=False):
     # print(ts)
 
 @pytest.mark.geo_test_data
-@pytest.mark.parametrize('mode', ['ASC', 'DESC'])
+@pytest.mark.parametrize('mode', ['ASC', 'DES'])
 def test_amsr2lprm_ts_reader(mode, verbose=False):
     dataset = ('AMSR2', 'LPRM', 'v6', mode)
     reader = GeoAmsr2LPRMv6Ts(dataset_or_path=dataset,
                               ioclass_kws={'read_bulk': True},
-                              parameters=['SM_069'], scale_factors=None)
+                              parameters=['SM_069', 'MASK'], scale_factors=None)
     ts = reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty

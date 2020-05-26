@@ -85,7 +85,7 @@ if __name__ == '__main__':
     ds = ScatSarCGLSReader(os.path.join("R:\Datapool", "SCATSAR", "02_processed", "CGLS", "C0418"),
                            tval=5)
     ts = ds.read(11.592313, 48.0013213)
-    ts.to_csv(r'C:\Temp\scatsartestts.csv')
+    #ts.to_csv(r'C:\Temp\scatsartestts.csv')
     print(ts)
     ts = ds.read(12.592313, 49.0013213)
     print(ts)

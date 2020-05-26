@@ -37,7 +37,7 @@ from io_utils.read.geo_ts_readers.merra.merra2 import *
 from io_utils.read.geo_ts_readers.smos.smos_ic import *
 
 ## SMAP version readers
-from io_utils.read.geo_ts_readers.smap.smap import *
+from io_utils.read.geo_ts_readers.smap.spl3smp import *
 
 # ISMN version readers
 from io_utils.read.geo_ts_readers.ismn.ismn_sm import *

@@ -18,7 +18,7 @@ class GeoAmsr2LPRMv6Ts(LPRMTs):
 
     # implememted subversion that have a set path configuration
     _ds_implemented = [('AMSR2', 'LPRM', 'v6', 'ASC'),
-                       ('AMSR2', 'LPRM', 'v6', 'DESC')]
+                       ('AMSR2', 'LPRM', 'v6', 'DES')]
 
     def __init__(self, dataset_or_path, exact_index=False, force_path_group=None, **kwargs):
 

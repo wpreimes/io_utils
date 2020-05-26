@@ -52,7 +52,7 @@ path_settings = \
                                          'a'),
                  }),
             ]),
-        ('AMSR2', 'LPRM', 'v6', 'DESC'):
+        ('AMSR2', 'LPRM', 'v6', 'DES'):
         # paths will be tried in this order, there is no limit to the potential pathes here
             OrderedDict([
                 ('local',

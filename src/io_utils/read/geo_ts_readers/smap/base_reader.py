@@ -7,6 +7,7 @@ Time Series Reader for the SMAP Time Series
 from pygeogrids.netcdf import load_grid
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
+import pandas as pd
 
 class SMAPTs(GriddedNcOrthoMultiTs):
     def __init__(self, ts_path=None, grid_path=None, **kwargs):

@@ -22,11 +22,11 @@ def test_smosic_reader():
 
 def test_smap_spl3_v5_reader():
     force_path_group = '__test'
-    smap_reader = GeoSMAPTs(dataset_or_path=('SMAP', 'SP3SMPv5', 'ASC'),
-                         ioclass_kws={'read_bulk': True},
-                         parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
-                         scale_factors={'soil_moisture_pm': 1.},
-                         force_path_group=force_path_group)
+    smap_reader = GeoSpl3smpTs(dataset_or_path=('SMAP', 'SP3SMPv5', 'ASC'),
+                               ioclass_kws={'read_bulk': True},
+                               parameters=['soil_moisture_pm', 'retrieval_qual_flag_pm'],
+                               scale_factors={'soil_moisture_pm': 1.},
+                               force_path_group=force_path_group)
     celldata = smap_reader.read_cells([165,166])
     assert any([not data.empty for gpi, data in celldata.items()])
     smap_reader = SelfMaskingAdapter(smap_reader, '!=', 999, 'retrieval_qual_flag_pm')
@@ -423,10 +423,12 @@ def test_ismn_good_sm_ts_reader_no_masking():
 
 
 if __name__ == '__main__':
+    test_smap_spl3_v5_reader()
+
+
     test_ismn_good_sm_ts_reader_masking()
     test_ismn_good_sm_ts_reader_no_masking()
 
-    test_smap_spl3_v5_reader()
     test_smosic_reader()
     test_era5_land_ts_reader()
     test_era5_ts_reader()

@@ -9,8 +9,6 @@ c3s_sm package.
 #---------
 # NOTES:
 #   -
-
-
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 from datetime import datetime, timedelta

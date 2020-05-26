@@ -8,13 +8,13 @@ Contains a combinatory plotter for e.g. creating difference plots.
 
 # NOTES # -
 
-from src.io_utils.plot.plot_maps import cp_map, cp_scatter_map
+from io_utils.plot.plot_maps import cp_map, cp_scatter_map
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
-from src.io_utils.write.reg_nc_image import ReadNcImg
+from io_utils.write.reg_nc_image import ReadNcImg
 
 
 class NcVarPlotter(ReadNcImg):

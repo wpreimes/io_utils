@@ -135,7 +135,7 @@ class GeoTsReader(object):
 
         return df
 
-    def read_multiple(self, locs, var='sm'):
+    def read_multiple(self, locs, var='sm', dtype='float32'):
         """
         Read a list of locations, either from gpis, from lonlats or from a grid.
         Applies all the filtering and conversion from the reader generation.
@@ -177,21 +177,26 @@ class GeoTsReader(object):
         for cell, cell_gpis in gpis.items():
             for gpi in cell_gpis:
                 print(f'Reading loc {i} of {len(locs)}')
-                df = self.read(gpi)[[var]].rename(columns={var: gpi})
-                data.append(df)
+                try:
+                    df = self.read(gpi)[[var]].rename(columns={var: gpi})
+                except:
+                    warnings.warn(f'Reading TS for GPI {gpi} failed. Continue.')
+                    continue
+                if not df.empty: data.append(df.astype(dtype))
                 i += 1
 
-        return pd.concat(data, axis=1)
+        data = pd.concat(data, axis=1, sort=True)
+        return data
 
 if __name__ == '__main__':
     from io_utils.read.geo_ts_readers import GeoMerra2Ts
-    from io_utils.read.geo_ts_readers import GeoCCISMv4Ts
+    from io_utils.read.geo_ts_readers import GeoC3Sv201912Ts
     from datetime import datetime
 
 
-    ccireader = GeoTsReader(GeoCCISMv4Ts,
-                reader_kwargs={'dataset_or_path': ('ESA_CCI_SM', 'v045', 'COMBINED'),
-                               'parameters': ['sm', 'flag', 't0'],
+    reader = GeoTsReader(GeoC3Sv201912Ts,
+                reader_kwargs={'dataset_or_path': ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR'),
+                               'parameters': ['sm', 'flag'],
                                'exact_index': False,
                                'ioclass_kws': {'read_bulk': True}},
                 selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
@@ -200,12 +205,12 @@ if __name__ == '__main__':
                                     'wraparound': True,
                                     'timespan': [datetime(1991, 1, 1), datetime(2018, 12, 31)],
                                     'moving_avg_clim': 30},
-                resample=('1D', 'mean'), params_rename={'sm': 'cci_sm'})
+                resample=None, params_rename={'sm': 'smc3s'})
     from io_utils.grid.grid_shp_adapter import GridShpAdapter
     from smecv_grid.grid import SMECV_Grid_v052
     adapter = GridShpAdapter(SMECV_Grid_v052('land'))
     subgrid = adapter.create_subgrid(['Senegal']) # type: CellGrid
-    df = ccireader.read_multiple(var='cci_sm', locs=list(zip(subgrid.activearrlon,
+    df = reader.read_multiple(var='cci_sm', locs=list(zip(subgrid.activearrlon,
                                                              subgrid.activearrlat)))
     print(df)
 
