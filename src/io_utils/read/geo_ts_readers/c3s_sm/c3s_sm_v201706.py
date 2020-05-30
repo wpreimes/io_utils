@@ -39,7 +39,8 @@ class GeoC3Sv201706Ts(base_reader.GeoC3STs):
                        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'TCDR'),
                        ('C3S', 'v201706', 'PASSIVE', 'DAILY', 'ICDR')]
 
-    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None,
+                 **kwargs):
         """
         Parameters
         ----------
@@ -105,8 +106,10 @@ if __name__ == '__main__':
     for record in ['TCDR', 'ICDR']:
         for dataset in ['COMBINED', 'ACTIVE', 'PASSIVE']:
             reader = GeoC3Sv201706Ts(
-                dataset=('C3S', 'v201706', dataset, record),
-                grid_path=None, ioclass_kws={'read_bulk': True},
+                dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
+                grid_path=None,
+                exact_index=True,
+                ioclass_kws={'read_bulk': True},
                 parameters=['sm', 'sm_uncertainty', 'flag'],
                 scale_factors={'sm': 100.})
             reader = SelfMaskingAdapter(reader, '==', 0, 'flag')

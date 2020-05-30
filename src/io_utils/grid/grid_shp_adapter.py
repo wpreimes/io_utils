@@ -168,4 +168,4 @@ if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052
     adapter = GridShpAdapter(SMECV_Grid_v052('land'))
     print(adapter)
-    adapter.create_subgrid(['Austria', 'Oceania'])
+    adapter.create_subgrid(['Morocco'])

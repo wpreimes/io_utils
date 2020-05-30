@@ -6,8 +6,13 @@ same way.
 """
 import warnings
 
-# LPRM readers
-from io_utils.read.geo_ts_readers.amsr2.amsr2_lprm import *
+# ASCAT readers
+from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_ssm import *
+
+# AMSR2 readers
+from io_utils.read.geo_ts_readers.amsr2.ccids_amsr2 import *
+from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
+
 # CCI SWI readers
 from io_utils.read.geo_ts_readers.esa_cci_swi.esa_cci_swi_v04 import *
 

@@ -39,7 +39,7 @@ def test_cci_v033_reader():
 
     ## == active
     reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=True,
+                          exact_index=False, # works only after 47
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -52,7 +52,7 @@ def test_cci_v033_reader():
 
     ## == combined
     reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -65,7 +65,7 @@ def test_cci_v033_reader():
 
     ## == passive
     reader = GeoCCISMv3Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -83,7 +83,7 @@ def test_cci_v045_reader():
     force_path_group = '__test'
     ## == active
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -97,7 +97,7 @@ def test_cci_v045_reader():
 
     ## == combined
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -109,7 +109,7 @@ def test_cci_v045_reader():
 
     ## == passive
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
@@ -127,9 +127,9 @@ def test_cci_v044_reader():
 
     ## == active
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
+                          parameters=['sm', 'sm_uncertainty'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -141,9 +141,9 @@ def test_cci_v044_reader():
 
     ## == combined
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
+                          parameters=['sm', 'sm_uncertainty'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -153,9 +153,9 @@ def test_cci_v044_reader():
 
     ## == passive
     reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=True,
+                          exact_index=False,
                           ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
+                          parameters=['sm', 'sm_uncertainty'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')

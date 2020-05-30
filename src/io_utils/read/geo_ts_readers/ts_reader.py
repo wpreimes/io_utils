@@ -9,11 +9,11 @@ Combines dataset config readers, adapters and some more features for all readers
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter
-import matplotlib.pyplot as plt
 import numpy as np
 from io_utils.utils import filter_months
 import warnings
 from collections import Iterable
+from pytesmo.validation_framework.adapters import BasicAdapter
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
@@ -38,7 +38,7 @@ class GeoTsReader(object):
         parameters : list
             A list of parameters that are read for the dataset
             e.g. ['sm', 'swvl1', 'flag']
-        selfmaskingadapter_kwargs : dict, optional (default: None)
+        selfmaskingadapter_kwargs : list, optional (default: None)
             Dictionary that provides options to create ONE SelfMaskingAdapter
             for the dataset. Thas is applied after reading the params.
             e.g. dict(op='==', threshold=0, column_name='flag')}
@@ -102,11 +102,18 @@ class GeoTsReader(object):
     def _adapt(self, reader):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
 
-        if self.selfmaskingadapter_kwargs is not None:
-            reader = SelfMaskingAdapter(reader, **self.selfmaskingadapter_kwargs)
+        if self.selfmaskingadapter_kwargs is None and self.climadapter_kwargs is None:
+            reader = BasicAdapter(reader)
+        else:
+            if self.selfmaskingadapter_kwargs is not None:
+                # Multiple self masking adapters are possible
+                if isinstance(self.selfmaskingadapter_kwargs, dict):
+                    self.selfmaskingadapter_kwargs = [self.selfmaskingadapter_kwargs]
+                for kwargs in self.selfmaskingadapter_kwargs:
+                    reader = SelfMaskingAdapter(reader, **kwargs)
 
-        if self.climadapter_kwargs is not None:
-            reader = AnomalyClimAdapter(reader, **self.climadapter_kwargs)
+            if self.climadapter_kwargs is not None:
+                reader = AnomalyClimAdapter(reader, **self.climadapter_kwargs)
 
         self.reader = reader
 
@@ -189,15 +196,12 @@ class GeoTsReader(object):
         return data
 
 if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers import GeoMerra2Ts
-    from io_utils.read.geo_ts_readers import GeoC3Sv201912Ts
     from datetime import datetime
-
-
+    from io_utils.read.geo_ts_readers import GeoC3Sv201912Ts
     reader = GeoTsReader(GeoC3Sv201912Ts,
                 reader_kwargs={'dataset_or_path': ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR'),
                                'parameters': ['sm', 'flag'],
-                               'exact_index': False,
+                               'exact_index': True,
                                'ioclass_kws': {'read_bulk': True}},
                 selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
                                  'column_name': 'flag'},

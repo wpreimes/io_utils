@@ -30,6 +30,7 @@ class GeoSMOSICTs(SMOSTs):
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
         super(GeoSMOSICTs, self).__init__(ts_path, **kwargs)
 
+
     def read_cells(self, cells):
         cell_data = OrderedDict()
         gpis, lons, lats = self.grid.grid_points_for_cell(list(cells))
@@ -40,3 +41,10 @@ class GeoSMOSICTs(SMOSTs):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoSMOSICTs._ds_implemented)
+
+if __name__ == '__main__':
+    path_new = ('SMOS', 'IC', 'DES')
+    ds = GeoSMOSICTs(path_new, exact_index=True)
+    ts = ds.read(131.125, -29.875)
+
+

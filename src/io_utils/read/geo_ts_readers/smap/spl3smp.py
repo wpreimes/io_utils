@@ -43,3 +43,9 @@ class GeoSpl3smpTs(SMAPTs):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoSpl3smpTs._ds_implemented)
+
+if __name__ == '__main__':
+    path = ('SMAP', 'SP3SMPv6', 'DES')
+    ds = GeoSpl3smpTs(path, exact_index=True)
+    ts = ds.read(-14,14)
+    print(ts)

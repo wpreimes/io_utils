@@ -420,11 +420,11 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     return f, imax, im
 
 def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
-           title=None, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
+           title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
            veg_mask=False, gridspace=(60,20), grid_label_loc='1001', style=None,
            ocean=False, land='grey', states=False, borders=False, scale_factor=1., watermark=None,
-           show_cbar=True, **cbar_kwargs):
+           show_cbar=True, ax=None, **cbar_kwargs):
 
     '''
     Plot data as an area on a map.
@@ -454,9 +454,13 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     title: str, optional (default: None)
         Title for the map.
     llc : tuple, optional (default: (-179.9999, -60.))
-        (lon, lat) : Coords of the lower left corner of the subset to plot
+        (lon, lat) : Coords of the lower left corner of the subset to plot,
+        or you can add a country name that we search in the country-bounding-boxes
+        package (todo: add feature)
     urc : tuple, optional (default: (179.9999, 80.))
         (lon, lat) : Coords of the upper right corner of the subset to plot
+        or you can add a country name that we search in the country-bounding-boxes
+        package
     flip_ud : bool, optional (default: False)
         Force flipping the data upside down before plotting it.
     cbrange : tuple, optional (default: (0,1))
@@ -566,11 +570,14 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     if flip_ud:
         img_masked = np.flipud(img_masked)
 
-    f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
 
     data_crs = ccrs.PlateCarree()
-
-    imax = plt.axes(projection=projection)
+    if ax is None:
+        f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
+        imax = plt.axes(projection=projection)
+    else:
+        f=None
+        imax = ax
 
     if ocean:
         imax.add_feature(cartopy.feature.OCEAN, zorder=0)
@@ -627,16 +634,29 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     #imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)
 
     if title:
-        imax.set_title(title, fontsize=10)
+        imax.set_title(title, fontsize=title_size)
         #f.suptitle(title, fontsize=10)
 
     if watermark:
         # todo: add text to plot corner
         raise NotImplementedError
-    if show_cbar:
+    if show_cbar and f is not None:
         map_add_cbar(f, imax, im, **cbar_kwargs)
     else:
         plt.tight_layout(pad=3)
 
 
     return f, imax, im
+
+
+if __name__ == '__main__':
+    from smecv_grid.grid import SMECV_Grid_v052
+    gpis, lons, lats = SMECV_Grid_v052('land').grid_points_for_cell(2244)
+    data = pd.DataFrame(index=[lons, lats], data={'var': np.random.rand(len(gpis))})
+
+    subplot_kw = {'projection': ccrs.Orthographic(-80, 35)}
+    fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(10, 7),
+                           subplot_kw={'projection': ccrs.Robinson()})
+    llc, urc = [(113.338953078, -43.6345972634), (153.569469029, -10.6681857235)]
+    cp_map(data, 'var', ax=ax[0], llc=llc, urc=urc)
+    cp_map(data, 'var', ax=ax[1], llc=llc, urc=urc)

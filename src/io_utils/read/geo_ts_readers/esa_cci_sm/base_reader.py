@@ -12,107 +12,49 @@ Reader for the ESA CCI SM time series data of different versions
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
-from datetime import datetime, timedelta
-import pandas as pd
 from collections import OrderedDict
-import numpy as np
-from pygeogrids import CellGrid
+import netCDF4
+import pandas as pd
 
 class CCITs(GriddedNcOrthoMultiTs):
     # The basic CCI TS netcdf reader, with some features
-    def __init__(self, ts_path, grid_path=None, **kwargs):
+
+    def __init__(self, ts_path, grid_path=None, exact_index=False,
+                 ioclass_kws=None, **kwargs):
+
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
 
+        if ioclass_kws is None:
+            ioclass_kws = {'read_bulk': True}
+        else:
+            if 'read_bulk' not in ioclass_kws.keys():
+                ioclass_kws['read_bulk'] = True
+
         grid = nc.load_grid(grid_path)
-        super(CCITs, self).__init__(ts_path, grid, **kwargs)
 
-    def read_ts(self, *args, **kwargs):
-        df = super(CCITs, self).read(*args, **kwargs)
-        return df
-
-
-class GeoCCITs(CCITs):
-    # Reader implementation that uses the PATH configuration from above
-
-    # exact time variable (days) from reference date
-    _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
-
-    # fill values in the data columns
-    _col_fillvalues = {'sm': [-9999.0],
-                       'sm_uncertainty': [-9999.0],
-                       }
-
-    def __init__(self, ts_path, grid_path=None, exact_index=False, **kwargs):
+        super(CCITs, self).__init__(ts_path, grid, ioclass_kws=ioclass_kws,
+                                    **kwargs)
 
         self.exact_index = exact_index
-
-        super(GeoCCITs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
-
-        if (self.parameters is not None) and self.exact_index and \
-                (self._t0_ref[0] not in self.parameters):
-            self.parameters.append(self._t0_ref[0])
-
-    def _replace_with_nan(self, df):
-        """
-        Replace the fill values in columns defined in _col_fillvalues with NaN
-        """
-        for col in df.columns:
-            if col in self._col_fillvalues.keys():
-                for fv in self._col_fillvalues[col]:
-                    if self.scale_factors is not None and \
-                            col in self.scale_factors.keys():
-                        fv = fv * self.scale_factors[col]
-                    df.loc[df[col] == fv, col] = np.nan
-        return df
-
-    def _add_time(self, df):
-        t0 = self._t0_ref[0]
-        if t0 in df.columns:
-            if self.exact_index:
-                dt = pd.to_timedelta(df[t0], unit='d')
-                df['t0'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
-                df = df.set_index('t0')
-                df = df[df.index.notnull()]
-
-        return df
+        self.t0 = 't0' # observation time stamp variable
+        if (self.parameters is not None) and self.exact_index:
+            self.parameters.append(self.t0)
 
     def read(self, *args, **kwargs):
-        return self._add_time(self._replace_with_nan(
-             super(GeoCCITs, self).read(*args, **kwargs)))
-
-    def read_cell_file(self, cell, var):
-        """
-        Read a whole cell file
-
-        Parameters
-        ----------
-        cell : int
-            Cell / filename to read.
-        var : str
-            Name of the variable to extract from the cellfile.
-
-        Returns
-        -------
-        data : np.array
-            Data for var in cell
-        """
-
-        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
-        with nc.Dataset(file_path) as ncfile:
-            loc_id = ncfile.variables['location_id'][:]
-            time = ncfile.variables['time'][:]
-            unit_time = ncfile.variables['time'].units
-            delta = lambda t: timedelta(t)
-            vfunc = np.vectorize(delta)
-            since = pd.Timestamp(unit_time.split('since ')[1])
-            time = since + vfunc(time)
-            variable = ncfile.variables[var][:]
-            variable = np.transpose(variable)
-            data = pd.DataFrame(variable, columns=loc_id, index=time)
-            if var in self._col_fillvalues.keys():
-                data = data.replace(self._col_fillvalues[var], np.nan)
-            return data
+        """ Read TS by gpi or by lonlat """
+        df = super(CCITs, self).read(*args, **kwargs)
+        if self.exact_index:
+            units = self.fid.dataset.variables[self.t0].units
+            df = df.set_index(self.t0)
+            df = df[df.index.notnull()]
+            if len(df.index.values) == 0:
+                df.index = pd.DatetimeIndex()
+            else:
+                df.index = pd.DatetimeIndex(
+                    netCDF4.num2date(df.index.values, units=units, calendar='standard',
+                             only_use_cftime_datetimes=False))
+        return df
 
     def read_cells(self, cells):
         cell_data = OrderedDict()
@@ -122,8 +64,8 @@ class GeoCCITs(CCITs):
             cell_data[gpi] = df
         return cell_data
 
+
 if __name__ == '__main__':
-
-
-    ds = GeoCCITs(r'D:\data-read\CCI_45_D_TS\combined', exact_index=Fals)
+    ds = CCITs(r'R:\Datapool\ESA_CCI_SM\02_processed\ESA_CCI_SM_v05.2\timeseries\combined',
+               exact_index=True)
     ts = ds.read(-104,38)

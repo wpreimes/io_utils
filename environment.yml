@@ -26,7 +26,10 @@ dependencies:
     - pytest==3.8.2
     - Equi7Grid
     - pytileproj
+    - cadati
+    - country-bounding-boxes
     - git+https://github.com/TUW-GEO/smecv-grid.git@master
     - git+https://github.com/TUW-GEO/veranda.git@master
     - git+https://github.com/TUW-GEO/geopathfinder.git@master
     - git+https://github.com/TUW-GEO/yeoda.git@master
+    - pip install git+https://git.geo.tuwien.ac.at/rs/developments/pygenio.git@v1.1.13#egg=pygenio

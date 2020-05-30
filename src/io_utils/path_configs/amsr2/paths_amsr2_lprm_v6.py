@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from collections import OrderedDict
 import os
 import getpass

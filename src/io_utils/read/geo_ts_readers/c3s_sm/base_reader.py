@@ -34,7 +34,7 @@ class C3STs(GriddedNcOrthoMultiTs):
 class GeoC3STs(C3STs):
     # Reader implementation that uses the PATH configuration from above
     # Flagging should be done with the masking adapter from pytesmo
-    _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
+    _t0_ref = ('t0', datetime(1970,1,1,0,0,0)) # todo: use t0 from metadata
 
     _col_fillvalues = {'sm': [-9999.0],
                        'sm_uncertainty': [-9999.0],
@@ -76,9 +76,10 @@ class GeoC3STs(C3STs):
         t0 = self._t0_ref[0]
         if t0 in df.columns:
             dt = pd.to_timedelta(df[t0], unit='d')
-            df['t0'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
+            df['_datetime'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
             if self.exact_index:
-                df = df.set_index('t0')
+                df['_date'] = df.index
+                df = df.set_index('_datetime')
                 df = df[df.index.notnull()]
 
         return df
@@ -131,12 +132,7 @@ class GeoC3STs(C3STs):
 if __name__ == '__main__':
     # ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
     # ds.read(15,45)
-
-    ds_old = C3STs(r"R:\Datapool\C3S\02_processed\v201812\TCDR\063_images_to_ts\combined-daily")
-    ts_old = ds_old.read(659123).replace(-9999., np.nan)
-    ts_old['sm'].plot(style='.')
-
-    ds_new = C3STs(r"R:\Datapool\C3S\02_processed\v201912\TCDR\063_images_to_ts\combined-daily")
-    ts_new = ds_new.read(659123).replace(-9999., np.nan)
-    (ts_new['sm']+1).plot(style='.')
+    ds_new = GeoC3STs(r"R:\Datapool\C3S\02_processed\v201912\TCDR\063_images_to_ts\combined-daily",
+                      exact_index=True)
+    ts_new = ds_new.read(659123)
 

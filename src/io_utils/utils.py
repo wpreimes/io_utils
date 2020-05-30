@@ -20,6 +20,9 @@ from matplotlib.dates import date2num
 from pygeogrids.grids import CellGrid
 from io_utils.grid.grid_shp_adapter import GridShpAdapter
 
+def mjd2jd(mjd):
+    return mjd + 2400000.5
+
 def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array:
 
     if not isinstance(ref_grid, CellGrid):
