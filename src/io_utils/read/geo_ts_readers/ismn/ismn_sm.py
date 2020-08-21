@@ -103,6 +103,7 @@ class GeoISMNTs(ISMN_Interface):
             actually found nearest station. If the distance is large, no data is read.
         return_distance : bool
             Also return the distance (2 return values), else 1 return value
+
         Returns
         -------
         data : pd.DataFrame

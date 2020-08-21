@@ -165,7 +165,14 @@ class CountryShpReader(object):
         return names
     
 if __name__ == '__main__':
-    from smecv_grid.grid import SMECV_Grid_v052
-    adapter = GridShpAdapter(SMECV_Grid_v052('land'))
+
+    country = 'Morocco'
+    from smos.grid import EASE25CellGrid
+    #from smecv_grid.grid import SMECV_Grid_v052
+    grid = EASE25CellGrid()
+    from pygeogrids.netcdf import save_grid
+    adapter = GridShpAdapter(grid)
     print(adapter)
-    adapter.create_subgrid(['Morocco'])
+    grid = adapter.create_subgrid([country])
+    save_grid(r"R:\Projects\SMART-DRI\07_data\sm_country_data\SMOS-IC\ease25grid_{country}.nc".format(country=country),
+              grid=grid)

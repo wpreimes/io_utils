@@ -368,9 +368,6 @@ class XrBase(object):
 
             var = self.dataset.variables[name]
 
-
-
-
             dim_unlimited = []
             key = []
             for index, dim in enumerate(var.dims):

@@ -64,7 +64,7 @@ class NcVarPlotter(ReadNcImg):
         self.time, self.df, self.title_template = None, None, None
 
 
-    def plot_variable(self, variable, time=None, interface=True, transparent=True,
+    def plot_variable(self, variable, time=None, interface=True, transparent=False,
                       plotfile_name=None, file_format='png', **plot_kwargs):
         """Plot a single variable from a certain time"""
         self.read(time)
@@ -266,11 +266,18 @@ class NcVarCombPlotter(object):
         return df[name], f, imax
 
 
-if __name__ == '__main__':
-    irreg_file = r"C:\Temp\nc_compress\test1_with_test2.nc"
-    reg_file = r"\\?\D:\data-write\paper_results\iter3\hsp_model_frames\CCI_45_COMBINED\intercomparison\ERA5\intercomparison\GLOBAL_basic_validation_1978-10-26_to_2018-12-31.nc"
-    plotter = NcVarPlotter(filepath=reg_file,
-                           lat_var='lat', lon_var='lon', resxy=(0.25,0.25),
-                           cell_center_origin=True)
-    plotter.plot_variable('n_obs', veg_mask=False, cbrange=(0,10000), ext_label_min='TEST',
-                          ext_label_max='TEST2', extend='both', cblabel='testtest', file_format='pdf')
+# if __name__ == '__main__':
+#     import matplotlib.pyplot as plt
+#     file = r"U:\CCI_C3S_VALIDATION_PROJECT\CCI\with_GLDAS21\v47\combined\v1\netcdf\lsm_val.nc"
+#     out_dir = r'C:\Temp'
+#
+#     plotter = NcVarPlotter(filepath=file,
+#                            lat_var='lat', lon_var='lon', resxy=(0.25,0.25),
+#                            cell_center_origin=True, out_dir=out_dir)
+#
+#     plotter.plot_variable('urmsd_between_1-GLDAS_and_2-CCI', veg_mask=False,
+#                           cbrange=(0,0.1), scale_factor=0.01,
+#                           cmap=plt.get_cmap('Reds'), title_size=5,grid_label_loc='0001',
+#                           plotfile_name='ubrmsd_cci47', cb_labelsize=7,
+#                           title='ubRMSD between ESA CCI SM v04.7 and GLDAS Noah 0-10cm SM',
+#                           cb_extend='max', cb_label='ubRMSD $[m^3/m^3]$', file_format='png')

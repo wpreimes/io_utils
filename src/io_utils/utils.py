@@ -23,6 +23,20 @@ from io_utils.grid.grid_shp_adapter import GridShpAdapter
 def mjd2jd(mjd):
     return mjd + 2400000.5
 
+def area_folder_name(cells_identifier):
+    """ Create a name from cells_identifiers e.g to store results """
+    if isinstance(cells_identifier, str):
+        area_str = cells_identifier
+    else:
+        if isinstance(cells_identifier, list):
+            area_str = '_'.join(str(e) for e in cells_identifier)
+        else:
+            area_str = 'subset'
+    if len(area_str) > 100:
+        area_str = 'subset'
+
+    return  area_str
+
 def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array:
 
     if not isinstance(ref_grid, CellGrid):

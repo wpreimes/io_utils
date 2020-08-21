@@ -70,14 +70,14 @@ class GeoTsReader(object):
         self.reader_kwargs = reader_kwargs
         self.params_rename = params_rename
         self.filter_months = filter_months
-        self.resample=resample
+        self.resample = resample
 
         self.selfmaskingadapter_kwargs = selfmaskingadapter_kwargs
         self.climadapter_kwargs = climadapter_kwargs
 
         cls = cls(**self.reader_kwargs)
 
-        self.grid = cls.grid
+        self.grid = cls.grid if hasattr(cls, 'grid') else None
 
         self.base_reader = cls # the unadaptered input reader
         self._adapt(self.base_reader) # the adapted reader to use
@@ -130,7 +130,7 @@ class GeoTsReader(object):
             method = self.resample[1]
             df = df.select_dtypes(np.number)
             if isinstance(method, str):
-                df = eval('df.resample(self.resample[0]).{}()'.format(method)) # todo: ?? better solution?
+                df = eval('df.resample(self.r esample[0]).{}()'.format(method)) # todo: ?? better solution?
             else:
                 warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
                 df = df.resample(self.resample[0]).apply(method, axis=0)
@@ -161,6 +161,9 @@ class GeoTsReader(object):
         df : pd.DataFrame
             Dataframe of time series for the var of all locs, named by gpi.
         """
+
+        if self.grid is None:
+            raise ValueError("No grid found for the current reader.")
 
         gpis = {}
 
@@ -197,26 +200,90 @@ class GeoTsReader(object):
 
 if __name__ == '__main__':
     from datetime import datetime
-    from io_utils.read.geo_ts_readers import GeoC3Sv201912Ts
-    reader = GeoTsReader(GeoC3Sv201912Ts,
-                reader_kwargs={'dataset_or_path': ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR'),
-                               'parameters': ['sm', 'flag'],
-                               'exact_index': True,
-                               'ioclass_kws': {'read_bulk': True}},
-                selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
-                                 'column_name': 'flag'},
-                climadapter_kwargs={'columns': ['sm'],
-                                    'wraparound': True,
-                                    'timespan': [datetime(1991, 1, 1), datetime(2018, 12, 31)],
-                                    'moving_avg_clim': 30},
-                resample=None, params_rename={'sm': 'smc3s'})
-    from io_utils.grid.grid_shp_adapter import GridShpAdapter
-    from smecv_grid.grid import SMECV_Grid_v052
-    adapter = GridShpAdapter(SMECV_Grid_v052('land'))
-    subgrid = adapter.create_subgrid(['Senegal']) # type: CellGrid
-    df = reader.read_multiple(var='cci_sm', locs=list(zip(subgrid.activearrlon,
-                                                             subgrid.activearrlat)))
-    print(df)
+    from io_utils.read.geo_ts_readers import GeoHsafAscatSsmTs, GeoScatSarSWIDrypanAbsReader,\
+    GeoScatSarSWIDrypanAnomsReader
+    import os
+    from pytesmo.time_series.anomaly import calc_climatology, calc_anomaly
+
+    path = r'C:\Temp\laura'
+
+    make_data = False
+    if make_data:
+        reader = GeoTsReader(GeoScatSarSWIDrypanAnomsReader,
+                             reader_kwargs={'dataset_or_path':
+                                                ['SCATSAR', 'SWI', 'Drypan', 'Anoms'],
+                                            'switchflip': False},
+                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ANOMS'})
+
+        ts_noms = reader.read(19.1222, 47.201232)
+
+        ts_noms.to_csv(os.path.join(path, 'anoms.csv'))
+
+
+        reader = GeoTsReader(GeoScatSarSWIDrypanAnomsReader,
+                             reader_kwargs={'dataset_or_path':
+                                                r"R:\Projects\DryPan\07_data\SCATSAR_SWI_anomalies_old",
+                                            'switchflip': False},
+                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ANOMS_OLD'})
+
+        ts_noms_old = reader.read(19.1222, 47.201232)
+
+        ts_noms_old.to_csv(os.path.join(path, 'anoms_old.csv'))
+        print(ts_noms_old)
+
+        reader = GeoTsReader(GeoScatSarSWIDrypanAbsReader,
+                             reader_kwargs={'dataset_or_path':
+                                                ['SCATSAR', 'SWI', 'Drypan', 'Abs']},
+                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ABS'})
+
+        ts_abs = reader.read(19.1222, 47.201232)
+        print(ts_abs)
+
+        ts_abs.to_csv(os.path.join(path, 'abs.csv'))
+
+
+    ts_abs = pd.read_csv(os.path.join(path, 'abs.csv'), index_col=0, parse_dates=True).resample('D').mean()
+    ts_anoms = pd.read_csv(os.path.join(path, 'anoms.csv'), index_col=0, parse_dates=True).resample('D').mean()
+    ts_anoms_old = pd.read_csv(os.path.join(path, 'anoms_old.csv'), index_col=0, parse_dates=True).resample('D').mean()
+    ts_abs_cgls = pd.read_csv(os.path.join(path, 'abs_cgls.csv'), index_col=0, parse_dates=True).resample('D').mean()
+    ts_abs_cgls = ts_abs_cgls.resample('D').mean()
+
+    clim = calc_climatology(ts_abs['SCATSAR_SWI_ABS'])
+    anom_from_abs = calc_anomaly(ts_abs['SCATSAR_SWI_ABS'], climatology=clim)
+    anom_from_abs.name = 'SCATSAR_SWI_ANOMS_from_abs'
+
+    clim_cgls = calc_climatology(ts_abs_cgls['swi_t005'])
+    anom_from_abs_cgls = calc_anomaly(ts_abs_cgls['swi_t005'], climatology=clim_cgls)
+    anom_from_abs_cgls.name = 'SCASAR_CGLS_T5_ANOM_from_abs'
+
+    df = pd.concat([ts_anoms, ts_anoms_old, ts_abs, anom_from_abs,anom_from_abs_cgls], axis=1)
+    df.plot(title='Different SCATSAR SWI data at lon=19.1222, lat=47.201232)')
+
+
+
+
+
+
+
+    # reader = GeoTsReader(GeoHsafAscatSsmTs,
+    #             reader_kwargs={'dataset_or_path': ('HSAF_ASCAT', 'SSM', 'H115+H116'),
+    #                            'parameters': ['sm', 'proc_flag'],
+    #                            'exact_index': True,
+    #                            'ioclass_kws': {'read_bulk': True}},
+    #             selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
+    #                              'column_name': 'flag'},
+    #             climadapter_kwargs={'columns': ['sm'],
+    #                                 'wraparound': True,
+    #                                 'timespan': [datetime(1991, 1, 1), datetime(2018, 12, 31)],
+    #                                 'moving_avg_clim': 30},
+    #             resample=None, params_rename={'sm': 'ascatsm'})
+    # from io_utils.grid.grid_shp_adapter import GridShpAdapter
+    # from smecv_grid.grid import SMECV_Grid_v052
+    # adapter = GridShpAdapter(SMECV_Grid_v052('land'))
+    # subgrid = adapter.create_subgrid(['Senegal']) # type: CellGrid
+    # df = reader.read_multiple(var='ascatsm', locs=list(zip(subgrid.activearrlon,
+    #                                                          subgrid.activearrlat)))
+    # print(df)
 
 
     # ccireader.read_multiple(var='sm', *zip(subgrid.activearrlon, subgrid.activearrlat))

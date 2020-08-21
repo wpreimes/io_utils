@@ -16,7 +16,9 @@ from geopathfinder.folder_naming import build_smarttree
 from osgeo import ogr
 from osgeo import osr
 from datetime import datetime
+import glob
 import numpy as np
+import os
 
 def decode_scatsar(data):
     data = data.astype(float)
@@ -80,12 +82,78 @@ class ScatSarCGLSReader(object):
 
         return df
 
+
+# Scatsar SWI (Drypan) Laura
+class ScatSarSWIDrypanReader(object):
+    """
+    Class reading SCATSAR SWI anomalies.
+    Projected in Web Mercator Projection (EPSG:3857)
+    """
+
+    def __init__(self, path, smart_filename_class, switchflip=False):
+
+        self.path = path
+        self.smart_filename_class = smart_filename_class
+        self.dc = None
+
+        self.switchflip = switchflip
+
+
+    def _build(self):
+        """
+        Builds a yeoda EODataCube of SCATSAR SWI anomalies data.
+        """
+        print(f'{datetime.now()}: Building Datacube....')
+
+        file_paths = glob.glob(os.path.join(self.path, '*.tif'))
+        dims = ['time']
+        self.dc = dc.EODataCube(filepaths=file_paths,
+                                dimensions=dims,
+                                smart_filename_class=self.smart_filename_class)
+        print(f'{datetime.now()}: DONE!')
+
+        self.sref = osr.SpatialReference()
+        self.sref.ImportFromEPSG(3857)
+
+
+    def read(self, lon, lat):
+        """
+        Reads data for a single point (lon, lat).
+        """
+        if self.dc is None:
+            self._build()
+
+        print(datetime.now(), 'Read single point...', end='')
+        geom = ogr.Geometry(ogr.wkbPoint)
+        geom.AddPoint(lon, lat)
+
+        source = osr.SpatialReference()
+        source.ImportFromEPSG(4326)
+        transform = osr.CoordinateTransformation(source, self.sref)
+        geom.Transform(transform)
+
+        ts = self.dc.filter_spatially_by_geom(geom, sref=self.sref)
+        df = ts.load_by_coords(geom.GetX(), geom.GetY(), sref=self.sref, dtype="dataframe")
+        df = df.rename(columns={'1': "SCATSAR_SWI"})
+        df = df.set_index(df.index.get_level_values('time'))
+
+        if self.switchflip:
+            df *= -1
+
+        return df
+
 if __name__ == '__main__':
-    import os
-    ds = ScatSarCGLSReader(os.path.join("R:\Datapool", "SCATSAR", "02_processed", "CGLS", "C0418"),
-                           tval=5)
-    ts = ds.read(11.592313, 48.0013213)
-    #ts.to_csv(r'C:\Temp\scatsartestts.csv')
-    print(ts)
-    ts = ds.read(12.592313, 49.0013213)
-    print(ts)
+    from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_swi_drypan import \
+        SCATSARSWIDrypanAnomsFilename, SCATSARSWIDrypanAbsFilename
+
+    name = "SCATSAR_SWI_anomalies"
+
+    if name == 'SCATSAR_reprojected':
+        smart_filename_class = SCATSARSWIDrypanAbsFilename
+    else:
+        smart_filename_class = SCATSARSWIDrypanAnomsFilename
+
+    path = r"R:\Projects\DryPan\07_data\{}".format(name)
+    reader = ScatSarSWIDrypanReader(path, smart_filename_class=smart_filename_class)
+    lon, lat = 19.1222, 47.201232
+    ts = reader.read(lon, lat)

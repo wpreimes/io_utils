@@ -26,8 +26,11 @@ class GeoScatSarCGLSReader(ScatSarCGLSReader):
 
 if __name__ == '__main__':
     import pandas as pd
-    #ds = GeoScatSarCGLSReader(('SCATSAR', 'CGLS', 'C0418', 'E7'), parameters=['1'])
-    #ts = ds.read(12.176, 43.216) # type: pd.DataFrame
+    import os
+
+    ds = GeoScatSarCGLSReader(('SCATSAR', 'CGLS', 'C0418', 'E7'))
+    ts = ds.read(19.1222, 47.201232) # type: pd.DataFrame
+    ts.to_csv(os.path.join(r'C:\Temp\laura', 'abs_cgls.csv'))
     #print(ts.index)
     #print(ts['1'])
-    ts = pd.read_csv(r'C:\Temp\scatsarts.csv', index_col=0, parse_dates=True)
+    #ts = pd.read_csv(r'C:\Temp\scatsarts.csv', index_col=0, parse_dates=True)

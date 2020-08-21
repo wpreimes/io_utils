@@ -19,6 +19,9 @@ from datetime import timedelta
 import os
 try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04 import path_settings
+    from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04_ADJUSTMENT import \
+        path_settings as adjusted_paths
+    path_settings.update(adjusted_paths)
 except ImportError:
     path_settings = {}
 
@@ -35,9 +38,11 @@ class GeoCCISMv4Ts(CCITs):
                                     -9999.0]} # TODO: why has v045 another fillvalue?
 
     # implememted subversion that have a set path configuration
-    _ds_implemented = [('ESA_CCI_SM', 'v045', 'COMBINED'),
-                       ('ESA_CCI_SM', 'v045', 'ACTIVE'),
+    _ds_implemented = [('ESA_CCI_SM', 'v045', 'ACTIVE'),
                        ('ESA_CCI_SM', 'v045', 'PASSIVE'),
+                       ('ESA_CCI_SM', 'v045', 'COMBINED'),
+                       ('ESA_CCI_SM', 'v045', 'COMBINED', 'ADJUSTED', 'QCM', 'ERA5'),
+                       # version 45
                        ('ESA_CCI_SM', 'v044', 'COMBINED'),
                        ('ESA_CCI_SM', 'v044', 'ACTIVE'),
                        ('ESA_CCI_SM', 'v044', 'PASSIVE'),
@@ -113,8 +118,5 @@ class GeoCCISMv4Ts(CCITs):
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv4Ts._ds_implemented)
 
 if __name__ == '__main__':
-    ds = GeoCCISMv4Ts(('ESA_CCI_SM', 'v045', 'COMBINED'))
+    ds = GeoCCISMv4Ts(['ESA_CCI_SM', 'v045', 'COMBINED', 'ADJUSTED', 'QCM', 'ERA5'])
     ts45 = ds.read(45,15)
-
-    ds = GeoCCISMv4Ts(('ESA_CCI_SM', 'v047', 'COMBINED'), exact_index=True)
-    ts47 = ds.read(45, 15)

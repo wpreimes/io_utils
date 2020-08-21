@@ -147,77 +147,6 @@ def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
 
     return f, imax, im
 
-def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom',
-                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None, cb_ext_label_min=None,
-                 cb_ext_label_max=None):
-    """
-    Add a colorbar to the bottom of the map
-
-    Parameters
-    ----------
-    f : plt.Figure
-        The map figure
-    imax : plt.Axes
-        The cartopy axes
-    im : plt.Axes
-        The data Axes
-    cb_label : str, optional (default: None)
-        Label that is shown below the colorbar
-    cb_loc : str, optional (default: bottom)
-        Location of the colorbar (bottom , left, right, top)
-    cb_labelsize : int, optional (default: 7)
-        Size of the colorbar label in points.
-    cb_extend : str, optional (default: Both)
-        Which sides of the colorbar are shown as an arrow.
-        One of: neither, both, max, min
-        By default, both sides are arrows.
-    cb_n_ticks : int, optional (default: None)
-        Override the default number of colobar ticks and use this many ticks
-        instead. If None is passed, let matplotlib decide.
-    cb_ext_label_min : str, optional (default: None)
-        Additional label for the left side of the colorbar
-    cb_ext_label_max : str, optional (default: None)
-        Additional label for the right if the colorbar
-    """
-
-    if not cb_ext_label_min and not cb_ext_label_max:
-        exteme_labels = False
-    else:
-        exteme_labels = True
-
-    cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
-                                     aspect=35 if cb_loc in ['top', 'bottom'] else 20,
-                                     extend=cb_extend, shrink=0.7, use_gridspec=True,
-                                     pad=0.07 if not exteme_labels else 0.08)
-
-    cb = f.colorbar(im, cax=cax, **kw)
-    cb.ax.tick_params(labelsize=int(cb_labelsize*0.66))
-    if cb_n_ticks:
-        tick_locator = ticker.MaxNLocator(nbins=cb_n_ticks)
-        cb.locator = tick_locator
-        cb.update_ticks()
-
-    if exteme_labels:
-        if cb_ext_label_min:
-            if cb_loc in ['top', 'bottom']:
-                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5, rotation=0, ha='left',
-                           transform=cax.transAxes)
-            else:
-                cb.ax.text(0.5, -0.06, cb_ext_label_min, fontsize=5, rotation=0, va='bottom',
-                           ha='center', transform=cax.transAxes)
-        if cb_ext_label_max:
-            if cb_loc in ['top', 'bottom']:
-                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5, rotation=0, ha='right',
-                           transform=cax.transAxes)
-            else:
-                cb.ax.text(0.5, 1.05, cb_ext_label_max, fontsize=5, rotation=0, va='top',
-                           ha='center', transform=cax.transAxes)
-
-
-    cb.set_label(cb_label if cb_label is not None else '', fontsize=cb_labelsize,
-                 labelpad=5, color='k')
-
-
 def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
     """
     Add a grid to the map
@@ -262,7 +191,7 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
 def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                    llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0,1),
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
-                   gridspace=(60,20), grid_label_loc='1001', style=None,
+                   gridspace=(60,20), grid_label_loc='1001', style=None, markersize=None,
                    ocean=False, land='white', states=False, borders=False,
                    scale_factor=1., watermark=None, show_cbar=True, **cbar_kwargs):
 
@@ -378,7 +307,7 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                             draw_labels=draw_labels)
 
     lon_interval = max([llc[0], urc[0]]) - min([llc[0], urc[0]])
-    markersize = 1.5 * (360 / lon_interval)
+    markersize = 1.5 * (360 / lon_interval) if markersize is None else markersize
     im = plt.scatter(lons, lats, c=values, cmap=cmap, s=markersize,
         vmin=cbrange[0], vmax=cbrange[1], edgecolors='black', linewidths=0.05,
                      zorder=3, transform=data_crs)
@@ -418,6 +347,104 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
 
 
     return f, imax, im
+
+def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
+                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None, cb_ext_label_min=None,
+                 cb_ext_label_max=None, cb_text=None):
+    """
+    Add a colorbar to the bottom of the map
+
+    Parameters
+    ----------
+    f : plt.Figure
+        The map figure
+    imax : plt.Axes
+        The cartopy axes
+    im : plt.Axes
+        The data Axes
+    cb_label : str, optional (default: None)
+        Label that is shown below the colorbar
+    cb_loc : str, optional (default: bottom)
+        Location of the colorbar (bottom , left, right, top)
+    cb_labelsize : int, optional (default: 7)
+        Size of the colorbar label in points.
+    cb_extend : str, optional (default: Both)
+        Which sides of the colorbar are shown as an arrow.
+        One of: neither, both, max, min
+        By default, both sides are arrows.
+    cb_n_ticks : int, optional (default: None)
+        Override the default number of colobar ticks and use this many ticks
+        instead. If None is passed, let matplotlib decide.
+    cb_ext_label_min : str, optional (default: None)
+        Additional label for the left side of the colorbar
+    cb_ext_label_max : str, optional (default: None)
+        Additional label for the right if the colorbar
+    cb_text : list, optional (default: None)
+        Strings that are put below, next to the cbar with equal space
+    """
+
+    if not cb_ext_label_min and not cb_ext_label_max:
+        exteme_labels = False
+    else:
+        exteme_labels = True
+
+    cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
+                                     aspect=35 if cb_loc in ['top', 'bottom'] else 20,
+                                     extend=cb_extend, shrink=0.7, use_gridspec=True,
+                                     pad=0.07 if not exteme_labels else 0.08)
+
+    cb = f.colorbar(im, cax=cax, **kw)
+    cb.ax.tick_params(labelsize=cb_ticksize)
+    if cb_n_ticks is not None:
+        if cb_n_ticks == 0:
+            cb.set_ticks([])
+        else:
+            tick_locator = ticker.MaxNLocator(nbins=cb_n_ticks)
+            cb.locator = tick_locator
+            cb.update_ticks()
+
+    if exteme_labels:
+        if cb_ext_label_min:
+            if cb_loc in ['top', 'bottom']:
+                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5, rotation=0, ha='left',
+                           transform=cax.transAxes)
+            else:
+                cb.ax.text(0.5, -0.06, cb_ext_label_min, fontsize=5, rotation=0, va='bottom',
+                           ha='center', transform=cax.transAxes)
+        if cb_ext_label_max:
+            if cb_loc in ['top', 'bottom']:
+                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5, rotation=0, ha='right',
+                           transform=cax.transAxes)
+            else:
+                cb.ax.text(0.5, 1.05, cb_ext_label_max, fontsize=5, rotation=0, va='top',
+                           ha='center', transform=cax.transAxes)
+
+    if cb_text is not None:
+        hs = []
+        vs = []
+        if cb_loc in ['top', 'bottom']:
+            off = (1. / len(cb_text)) / 2.
+            for i, t in enumerate(cb_text):
+                hs.append(i * (1. / len(cb_text)) + off)
+            vs = [-0.8 if cb_loc == 'bottom' else 1.2] * len(cb_text)
+        else:
+            off = (1. / len(cb_text)) / 2.
+            for i, t in enumerate(cb_text):
+                vs.append(i * (1. / len(cb_text)) + off)
+            hs = [1.2 if cb_loc == 'right' else -0.2] * len(cb_text)
+        for i, (h,v) in enumerate(zip(hs, vs)):
+            if cb_loc in ['top', 'bottom']:
+                cb.ax.text(h, v, cb_text[i], fontsize=cb_ticksize, rotation=0,
+                           transform=cax.transAxes, ha='center',
+                           va='top' if cb_loc=='bottom' else 'bottom')
+            else:
+                cb.ax.text(h, v, cb_text[i], fontsize=cb_ticksize, rotation=0,
+                           transform=cax.transAxes, va='center',
+                           ha='left' if cb_loc == 'right' else 'right')
+
+
+    cb.set_label(cb_label if cb_label is not None else '', fontsize=cb_labelsize,
+                 labelpad=5, color='k')
 
 def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
@@ -501,20 +528,20 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     -------------------------
     Optional keywords that are passed when making the colorbar
     -------------------------
-        cblabel : str, optional (default: None)
-            Title that is shown below the colorbar
-        cblabelsize : int, optional (default: 7)
-            Size of the colorbar label in points.
-        extend : str, optional (default: 'both')
-            Which sides of the colorbar are shown as an arrow.
-            One of: neither, both, max, min
-        n_ticks: int, optional (default: None)
-            Override the default number of colobar ticks and use this many ticks
-            instead. If None is passed, let matplotlib decide.
-        ext_label_min : str, optional (default: None)
-            Additional label for the min of the colorbar
-        ext_label_max : str, optional (default: None)
-            Additional label for the max if the colorbar
+    cblabel : str, optional (default: None)
+        Title that is shown below the colorbar
+    cblabelsize : int, optional (default: 7)
+        Size of the colorbar label in points.
+    cb_extend : str, optional (default: 'both')
+        Which sides of the colorbar are shown as an arrow.
+        One of: neither, both, max, min
+    n_ticks: int, optional (default: None)
+        Override the default number of colobar ticks and use this many ticks
+        instead. If None is passed, let matplotlib decide.
+    cb_ext_label_min : str, optional (default: None)
+        Additional label for the min of the colorbar
+    cb_ext_label_max : str, optional (default: None)
+        Additional label for the max if the colorbar
 
 
     Returns
@@ -651,8 +678,22 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
 
 if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052
-    gpis, lons, lats = SMECV_Grid_v052('land').grid_points_for_cell(2244)
-    data = pd.DataFrame(index=[lons, lats], data={'var': np.random.rand(len(gpis))})
+    gpis, lons, lats,cells = SMECV_Grid_v052('land').get_grid_points()
+    data_py3 = pd.read_csv(
+        r"\\project9\data-write\RADAR\ESA_CCI_SM\v06.0.0\python3_old_cov\050_errp_images\errp_combined_gapfilled.csv")
+    data_py3 = data_py3.set_index('gpi')
+
+    data_py2 = pd.read_csv(
+        r"\\project9\data-write\RADAR\ESA_CCI_SM\v06.0.0\python2\050_errp_images\errp_combined_gapfilled.csv")
+    data_py2 = data_py2.set_index('gpi')
+
+    data_py3['snr_ascat_diff'] = data_py3['snr_ascat'] - data_py2['snr_ascat']
+
+    #df = pd.DataFrame(index=[lons, lats], data={'gpi': gpis})
+    df = pd.DataFrame(index=gpis, data={'lons': lons, 'lats': lats})
+    df['snr_ascat_diff'] = data_py3['snr_ascat_diff']
+    df.set_index(['lons', 'lats'])
+    cp_map(df, 'snr_ascat_diff', cbrange=(-1,1))
 
     subplot_kw = {'projection': ccrs.Orthographic(-80, 35)}
     fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(10, 7),
