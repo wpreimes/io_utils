@@ -63,7 +63,8 @@ def test_cci_v044_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_era5land_merged_reader(verbose=False):
     if verbose: print('Test reading ERA5Land MERGED sm/temp data from storage.')
-    reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1'], 'temperature': ['stl1']},
+    reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1'],
+                                       'temperature': ['stl1']},
                            ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.})
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
@@ -233,8 +234,20 @@ def test_ascatssm_ts_reader(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
+@pytest.mark.geo_test_data
+def test_ccigenio_ts_reader(verbose=False):
+    path = os.path.join(root_path.r, 'Projects', "CCIplus_Soil_Moisture",
+                        "07_data", "ESA_CCI_SM_v04.7", "042_combined_MergedProd")
+    reader = GeoCCISMv6GenioTs(path,
+                               parameters=['sm', 'flag', 'freqband'],
+                               exact_index=False)
+    ts = reader.read(*test_loc)
+    if verbose: print(ts)
+    assert not ts.dropna(how='all').empty
+
 if __name__ == '__main__':
     v = True
+    test_ccigenio_ts_reader()
     test_SMAP_spl3_v6_reader(v)
 
 

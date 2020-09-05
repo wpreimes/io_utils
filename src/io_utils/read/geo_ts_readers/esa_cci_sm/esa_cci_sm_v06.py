@@ -80,7 +80,6 @@ assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv6Ts._ds_implemented
 if __name__ == '__main__':
     from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import GeoCCISMv5Ts
     ds = GeoCCISMv6Ts(('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'), exact_index=False)
-    ts6 = ds.read(45, 15)['sm']
-    ds = GeoCCISMv5Ts(('ESA_CCI_SM', 'v052', 'COMBINED'), exact_index=False)
-    ts6['sm5'] = ds.read(45, 15)['sm']
+    ts6 = ds.read(45, 15)
+
 

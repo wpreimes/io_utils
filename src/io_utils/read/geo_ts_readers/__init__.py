@@ -17,6 +17,7 @@ from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
 from io_utils.read.geo_ts_readers.esa_cci_swi.esa_cci_swi_v04 import *
 
 ## CCI version readers
+from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06_genio import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v04 import *

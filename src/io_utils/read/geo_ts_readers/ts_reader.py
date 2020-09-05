@@ -8,7 +8,7 @@ Combines dataset config readers, adapters and some more features for all readers
 
 import pandas as pd
 from pytesmo.validation_framework.adapters import SelfMaskingAdapter
-from pytesmo.validation_framework.adapters import AnomalyClimAdapter
+from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter
 import numpy as np
 from io_utils.utils import filter_months
 import warnings
@@ -113,7 +113,12 @@ class GeoTsReader(object):
                     reader = SelfMaskingAdapter(reader, **kwargs)
 
             if self.climadapter_kwargs is not None:
-                reader = AnomalyClimAdapter(reader, **self.climadapter_kwargs)
+                if 'timespan' in self.climadapter_kwargs.keys():
+                    anom_adapter = AnomalyClimAdapter
+                else:
+                    anom_adapter = AnomalyAdapter
+
+                reader = anom_adapter(reader, **self.climadapter_kwargs)
 
         self.reader = reader
 

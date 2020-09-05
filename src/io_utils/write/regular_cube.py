@@ -552,9 +552,3 @@ class NcRegGridStack(object):
 
         kwargs = {'lon': lon, 'lat': lat, self.z_name: z}
         self._write_pt(data, **kwargs)
-
-
-
-
-
-
