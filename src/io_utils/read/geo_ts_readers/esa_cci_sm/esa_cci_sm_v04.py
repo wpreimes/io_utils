@@ -118,5 +118,5 @@ class GeoCCISMv4Ts(CCITs):
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv4Ts._ds_implemented)
 
 if __name__ == '__main__':
-    ds = GeoCCISMv4Ts(['ESA_CCI_SM', 'v045', 'COMBINED', 'ADJUSTED', 'QCM', 'ERA5'])
-    ts45 = ds.read(45,15)
+    ds = GeoCCISMv4Ts(['ESA_CCI_SM', 'v047', 'PASSIVE'])
+    ts47 = ds.read(26.68595, 67.35922)

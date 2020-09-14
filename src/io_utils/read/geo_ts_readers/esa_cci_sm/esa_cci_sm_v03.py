@@ -16,21 +16,28 @@ try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
 except ImportError:
     path_settings = {}
+from datetime import datetime
 
 class GeoCCISMv3Ts(CCITs):
     # Reader implementation that uses the PATH configuration from above
+
+    # exact time variable (days) from reference date
+    _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
+
+    # fill values in the data columns
+    _col_fillvalues = {'sm': [-9999.0],
+                       'sm_uncertainty': [-9999.0],
+                       _t0_ref[0]: [-3440586.5,
+                                    -9999.0]} # TODO: why has v045 another fillvalue?
+
 
     # implememted subversion that have a set path configuration
     _ds_implemented = [('ESA_CCI_SM', 'v033', 'COMBINED'),
                        ('ESA_CCI_SM', 'v033', 'ACTIVE'),
                        ('ESA_CCI_SM', 'v033', 'PASSIVE')]
 
-    _col_fillvalues = {'sm': [-9999.0],
-                       'sm_uncertainty': [-9999.0],
-                       't0': [-3440586.5]} # TODO: why this fill value for t0?
-
-
-    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None, **kwargs):
+    def __init__(self, dataset_or_path, exact_index=False, force_path_group=None,
+                 **kwargs):
 
         if isinstance(dataset_or_path, list):
             dataset_or_path = tuple(dataset_or_path)
@@ -60,12 +67,9 @@ class GeoCCISMv3Ts(CCITs):
     def read(self, *args, **kwargs):
         return self._replace_with_nan(super(GeoCCISMv3Ts, self).read(*args, **kwargs))
 
-
-
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv3Ts._ds_implemented)
 
 if __name__ == '__main__':
-    path = r"R:\Projects\CCI_Soil_Moisture_Phase_2\07_data\ESA_CCI_SM_v03.3\073_images_to_ts\combined"
-    ds = GeoCCISMv3Ts(path, exact_index=False)
+    ds = GeoCCISMv3Ts(('ESA_CCI_SM', 'v033', 'COMBINED'), exact_index=True)
     ts = ds.read(45,15)

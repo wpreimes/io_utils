@@ -198,7 +198,8 @@ class GeoISMNTs(ISMN_Interface):
         return df[[max_col]].rename(columns={max_col: 'soil moisture'}), dist
 
     def plot_station_locations(self, variable='soil moisture',
-                               min_depth=0, max_depth=999., filename=None):
+                               min_depth=0, max_depth=999., filename=None,
+                               check_only_depth_from=False):
         """
         plots available stations on a world map in robinson projection
 
@@ -208,8 +209,9 @@ class GeoISMNTs(ISMN_Interface):
             Variable that is use to find stations that measure it
         min_depth : float, optional (default: 0.)
             Only stations that measure variable below this depth are considered.
-        max_depth : float, optional (default: 999.)
+        max_depth : float or None, optional (default: None.)
             Only stations that measure variable above this depth are considered.
+            If None is passed, only the min_depth is considered.
 
         Returns
         -------
@@ -251,9 +253,13 @@ class GeoISMNTs(ISMN_Interface):
                 station_depths_from, station_depths_to = station.get_depths(variable)
 
                 for depth_from, depth_to in zip(station_depths_from, station_depths_to):
-                    if (depth_from < min_depth) or (depth_to > max_depth):
-                        # skip depths outside of the passed range
-                        continue
+                    if check_only_depth_from:
+                        if (depth_from < min_depth) or (depth_from > max_depth):
+                            # skip depths outside of the passed range
+                            continue
+                    else:
+                        if (depth_from < min_depth) or (depth_to > max_depth):
+                            continue
 
                     # from here we actually have valid data
                     if not station_counted:
@@ -264,7 +270,16 @@ class GeoISMNTs(ISMN_Interface):
                         network_count += 1
                         network_counted = True
 
-                    sensors = station.get_sensors(variable, depth_from, depth_to)
+                    # we check only depth_from here
+                    if check_only_depth_from:
+                        ind_sensors = np.where((variable == station.variables) &
+                                               (depth_from == station.depth_from))[0]
+                    else:
+                        ind_sensors = np.where((variable == station.variables) &
+                                               (depth_to == station.depth_to) &
+                                               (depth_from == station.depth_from))[0]
+
+                    sensors = station.sensors[ind_sensors]
 
                     for sensor in sensors:
                         lons.append(station.longitude)
@@ -272,9 +287,11 @@ class GeoISMNTs(ISMN_Interface):
                         values.append(colorsteps[j])
                         sensors_count += 1
 
+        postfix_depth = "when only considering depth_from of the sensor" if check_only_depth_from else ''
+
         feedback = "{} valid sensors in {} stations in {} networks (of {} potential networks) \n" \
-                   "for variable '{}' between {} and {} m depth".format(
-            sensors_count, station_count, network_count, len(uniq_networks), variable, min_depth, max_depth)
+                   "for variable '{}' between {} and {} m depth \n {}".format(
+            sensors_count, station_count, network_count, len(uniq_networks), variable, min_depth, max_depth, postfix_depth)
 
         print(feedback)
 
@@ -312,11 +329,11 @@ if __name__ == '__main__':
               'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
               'SCAN', 'USCRN', 'LAB-net']
 
-    reader = GeoISMNTs(('ISMN', 'v20191211'), network=networks, scale_factors=None)
+    reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'], scale_factors=None)
     s = reader.read(0)
 
     #reader.plot_station_locations(min_depth=0, max_depth=.05, filename='C:\Temp\stations_cci_0.0_to_0.05.png')
-    reader.plot_station_locations(min_depth=0.0, max_depth=.1, filename='C:\Temp\stations_cci_0.0_to_0.1.png')
+    reader.plot_station_locations(min_depth=0., max_depth=.1, filename='C:\Temp\stations_cci_0.0_to_0.1.png')
     # reader.plot_station_locations(min_depth=0, max_depth=.051, filename='C:\Temp\stations_0.0_to_0.051.png')
     # reader.plot_station_locations(min_depth=.05, max_depth=.1, filename='C:\Temp\stations_0.05_to_0.1.png')
     # reader.plot_station_locations(min_depth=.051, max_depth=.1, filename='C:\Temp\stations_0.051_to_0.1.png')
