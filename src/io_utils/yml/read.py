@@ -31,7 +31,7 @@ def read_settings(settings_file, groups=None, override=None):
     -------
     settings_file : str
         Path to the settings yml file to read
-    groups: liss
+    groups: list
         Name(s) of parameter groups to read. If none are passed, all are read.
     override : dict of dicts
         Keys and values that are replaced from the loaded file

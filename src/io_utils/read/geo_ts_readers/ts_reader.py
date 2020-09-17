@@ -6,14 +6,16 @@ Combines dataset config readers, adapters and some more features for all readers
 
 # TODO: pass multiple selfmasking adapters that are applied sequentially?
 
+import operator
 import pandas as pd
-from pytesmo.validation_framework.adapters import SelfMaskingAdapter
-from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter
+from pytesmo.validation_framework.adapters import BasicAdapter
+from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter, SelfMaskingAdapter
 import numpy as np
 from io_utils.utils import filter_months
 import warnings
 from collections import Iterable
 from pytesmo.validation_framework.adapters import BasicAdapter
+
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
@@ -135,7 +137,7 @@ class GeoTsReader(object):
             method = self.resample[1]
             df = df.select_dtypes(np.number)
             if isinstance(method, str):
-                df = eval('df.resample(self.r esample[0]).{}()'.format(method)) # todo: ?? better solution?
+                df = eval('df.resample(self.resample[0]).{}()'.format(method)) # todo: ?? better solution?
             else:
                 warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
                 df = df.resample(self.resample[0]).apply(method, axis=0)

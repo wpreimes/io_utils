@@ -18,9 +18,6 @@ class HSAFAscatSSMTs(AscatNc):
                                          grid_filename=grid_path,
                                          **kwargs)
 
-
-
-
 if __name__ == '__main__':
     ascat_path = r"R:\Projects\H_SAF_CDOP3\05_deliverables_products\H116\H115+H116r8"
     grid_path = r"R:\Projects\H_SAF_CDOP3\05_deliverables_products\auxiliary\warp5_grid\TUW_WARP5_grid_info_2_3.nc"
