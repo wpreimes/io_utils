@@ -711,7 +711,7 @@ class ReadNcImg(object):
                 df = pd.DataFrame(index=None, data={'gpi': gpis,
                                                     'lat': lats.flatten(),
                                                     'lon': lons.flatten()})
-                df = df.set_index(self.index_name)
+                df = df.set_index(['lat', 'lon'])
 
                 if vars is None:
                     df = pd.DataFrame(index=df.index, data=df_file)

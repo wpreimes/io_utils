@@ -446,7 +446,7 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
     cb.set_label(cb_label if cb_label is not None else '', fontsize=cb_labelsize,
                  labelpad=5, color='k')
 
-def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
+def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
            veg_mask=False, gridspace=(60,20), grid_label_loc='0011', style=None,
@@ -458,7 +458,7 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
 
     Parameters
     ----------
-    df : pd.Dataframe or pd.Series
+    df : pd.Dataframe
         The DataFrame that contains the data to plot
         The index must either be a multiindex (with lat in the FIRST and lon in
         the SECOND index col) and sorted by lat or a list of ints, that are the
@@ -466,6 +466,8 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     col : str, optional (default: None)
         The column in df that contains the data to plot, not necessary if a
         Series is passed.
+    mask_cols_colors : dict, Optional (default: None)
+        Dictionary with mask columns in df as keys and colors as values
     resxy : tuple, optional (default: (0.25,0.25))
         Resolution if the grid that the passed data is on
         First arg in lon direction, second one in lat direction.
@@ -553,18 +555,17 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     im : plt.axes
         The plot ax
     '''
-    set_style(style)
 
-    if isinstance(df, pd.Series):
-        dat = df
-    else:
-        dat = df[col]
+    if mask_cols_colors is None:
+        mask_cols_colors = dict()
+
+    set_style(style)
 
     dy, dx = float(resxy[1]), float(resxy[0])
     offsetx, offsety = float(offset[0]), float(offset[1])
 
     glob_lons = (np.arange(360 * int(1. / dx), dtype=np.float32) * dx) - (180. - (dx * offsetx))
-    glob_lats = (np.arange(180 * int(1. / dy),  dtype=np.float32) * dy) - (90. - (dy * offsety))
+    glob_lats = (np.arange(180 * int(1. / dy), dtype=np.float32) * dy) - (90. - (dy * offsety))
 
     glob_lons, glob_lats = np.meshgrid(glob_lons, glob_lats)
 
@@ -576,26 +577,36 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     if isinstance(df.index, pd.MultiIndex):
         s_lats, s_lons = df.index.get_level_values(0), df.index.get_level_values(1)
 
-        index =pd.MultiIndex.from_arrays(
+        index = pd.MultiIndex.from_arrays(
             np.array([s_lats, s_lons]), names=['lats', 'lons'])
-        df = pd.DataFrame(index=index, data={'dat': dat})
+        data = {mask: df[mask] for mask in mask_cols_colors.keys()}
+        data.update({col: df[col]})
+        df = pd.DataFrame(index=index, data=data)
         df['gpi'] = np.arange(df.index.size)
     else:
-        df = dat.to_frame('dat')
         glob_df = glob_df.set_index('gpi')
 
-    glob_df['dat'] = df['dat']
-    df = dat = None # clear memory
+    for c in [col] + list(mask_cols_colors.keys()):
+        glob_df[c] = df[c]
 
-    img = np.empty(glob_df.index.size, dtype='float32')
-    img.fill(np.nan)
-    index = np.array(range(glob_df.shape[0]))
-    img[index] = glob_df['dat'].values * scale_factor
-    img_masked = np.ma.masked_invalid(img.reshape(180 * int(1. / dy),
-                                                  360 * int(1. / dx)))
+    df = data = None # clear memory
 
-    if flip_ud:
-        img_masked = np.flipud(img_masked)
+    layers = {}
+
+    for layer_name in [col] + list(mask_cols_colors.keys()):
+
+        img = np.empty(glob_df.index.size, dtype='float32')
+        img.fill(np.nan)
+        index = np.array(range(glob_df.shape[0]))
+        if layer_name == col:
+            img[index] = glob_df[col].values * scale_factor
+
+        img_masked = np.ma.masked_invalid(img.reshape(180 * int(1. / dy),
+                                                      360 * int(1. / dx)))
+        if flip_ud:
+            img_masked = np.flipud(img_masked)
+
+        layers[layer_name] = img_masked
 
 
     data_crs = ccrs.PlateCarree()
@@ -629,33 +640,39 @@ def cp_map(df, col=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Ro
     if llc is not None and urc is not None:
         imax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=data_crs)
 
+    for name, img_masked in layers.items():
+        if name != col:
+            colors = [mask_cols_colors[name], (1., 1., 1.)]  # dark green
+            layer_cmap = LinearSegmentedColormap.from_list(name, colors, N=2)
+        else:
+            layer_cmap = cmap
 
-    im = imax.pcolormesh(glob_lons, glob_lats, img_masked, cmap=cmap, transform=data_crs,
-                         rasterized=True)
+        im = imax.pcolormesh(glob_lons, glob_lats, img_masked, cmap=layer_cmap, transform=data_crs,
+                             rasterized=True)
 
     im.set_clim(vmin=cbrange[0], vmax=cbrange[1])
 
-    if veg_mask:
-        if not resxy == (0.25, 0.25):
-            raise ValueError(resxy, 'Vegetation mask only implemented for 0.25x0.25 grid')
-        # Plot a dense vegetation mask as in the ESA CCI SM grid
-        veg_gpis, veg_lons, veg_lats, _  = SMECV_Grid_v042('rainforest').get_grid_points()
-        glob_df['veg_mask'] = np.nan
-        if isinstance(glob_df.index, pd.MultiIndex):
-            veg_index = pd.MultiIndex.from_arrays([veg_lats, veg_lons], names=['lat', 'lon'])
-            glob_df.loc[veg_index, 'veg_mask'] = 1.
-        else:
-            glob_df.loc[glob_df.loc[veg_gpis].index, 'veg_mask'] = 1.
-        img = np.empty(glob_df.index.size, dtype='float32')
-        img.fill(np.nan)
-        img[range(glob_df.index.size)] = glob_df['veg_mask'].values
-        veg_img_masked = np.ma.masked_invalid(img.reshape((180 * 4, 360 * 4)))
-
-        colors = [(7. / 255., 79. / 255., 25. / 255.), (1., 1., 1.)]  # dark green
-        vegcmap = LinearSegmentedColormap.from_list('Veg', colors, N=2)
-
-        imax.pcolormesh(glob_lons, glob_lats, veg_img_masked, cmap=vegcmap, transform=data_crs,
-                        rasterized=True)
+    # if veg_mask:
+    #     if not resxy == (0.25, 0.25):
+    #         raise ValueError(resxy, 'Vegetation mask only implemented for 0.25x0.25 grid')
+    #     # Plot a dense vegetation mask as in the ESA CCI SM grid
+    #     veg_gpis, veg_lons, veg_lats, _  = SMECV_Grid_v042('rainforest').get_grid_points()
+    #     glob_df['veg_mask'] = np.nan
+    #     if isinstance(glob_df.index, pd.MultiIndex):
+    #         veg_index = pd.MultiIndex.from_arrays([veg_lats, veg_lons], names=['lat', 'lon'])
+    #         glob_df.loc[veg_index, 'veg_mask'] = 1.
+    #     else:
+    #         glob_df.loc[glob_df.loc[veg_gpis].index, 'veg_mask'] = 1.
+    #     img = np.empty(glob_df.index.size, dtype='float32')
+    #     img.fill(np.nan)
+    #     img[range(glob_df.index.size)] = glob_df['veg_mask'].values
+    #     veg_img_masked = np.ma.masked_invalid(img.reshape((180 * 4, 360 * 4)))
+    #
+    #     colors = [(7. / 255., 79. / 255., 25. / 255.), (1., 1., 1.)]  # dark green
+    #     vegcmap = LinearSegmentedColormap.from_list('Veg', colors, N=2)
+    #
+    #     imax.pcolormesh(glob_lons, glob_lats, veg_img_masked, cmap=vegcmap, transform=data_crs,
+    #                     rasterized=True)
 
     imax.coastlines(resolution=coastline_size, color='black', linewidth=0.25)
     #imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)

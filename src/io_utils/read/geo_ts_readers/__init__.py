@@ -8,6 +8,7 @@ import warnings
 
 # ASCAT readers
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_ssm import *
+from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_smdas import *
 
 # AMSR2 readers
 from io_utils.read.geo_ts_readers.amsr2.ccids_amsr2 import *
@@ -45,6 +46,7 @@ from io_utils.read.geo_ts_readers.smos.smos_ic import *
 
 ## SMAP version readers
 from io_utils.read.geo_ts_readers.smap.spl3smp import *
+from io_utils.read.geo_ts_readers.smap.smap_lprm import *
 
 # ISMN version readers
 from io_utils.read.geo_ts_readers.ismn.ismn_sm import *
@@ -55,5 +57,7 @@ try:
         GeoScatSarCGLSReader
     from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_swi_drypan import \
         GeoScatSarSWIDrypanAbsReader, GeoScatSarSWIDrypanAnomsReader
+    from io_utils.read.geo_ts_readers.csar_ssm.csar_cgls_ssm import \
+        GeoCSarSsmTiffReader
 except ImportError:
     warnings.warn('Could not import SAR reader')

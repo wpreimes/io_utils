@@ -329,11 +329,19 @@ if __name__ == '__main__':
               'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
               'SCAN', 'USCRN', 'LAB-net']
 
-    reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'], scale_factors=None)
-    s = reader.read(0)
+    reader = GeoISMNTs(('ISMN', 'v20191211'), network=networks, scale_factors=None)
+
+    ids = reader.get_dataset_ids('soil moisture', 0, 0.1)
+
+    reader.plot_station_locations(min_depth=0., max_depth=.1,
+                                  filename='C:\Temp\stations_cci_0.0_to_0.1.png')
+
+    for id in ids:
+        lon = reader.metadata['longitude'][id]
+        lat = reader.metadata['latitude'][id]
+        network = reader.metadata['network'][id]
 
     #reader.plot_station_locations(min_depth=0, max_depth=.05, filename='C:\Temp\stations_cci_0.0_to_0.05.png')
-    reader.plot_station_locations(min_depth=0., max_depth=.1, filename='C:\Temp\stations_cci_0.0_to_0.1.png')
     # reader.plot_station_locations(min_depth=0, max_depth=.051, filename='C:\Temp\stations_0.0_to_0.051.png')
     # reader.plot_station_locations(min_depth=.05, max_depth=.1, filename='C:\Temp\stations_0.05_to_0.1.png')
     # reader.plot_station_locations(min_depth=.051, max_depth=.1, filename='C:\Temp\stations_0.051_to_0.1.png')

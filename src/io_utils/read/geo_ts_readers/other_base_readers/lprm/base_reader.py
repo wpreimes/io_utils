@@ -34,6 +34,6 @@ class LPRMTs(GriddedNcOrthoMultiTs):
         return df
 
 if __name__ == '__main__':
-    path = r"R:\Datapool\AMSR2\02_processed\AMSR2_S3_VEGC_LPRMv6\timeseries\v202001\d"
+    path = r"\\project9\data-read\RADAR\Datapool_processed\LPRM\v6\SMAP_S3_VEGC\timeseries\d"
     ds = LPRMTs(path, exact_index=True)
     ts = ds.read(45,15)

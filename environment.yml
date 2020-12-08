@@ -9,7 +9,8 @@ dependencies:
   - pandas
   - netCDF4
   - matplotlib
-  - cartopy
+  - cartopy>=0.18
+  - cftime>=1.1.2
   - gdal<=2.4.3
   - geopandas
   - pip
@@ -21,9 +22,6 @@ dependencies:
     - xarray
     - configparser
     - more_itertools
-    - pytest-cov
-    - coverage==4.5.2
-    - pytest==3.8.2
     - Equi7Grid
     - pytileproj
     - cadati

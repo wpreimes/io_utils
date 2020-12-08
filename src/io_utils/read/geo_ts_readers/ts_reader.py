@@ -92,7 +92,7 @@ class GeoTsReader(object):
         if self.selfmaskingadapter_kwargs is not None:
             adapters.append('SelfMaskingAdapter')
         if self.climadapter_kwargs is not None:
-            adapters.append('AnomalyClimAdapter')
+            adapters.append('AnomalyAdapter')
         if len(adapters) == 0:
             adapters.append('no Adapters')
 

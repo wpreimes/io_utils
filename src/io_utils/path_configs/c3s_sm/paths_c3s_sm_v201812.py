@@ -377,6 +377,7 @@ path_settings = \
                                          'active-dekadal'),
                  }),
             ]),
+
         ('C3S', 'v201812', 'PASSIVE', 'DEKADAL', 'TCDR'):
         # paths will be tried in this order, there is no limit to the potential pathes here
             OrderedDict([
@@ -417,6 +418,132 @@ path_settings = \
                                          'TCDR',
                                          '063_images_to_ts',
                                          'passive-dekadal'),
+                 }),
+            ]),
+
+        ('C3S', 'v201812', 'COMBINED', 'DAILY', 'ICDR'):
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'combined-daily'),
+
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'combined-daily')
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'combined-daily'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'TCDR',
+                                         '064_images_to_ts',
+                                         'combined-daily'),
+                 }),
+            ]),
+
+        ('C3S', 'v201812', 'ACTIVE', 'DAILY', 'ICDR'):
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'active-daily'),
+
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'active-daily')
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'active-daily'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'TCDR',
+                                         '064_images_to_ts',
+                                         'active-daily'),
+                 }),
+            ]),
+
+        ('C3S', 'v201812', 'PASSIVE', 'DAILY', 'ICDR'):
+            OrderedDict([
+                ('local',
+                 {
+                     'win': os.path.join(root_path.d,
+                                         'data-read',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'passive-daily'),
+
+                     'lin': os.path.join(root_path.dr,
+                                         'USERS',
+                                         'wpreimes',
+                                         'C3S',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'passive-daily')
+                 }),
+                ('radar',
+                 {
+                     'win': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'ICDR',
+                                         '064_images_to_ts',
+                                         'passive-daily'),
+                     'lin': os.path.join(root_path.r,
+                                         'Datapool',
+                                         'C3S',
+                                         '02_processed',
+                                         'v201812',
+                                         'TCDR',
+                                         '064_images_to_ts',
+                                         'passive-daily'),
                  }),
             ]),
     }

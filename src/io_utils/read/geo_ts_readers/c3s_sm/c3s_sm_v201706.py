@@ -88,6 +88,8 @@ class GeoC3Sv201706FullCDRTs(object):
         self.icdr_reader = GeoC3Sv201706Ts(
             icdr_dataset, exact_index=exact_index, **kwargs)
 
+        self.grid = self.tcdr_reader.grid
+
     def read(self, *args, **kwargs):
         return pd.concat([self.tcdr_reader.read(*args, **kwargs),
                           self.icdr_reader.read(*args, **kwargs)], axis=0)

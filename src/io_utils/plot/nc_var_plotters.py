@@ -266,18 +266,18 @@ class NcVarCombPlotter(object):
         return df[name], f, imax
 
 
-# if __name__ == '__main__':
-#     import matplotlib.pyplot as plt
-#     file = r"U:\CCI_C3S_VALIDATION_PROJECT\CCI\with_GLDAS21\v47\combined\v1\netcdf\lsm_val.nc"
-#     out_dir = r'C:\Temp'
-#
-#     plotter = NcVarPlotter(filepath=file,
-#                            lat_var='lat', lon_var='lon', resxy=(0.25,0.25),
-#                            cell_center_origin=True, out_dir=out_dir)
-#
-#     plotter.plot_variable('urmsd_between_1-GLDAS_and_2-CCI', veg_mask=False,
-#                           cbrange=(0,0.1), scale_factor=0.01,
-#                           cmap=plt.get_cmap('Reds'), title_size=5,grid_label_loc='0001',
-#                           plotfile_name='ubrmsd_cci47', cb_labelsize=7,
-#                           title='ubRMSD between ESA CCI SM v04.7 and GLDAS Noah 0-10cm SM',
-#                           cb_extend='max', cb_label='ubRMSD $[m^3/m^3]$', file_format='png')
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    file = r"\\project9\data-read\RADAR\Datapool_raw\LPRM\v6.1\SMAP_S3_VEGC\daily_images\D201910\SMAP_LPRM_VEGC_D20191008_v061.nc"
+    out_dir = r'C:\Temp'
+
+    plotter = NcVarPlotter(filepath=file,
+                           lat_var='LAT', lon_var='LON', resxy=(0.25,0.25),
+                           cell_center_origin=True, out_dir=out_dir)
+
+    plotter.plot_variable('FLAGS', veg_mask=False,
+                          cbrange=(0,134219268), scale_factor=1.,
+                          cmap=plt.get_cmap('jet'), title_size=5,grid_label_loc='0001',
+                          plotfile_name='flags', cb_labelsize=7,
+                          title='flags LPRM 6.1 SMAP D20191008',
+                          cb_extend='neither', cb_label='Flag value', file_format='png')
