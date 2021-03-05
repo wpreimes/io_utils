@@ -9,7 +9,7 @@ Module description
 # NOTES:
 #   -
 
-from io_utils.write.new.base import XrBase, NcBase
+from io_utils.workspace.write.new.base import XrBase, NcBase
 from smecv_grid.grid import SMECV_Grid_v052
 import numpy as np
 

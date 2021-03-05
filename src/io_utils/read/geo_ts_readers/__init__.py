@@ -54,10 +54,13 @@ from io_utils.read.geo_ts_readers.ismn.ismn_sm import *
 try:
     # SCATSAR reading uses many other packages, therefore it's optional here
     from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_cgls_equi7 import \
-        GeoScatSarCGLSReader
+        GeoScatSarCglsSwiReader
     from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_swi_drypan import \
         GeoScatSarSWIDrypanAbsReader, GeoScatSarSWIDrypanAnomsReader
-    from io_utils.read.geo_ts_readers.csar_ssm.csar_cgls_ssm import \
+
+    from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_ssm import \
         GeoCSarSsmTiffReader
+    from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_swi import \
+        GeoCSarSwiTiffReader
 except ImportError:
     warnings.warn('Could not import SAR reader')

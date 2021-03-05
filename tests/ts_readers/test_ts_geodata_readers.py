@@ -61,6 +61,22 @@ def test_cci_v044_reader(verbose=False):
         if verbose: print(ts)
 
 @pytest.mark.geo_test_data
+def test_cci_v061_reader(verbose=False):
+    vers = 'v061'
+    for prod in ['COMBINED', 'ACTIVE', 'PASSIVE']:
+        dataset = ('ESA_CCI_SM', vers, prod)
+        if verbose: print_test_config(dataset)
+        reader = GeoCCISMv6Ts(dataset_or_path=dataset,
+                              exact_index=False,
+                              ioclass_kws={'read_bulk': True},
+                              parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
+                              scale_factors={'sm': 1.})
+        #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
+        ts = reader.read(*test_loc)
+        assert not ts.empty
+        if verbose: print(ts)
+
+@pytest.mark.geo_test_data
 def test_era5land_merged_reader(verbose=False):
     if verbose: print('Test reading ERA5Land MERGED sm/temp data from storage.')
     reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1'],
@@ -247,6 +263,8 @@ def test_ccigenio_ts_reader(verbose=False):
 
 if __name__ == '__main__':
     v = True
+    test_cci_v061_reader(v)
+
     test_ccigenio_ts_reader()
     test_SMAP_spl3_v6_reader(v)
 

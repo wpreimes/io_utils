@@ -20,7 +20,11 @@ class GeoCCISMv6Ts(CCITs):
     # Reader implementation that uses the PATH configuration from above
 
     # implememted subversion that have a set path configuration
-    _ds_implemented = [('ESA_CCI_SM', 'v0603_tmi', 'COMBINED')]
+    _ds_implemented = [('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'),
+                       ('ESA_CCI_SM', 'v061', 'COMBINED'),
+                       ('ESA_CCI_SM', 'v061', 'ACTIVE'),
+                       ('ESA_CCI_SM', 'v061', 'PASSIVE'),
+                       ]
 
     _t0 = 't0'
 

@@ -32,7 +32,8 @@ class GeoISMNTs(ISMN_Interface):
     Modified ISMN Reader class, that reads good (G Flag) ISMN values and provides
     functions for reading the station closest to a passed lonlat tuple.
     """
-    _ds_implemented = [('ISMN', 'v20191211')]
+    _ds_implemented = [('ISMN', 'v20191211'),
+                       ('ISMN', 'v20210131')]
 
     def __init__(self, dataset_or_path, network=None, parameters=('soil moisture'),
                  force_path_group=None, scale_factors=None):
@@ -61,8 +62,9 @@ class GeoISMNTs(ISMN_Interface):
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
         self.scale_factors = scale_factors
-        self.metapath = os.path.join(ts_path, 'python_metadata')
-        super(GeoISMNTs, self).__init__(ts_path, self.network)
+        self.metapath = os.path.join(ts_path, 'python_metadata') # type: str
+        super(GeoISMNTs, self).__init__(ts_path, network=self.network)
+                                        #meta_path=self.metapath)
 
     def reset_python_metadata(self):
         """
@@ -329,7 +331,7 @@ if __name__ == '__main__':
               'FLUXNET-AMERIFLUX', 'iRON', 'PBO-H2O', 'RISMA',
               'SCAN', 'USCRN', 'LAB-net']
 
-    reader = GeoISMNTs(('ISMN', 'v20191211'), network=networks, scale_factors=None)
+    reader = GeoISMNTs(('ISMN', 'v20210131'), network=None, scale_factors=None)
 
     ids = reader.get_dataset_ids('soil moisture', 0, 0.1)
 

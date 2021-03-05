@@ -58,9 +58,9 @@ class CglsS1Filename(SmartFilename):
                                      delimiter=CglsS1Filename._delimiter, 
                                      convert=convert)
 
-class CSarSsmTiffReader(object):
+class CSarTiffReader(object):
 
-    def __init__(self, path, grid_sampling=500):
+    def __init__(self, path, grid_sampling=500, param_rename='ssm'):
         
         self.path = path
 
@@ -68,6 +68,8 @@ class CSarSsmTiffReader(object):
         self.datacube = None
         self.grid = None
         self.dc = None
+
+        self.param_rename = param_rename
 
     def _setUp(self):
         # build data cube
@@ -102,13 +104,13 @@ class CSarSsmTiffReader(object):
         df = df.set_index(df.index.get_level_values('time'))
         df = df[~df.index.duplicated(keep='last')]
 
-        return decode(df).rename(columns={'1': 'ssm'})
+        return decode(df).rename(columns={'1': self.param_rename})
 
 
 if __name__ == '__main__':
     path = r"C:\Temp\delete_me\geotiff\in"
     str(datetime.now())
-    reader = CSarSsmTiffReader(path)
+    reader = CSarTiffReader(path)
     lon, lat = 15.7,47
     str(datetime.now())
     ts = reader.read(lon, lat)

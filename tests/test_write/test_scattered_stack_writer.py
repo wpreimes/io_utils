@@ -15,7 +15,7 @@ import tempfile
 import os
 import time
 
-from io_utils.write.new.scattered_cube import NcScatteredStack
+from io_utils.workspace.write.new import NcScatteredStack
 from tests.test_write.test_regular_stack_writer import generate_random_data
 
 

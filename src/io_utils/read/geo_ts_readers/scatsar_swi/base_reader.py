@@ -26,7 +26,7 @@ def decode_scatsar(data):
     data /= 2.
     return data
 
-class ScatSarCGLSReader(object):
+class ScatSarCglsSwiReader(object):
 
     def __init__(self, path, tval=5, grid_sampling=500):
         
@@ -65,7 +65,6 @@ class ScatSarCGLSReader(object):
     def read(self, *args, **kwargs):
         """ Read data for a single point from data cube """
         # import pandas as pd
-        # return pd.read_csv(r'C:\Temp\scatsarts.csv', index_col=0, parse_dates=True)
 
         if self.scatsardc is None:
             self._build()

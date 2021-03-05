@@ -1,11 +1,14 @@
 from io_utils.read.path_config import PathConfig
-from io_utils.read.geo_ts_readers.csar_ssm.base_reader import CSarSsmTiffReader
+from io_utils.read.geo_ts_readers.csar_cgls.base_reader import CSarTiffReader
+import warnings
+import os
 try:
-    from io_utils.path_configs.csar.paths_csar_cgls import path_settings
+    from io_utils.path_configs.csar.paths_csar_cgls_ssm import path_settings
 except ImportError:
+    warnings.warn(f"Not paths imported for {os.path.basename(__file__)}")
     path_settings = {}
 
-class GeoCSarSsmTiffReader(CSarSsmTiffReader):
+class GeoCSarSsmTiffReader(CSarTiffReader):
 
     _ds_implemented = [('CSAR', 'CGLS', 'SSM', '1km', 'V1.1', 'tiff')]
 
@@ -19,12 +22,14 @@ class GeoCSarSsmTiffReader(CSarSsmTiffReader):
         self.path_config = PathConfig(self.dataset, path_config)
         path = self.path_config.load_path(force_path_group=force_path_group)
 
-        super(GeoCSarSsmTiffReader, self).__init__(path, grid_sampling=grid_sampling)
+        super(GeoCSarSsmTiffReader, self).__init__(path, grid_sampling=grid_sampling,
+                                                   param_rename='ssm')
+
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCSarSsmTiffReader._ds_implemented)
 
 if __name__ == '__main__':
     ds = GeoCSarSsmTiffReader(('CSAR', 'CGLS', 'SSM', '1km', 'V1.1', 'tiff'))
-    ts = ds.read(15.7,47)
+    ts = ds.read(19.1222, 47.201232)
     print(ts.loc['2020-08-17':'2020-08-30'])
