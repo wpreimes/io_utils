@@ -1,0 +1,30 @@
+# List of conda and pip packages that are should be install when developing the packages
+# To create the full conda environment: conda env create -f environment.yml
+name: io_utils
+channels:
+  - defaults
+dependencies:
+  - numpy
+  - pandas
+  - netCDF4
+  - matplotlib
+  - cartopy>=0.18
+  - cftime>=1.1.2
+  - shapely
+  - fiona
+  - pyproj
+  - pip
+  - pip:
+      - pytesmo
+      - geopandas
+      - pygeogrids
+      - datetime
+      - pyyaml
+      - xarray
+      - configparser
+      - more_itertools
+      - Equi7Grid
+      - pytileproj
+      - cadati
+      - country-bounding-boxes
+      - pygenio

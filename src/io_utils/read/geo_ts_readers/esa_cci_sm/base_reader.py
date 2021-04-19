@@ -22,6 +22,10 @@ from cadati.jd_date import julian2date
 import pytz
 from datetime import datetime
 from pygeogrids import CellGrid
+import numpy as np
+from datetime import timedelta
+import xarray as xr
+import warnings
 
 def julian2datetimeindex(j, tz=pytz.UTC):
     """
@@ -171,11 +175,23 @@ class CCIDs(GriddedTsBase):
 class CCITs(GriddedNcOrthoMultiTs):
     # The basic CCI TS netcdf reader, with some features
 
-    def __init__(self, ts_path, grid_path=None, exact_index=False,
+    def __init__(self, ts_path, grid=None, exact_index=False, clip_dates=None,
                  ioclass_kws=None, **kwargs):
+        """
+        Read ESA CCI SM in time series format from netcdf files
 
-        if grid_path is None:
-            grid_path = os.path.join(ts_path, "grid.nc")
+        Parameters
+        ----------
+        ts_path
+        grid
+        exact_index
+        clip_dates : tuple
+        ioclass_kws
+        kwargs
+        """
+
+        if grid is None:
+            grid = os.path.join(ts_path, "grid.nc")
 
         if ioclass_kws is None:
             ioclass_kws = {'read_bulk': True}
@@ -183,19 +199,33 @@ class CCITs(GriddedNcOrthoMultiTs):
             if 'read_bulk' not in ioclass_kws.keys():
                 ioclass_kws['read_bulk'] = True
 
-        grid = nc.load_grid(grid_path)
+        if isinstance(grid, CellGrid):
+            pass
+        else:
+            grid = nc.load_grid(grid)
 
         super(CCITs, self).__init__(ts_path, grid, ioclass_kws=ioclass_kws,
                                     **kwargs)
+
+        self.clip_dates = clip_dates
 
         self.exact_index = exact_index
         self.t0 = 't0' # observation time stamp variable
         if (self.parameters is not None) and self.exact_index:
             self.parameters.append(self.t0)
 
+    def _clip_dates(self, df) -> pd.DataFrame:
+        if isinstance(df.index, pd.MultiIndex):
+            return df[(df.index.get_level_values('time') >= self.clip_dates[0]) &
+                      (df.index.get_level_values('time') <= self.clip_dates[1])]
+        else:
+            return df[(df.index >= self.clip_dates[0]) &
+                      (df.index <= self.clip_dates[1])]
+
     def read(self, *args, **kwargs):
         """ Read TS by gpi or by lonlat """
         df = super(CCITs, self).read(*args, **kwargs)
+
         if self.exact_index:
             units = self.fid.dataset.variables[self.t0].units
             df = df.set_index(self.t0)
@@ -204,11 +234,41 @@ class CCITs(GriddedNcOrthoMultiTs):
                 df.index = pd.DatetimeIndex()
             else:
                 df.index = pd.DatetimeIndex(
-                    netCDF4.num2date(df.index.values, units=units, calendar='standard',
-                             only_use_cftime_datetimes=False))
+                    netCDF4.num2date(df.index.values, units=units,
+                                     calendar='standard',
+                                     only_use_cftime_datetimes=False))
+
+        if self.clip_dates:
+            df = self._clip_dates(df)
+
         return df
 
+    def read_cell(self, cell, param='sm'):
+        """ Read a full cell file """
+        if self.exact_index:
+            warnings.warn("Reading cell with exact index not yet supported. Use read_cells()")
+
+        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
+        with nc.Dataset(file_path) as ncfile:
+            loc_id = ncfile.variables['location_id'][:]
+            time = ncfile.variables['time'][:]
+            unit_time = ncfile.variables['time'].units
+            delta = lambda t: timedelta(t)
+            vfunc = np.vectorize(delta)
+            since = pd.Timestamp(unit_time.split('since ')[1])
+            time = since + vfunc(time)
+
+            variable = ncfile.variables[param][:]
+            variable = np.transpose(variable)
+            data = pd.DataFrame(variable, columns=loc_id, index=time)
+
+        if self.clip_dates:
+            data = self._clip_dates(data)
+
+        return data
+
     def read_cells(self, cells):
+        """ Read all data for one or multiple cells as a data frame """
         cell_data = OrderedDict()
         gpis, lons, lats = self.grid.grid_points_for_cell(list(cells))
         for gpi, lon, lat in zip(gpis, lons, lats):
@@ -216,11 +276,280 @@ class CCITs(GriddedNcOrthoMultiTs):
             cell_data[gpi] = df
         return cell_data
 
+    def read_agg_cell_data(self, cell, params, format='pd_multidx_df',
+                           drop_coord_vars=True, to_replace=None,
+                           **kwargs) -> dict or pd.DataFrame:
+        """
+        Read all time series for a single variable in the selected cell.
+
+        Parameters
+        ----------
+        cell: int
+            Cell number as in the c3s grid
+        params: list or str
+            Name of the variable(s) to read.
+        format : str, optional (default: 'multiindex')
+            * pd_multidx_df (default):
+                Returns one data frame with gpi as first, and time as
+                second index level.
+            * gpidict : Returns a dictionary of dataframes, with gpis as keys
+                        and time series data as values.
+            * var_np_arrays : Returns 2d arrays for each variable and a variable
+                              'index' with time stamps.
+        to_replace : dict of dicts, optional (default: None)
+            Dict for parameters of values to replace.
+            e.g. {'sm': {-999999.0: -9999}}
+            see pandas.to_replace()
+
+        Additional kwargs are given to xarray to open the dataset.W
+
+        Returns
+        -------
+        data : dict or pd.DataFrame
+            A DataFrame if a single variable was passed, otherwise
+            a dict of DataFrames with parameter name as key.
+        """
+        if self.exact_index:
+            warnings.warn("Reading cell with exact index not yet supported. Use read_cells()")
+
+        file_path = os.path.join(self.path, f'{cell:04}.nc')
+
+        params = np.atleast_1d(params)
+
+        if 'location_id' not in params:
+            params = np.append(params, 'location_id')
+
+        with xr.open_dataset(file_path, **kwargs) as ds:
+            gpis = ds['location_id'].values
+            mask = (gpis >= 0)
+            gpis = gpis[mask]
+
+            df = ds[params].to_dataframe(dim_order=['locations', 'time'])
+            df = df.loc[ds['locations'].values[mask], :]
+            df.rename(columns={'location_id': 'gpi'}, inplace=True)
+
+            if drop_coord_vars:
+                df.drop(columns=['alt', 'lon', 'lat'], inplace=True)
+
+        if self.clip_dates:
+            df = self._clip_dates(df)
+
+        if to_replace is not None:
+            df = df.replace(to_replace=to_replace)
+
+        if format.lower() == 'pd_multidx_df':
+            index = df.index.set_levels(gpis, level=0) \
+                            .set_names('gpi', level=0)
+            data = df.set_index(index)
+
+        elif format.lower() == 'gpidict':
+            df = df.set_index(df.index.droplevel(0))
+            data = dict(tuple(df.groupby(df.pop('gpi'))))
+
+        elif format.lower() == 'var_np_arrays':
+            df = df.set_index(df.index.droplevel(0))
+            index = df.index.unique()
+            data = {'index': index}
+            for col in df.columns:
+                if col == 'gpi': continue
+                data[col] = df.groupby('gpi')[col].apply(np.array)
+
+        else:
+            raise NotImplementedError
+
+        return data
+
+
+
+    def read_agg_cell_cube(
+        self,
+        cell:int,
+        dt_index:pd.Index,
+        params:list,
+        param_fill_val:dict=None,
+        param_scalf:dict=None,
+        param_dtype:dict=None,
+        to_replace=None,
+        as_xr=False):
+        """
+        Read aggregated data for a cell.
+
+        Parameters
+        ----------
+        cell : int
+            Cell number to read data for.
+        dt_index : pd.Index
+            Index of time stamps to read data for.
+            e.g. pd.date_range('2000-01-01', '2000-12-31', freq='D')
+        params : list
+            List of parameters to read
+        param_fill_val : dict['str': float | int], optional (default: None)
+            Fill values for each parameter to use for missing values,
+            e.g. {'sm' : np.nan}
+        param_scalf : dict[str: float | int], optional (default: None)
+            Parameter names and scale factors, i.e. values that a parameter
+            time series is multiplied with after reading.
+        param_dtype : dict[str: str], optional (default: None)
+            Data types that the parameter columns are converted into.
+        to_replace : dict, optional (default: None)
+            See read_agg_cell_data()
+        as_xr : bool, optional (default: False)
+            Read as xarray DataSet.
+
+        Returns
+        -------
+
+        """
+
+        def _template(name, gpis, fill_value=np.nan, dtype='float64'):
+            ser = pd.Series(index=np.sort(gpis),
+                            data=[np.full(len(dt_index), fill_value, dtype=dtype)] * len(gpis))
+            ser.name = name
+            return ser
+
+        cell_gpi = self.grid.gpis[self.grid.arrcell == cell]
+        cell_lons, cell_lats = self.grid.gpi2lonlat(cell_gpi)
+        cell_gpi_shape = tuple([int(self.grid.cellsize / self.grid.resolution)] * 2)
+
+        cell_gpi = np.flipud(cell_gpi.reshape(cell_gpi_shape))
+        cell_lats = np.flipud(cell_lats.reshape(cell_gpi_shape))
+        cell_lons = cell_lons.reshape(cell_gpi_shape)
+
+        #read all data for a cell as data cube..
+        if param_fill_val is None:
+            param_fill_val = {}
+
+        if param_dtype is None:
+            param_dtype = {}
+
+        if param_scalf:
+            for p in param_scalf:
+                if p not in param_fill_val:
+                    warnings.warn(f"{p} : Value is scaled but not replaced, are you sure?")
+
+        data_df = self.read_agg_cell_data(cell,
+                                          params=params,
+                                          format='var_np_arrays',
+                                          to_replace=to_replace)
+
+        for p in params:
+            if p not in param_fill_val.keys():
+                param_fill_val[p] = np.nan
+            if p not in param_dtype.keys():
+                param_dtype[p] = 'float64'
+
+        if data_df is None: # file not found
+            data_df = {'index': dt_index}
+            for p in params:
+                fill_value = param_fill_val[p]
+                dtype= param_dtype[p]
+                data_df[p] = _template(p,
+                                       cell_gpi.flatten(),
+                                       fill_value=fill_value,
+                                       dtype=dtype)
+
+        timestamps = data_df.pop('index')
+
+        data_arr = {}
+        for name, ds in data_df.items():
+            if ds.index.size != cell_gpi.size:
+                missing_gpis = np.setdiff1d(cell_gpi, ds.index.values)
+                fill_val = param_fill_val[name]
+
+                ds_missing_gpis = pd.Series(
+                    index=missing_gpis,
+                    data=[np.repeat(fill_val, len(timestamps))] * len(missing_gpis))
+
+                data_df[name] = pd.concat([ds, ds_missing_gpis], axis=0, sort=True)
+                assert len(data_df[name]) == cell_gpi.size, "Unexpected number of gpis"
+
+            data_df[name] = data_df[name].sort_index(ascending=True)
+
+            # from (time, gpi) to (gpi, time)
+            arr = np.ndarray.view(np.transpose(np.vstack(data_df[name]))) # transpose?
+
+            newshape = (len(timestamps), *cell_gpi_shape)
+            arr = np.reshape(arr, newshape) #flip?
+
+            data_arr[name] = np.ma.masked_equal(arr.astype(param_dtype[name]),
+                                                param_fill_val[name],
+                                                copy=False)
+
+            param_scalf = {} if param_scalf is None else param_scalf
+
+            if name in param_scalf.keys():
+                data_arr[name] *= param_scalf[name]
+
+        timestamps.name = 'time'
+        if as_xr:
+            data_vars = {}
+            for name in data_arr.keys():
+                attrs = {'dtype': str(data_arr[name].dtype)}
+                if name in param_fill_val.keys():
+                    attrs['_FillValue'] = data_arr[name].fill_value
+                data_vars[name] = (['time', 'lat', 'lon'],
+                                   data_arr[name].filled(),
+                                   attrs)
+
+            cube = xr.Dataset(
+                data_vars=data_vars,
+                coords={'time': timestamps.values.astype('datetime64[s]'),
+                        'lon': np.array(np.unique(cell_lons.flatten()), np.float32),
+                        'lat': np.array(np.unique(cell_lats.flatten()), np.float32)})
+
+            return cube
+        else:
+            return data_arr, {'lon': cell_lons, 'lat': cell_lats, 'gpi': cell_gpi}
+
+
+
+
+
 
 if __name__ == '__main__':
-    ds = CCIDs(r"\\project9\data-write\RADAR\ESA_CCI_SM\v06.0\python3_new_grid\042_combined_MergedProd")
-    ts = ds.read(-104,38)
+    path = r"C:\Temp\delete_me\adjusted_ts2img\ESA_CCI_SM_v061_COMBINED_ADJUSTED_QCM"
 
-    ds2 = CCITs(r'R:\Datapool\ESA_CCI_SM\02_processed\ESA_CCI_SM_v05.2\timeseries\combined',
-               exact_index=False)
-    ts2 = ds2.read(-104,38)
+    dt_index = pd.date_range('2000-06-01', '2000-06-30', freq='D')
+
+
+    ds = CCITs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
+
+    params = ['adjusted',
+              'flag',
+              'dnflag',
+              'freqbandID',
+              'mode',
+              'sensor',
+              't0']
+
+    param_fill_val = {'adjusted': -9999.,
+                      'flag': 0,
+                      'dnflag': 0,
+                      'freqbandID': 0,
+                      'mode': 0,
+                      'sensor': 0,
+                      't0': -9999.,
+                      }
+
+    param_dtype = {'adjusted': 'float32',
+                   'flag': 'int8',
+                   'dnflag': 'int8',
+                   'freqbandID': 'int16',
+                   'mode': 'int8',
+                   'sensor': 'int16',
+                   't0': 'float64',
+                   }
+
+    to_replace = {param: {np.nan: param_fill_val[param]} for param in params}
+
+
+    celldata = ds.read_agg_cell_cube(2244,
+                                     dt_index=dt_index,
+                                     params=params,
+                                     param_fill_val = param_fill_val,
+                                     param_dtype=param_dtype,
+                                     param_scalf=None,
+                                     to_replace=to_replace,
+                                     as_xr=True)
+
+    celldata.to_netcdf(r"C:\Temp\delete_me\adjusted_ts2img\img\test.nc")

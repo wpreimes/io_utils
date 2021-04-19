@@ -28,6 +28,7 @@ from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v03 import *
 from io_utils.read.geo_ts_readers.c3s_sm.c3s_sm_v201706 import *
 from io_utils.read.geo_ts_readers.c3s_sm.c3s_sm_v201812 import *
 from io_utils.read.geo_ts_readers.c3s_sm.c3s_sm_v201912 import *
+from io_utils.read.geo_ts_readers.c3s_sm.c3s_sm_v202012 import *
 
 ## ERA version readers
 from io_utils.read.geo_ts_readers.era.eraint_land import *
