@@ -11,64 +11,52 @@ from smecv_grid.grid import SMECV_Grid_v052
 from io_utils.plot.colormaps import cm_sm
 import cartopy.crs as ccrs
 import shutil
-
+from tempfile import TemporaryDirectory
 
 def test_scatter_map():
-    out_dir = tempfile.mkdtemp()
+    with TemporaryDirectory() as out_dir:
+        lons = np.linspace(-160, 160, 160)
+        lats = np.linspace(90, -90, 160)
+        values = np.random.rand(160)
 
-    lons = np.linspace(-160, 160, 160)
-    lats = np.linspace(90, -90, 160)
-    values = np.random.rand(160)
+        f, imax, im = cp_scatter_map(lons, lats, values)
 
-    f, imax, im = cp_scatter_map(lons, lats, values)
+        filename = 'plot_scatter.png'
 
-    filename = 'plot_scatter.png'
-
-    f.savefig(os.path.join(out_dir, filename))
-    print('Stored plot in {}')
-    try:
+        f.savefig(os.path.join(out_dir, filename))
+        print('Stored plot in {}')
         assert os.path.isfile(os.path.join(out_dir, filename))
-    finally:
-        shutil.rmtree(out_dir)
 
 def test_area_multiindex():
-    out_dir = tempfile.mkdtemp()
+    with TemporaryDirectory() as out_dir:
+        lons = np.linspace(-20, 20, 41)
+        lats = np.linspace(20, -20, 41).transpose()
 
-    lons = np.linspace(-20, 20, 41)
-    lats = np.linspace(20, -20, 41).transpose()
+        lons, lats = np.meshgrid(lons, lats)
 
-    lons, lats = np.meshgrid(lons, lats)
+        # multiindex: lats, lons
+        index =pd.MultiIndex.from_arrays(np.array([lats.flatten(), lons.flatten()]),
+                                         names=['lats', 'lons'])
+        df = pd.DataFrame(index=index)
+        df['data'] = np.random.rand(df.index.size)
+        f, imax, im = cp_map(df, 'data', resxy=(1,1), offset=(0,0))
 
-    # multiindex: lats, lons
-    index =pd.MultiIndex.from_arrays(np.array([lats.flatten(), lons.flatten()]),
-                                     names=['lats', 'lons'])
-    df = pd.DataFrame(index=index)
-    df['data'] = np.random.rand(df.index.size)
-    f, imax, im = cp_map(df, 'data', resxy=(1,1), offset=(0,0))
-
-    filename = 'plot_area_multiindex.png'
-    f.savefig(os.path.join(out_dir, filename))
-    print('Stored plot in {}')
-    try:
+        filename = 'plot_area_multiindex.png'
+        f.savefig(os.path.join(out_dir, filename))
+        print('Stored plot in {}')
         assert os.path.isfile(os.path.join(out_dir, filename))
-    finally:
-        shutil.rmtree(out_dir)
 
 def test_area_gpi():
-    out_dir = tempfile.mkdtemp()
+    with TemporaryDirectory() as out_dir:
+        gpis = np.arange(346859, 374200)
 
-    gpis = np.arange(346859, 374200)
+        df = pd.DataFrame(index=gpis)
+        df['data'] = np.random.rand(df.index.size)
+        f, imax, im = cp_map(df, 'data', resxy=(0.25,0.25))
+        filename = 'plot_area_gpi.png'
+        f.savefig(os.path.join(out_dir, filename))
 
-    df = pd.DataFrame(index=gpis)
-    df['data'] = np.random.rand(df.index.size)
-    f, imax, im = cp_map(df, 'data', resxy=(0.25,0.25))
-    filename = 'plot_area_gpi.png'
-    f.savefig(os.path.join(out_dir, filename))
-
-    try:
         assert os.path.isfile(os.path.join(out_dir, filename))
-    finally:
-        shutil.rmtree(out_dir)
 
 def test_pretty_plot():
 
@@ -102,8 +90,8 @@ def test_pretty_plot():
 
 
 if __name__ == '__main__':
-    # test_scatter_map()
+    test_scatter_map()
     test_pretty_plot()
-    # test_area_multiindex()
-    # test_area_gpi()
+    test_area_multiindex()
+    test_area_gpi()
 

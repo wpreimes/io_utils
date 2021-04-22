@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from io_utils.grid.grid_functions import read_cells_for_continent
 
-
 def test_read_cells_for_continent():
     try:
         read_cells_for_continent('notexistingname')

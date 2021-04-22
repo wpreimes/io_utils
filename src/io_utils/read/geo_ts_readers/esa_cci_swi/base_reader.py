@@ -12,7 +12,6 @@ Reader for the ESA CCI SWI time series data of different versions
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
-from datetime import datetime
 import pandas as pd
 from collections import OrderedDict
 import numpy as np

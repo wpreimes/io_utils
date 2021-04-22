@@ -73,7 +73,7 @@ class PathConfig(object):
         group_config_os = group_config[self.os]
         return group_config_os
 
-    def load_path(self, force_path_group=None, ignore_path_groups=('__test')):
+    def load_path(self, force_path_group=None, ignore_path_groups=('__test',)):
         """
         Get a path from the path groups
 
@@ -81,7 +81,7 @@ class PathConfig(object):
         ----------
         force_path_group : str, optional (default: None)
             Use the path group of this name.
-        ignore_path_groups : list, optional (default: '__test')
+        ignore_path_groups : list or None, optional (default: ('__test',))
             Exclude these path groups from the search (if none are forced).
 
         Returns
@@ -104,15 +104,14 @@ class PathConfig(object):
                 print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
                     self.os, group, self.name_path, path))
             else:
-                raise ConfigNotFoundError('No configuration found for group {}'.
-                                        format(group))
+                raise ConfigNotFoundError('No configuration found for group {} or path does not exist {}'.
+                                        format(group, path))
             return path
         else:
             for group, ospath in self.config.items():
                 if group not in ignore_path_groups:
                     path = self._load_path_group(group)
                     if path is not None and os.path.exists(path):
-                        print('OS: {}; PathGroup: {}; Dataset: {}; Path: {}'.format(
-                            self.os, group, self.name_path, path))
+                        print(f'OS: {self.os}; PathGroup: {group}; Dataset: {self.name_path,}; Path: {path}')
                         return path
             raise PathNotFoundError('None of the paths in the configuration were found')

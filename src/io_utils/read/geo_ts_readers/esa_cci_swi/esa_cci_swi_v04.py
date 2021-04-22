@@ -4,11 +4,8 @@
 Reader for SWI data from esa cci sm v4 sm data.
 """
 from io_utils.read.path_config import PathConfig
-try:
-    from io_utils.path_configs.esa_cci_swi.paths_esa_cci_swi_v04 import path_settings
-except ImportError:
-    path_settings = {}
 from io_utils.read.geo_ts_readers.esa_cci_swi.base_reader import GeoCCISWITs
+path_settings = {}
 
 class GeoCCISWIv4Ts(GeoCCISWITs):
     # Reader implementation that uses the PATH configuration from above
@@ -17,7 +14,7 @@ class GeoCCISWIv4Ts(GeoCCISWITs):
     _col_fillvalues = {}
 
     # implememted subversion that have a set path configuration
-    _ds_implemented = [('ESA_CCI_SWI', 'v047')]
+    _ds_implemented = []
 
     def __init__(self, dataset_or_path, force_path_group=None, **kwargs):
         """

@@ -42,10 +42,6 @@ class GeoCCISMv4Ts(CCITs):
                        ('ESA_CCI_SM', 'v045', 'PASSIVE'),
                        ('ESA_CCI_SM', 'v045', 'COMBINED'),
                        ('ESA_CCI_SM', 'v045', 'COMBINED', 'ADJUSTED', 'QCM', 'ERA5'),
-                       # version 45
-                       ('ESA_CCI_SM', 'v044', 'COMBINED'),
-                       ('ESA_CCI_SM', 'v044', 'ACTIVE'),
-                       ('ESA_CCI_SM', 'v044', 'PASSIVE'),
                        # exact index fails for versions <47
                        ('ESA_CCI_SM', 'v047', 'COMBINED'),
                        ('ESA_CCI_SM', 'v047', 'ACTIVE'),

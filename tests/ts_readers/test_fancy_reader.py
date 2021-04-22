@@ -2,8 +2,7 @@
 
 import pytest
 from io_utils.read.geo_ts_readers.ts_reader import GeoTsReader
-import pandas as pd
-from io_utils.read.geo_ts_readers import GeoCCISMv4Ts, GeoGLDAS21Ts, GeoISMNTs, GeoHsafAscatSsmTs, GeoEra5LandTs
+from io_utils.read.geo_ts_readers import GeoCCISMv6Ts, GeoGLDAS21Ts, GeoISMNTs, GeoHsafAscatSsmTs, GeoEra5LandTs
 import numpy as np
 from datetime import datetime
 import os
@@ -59,7 +58,7 @@ def test_cci_sat_data():
     Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
     sm anomalies based on 1991-2010 clim.
     """
-    reader_kwargs = {'dataset_or_path': ('ESA_CCI_SM', 'v047', 'COMBINED'),
+    reader_kwargs = {'dataset_or_path': ('ESA_CCI_SM', 'v061', 'COMBINED'),
                      'force_path_group': 'radar',
                      'exact_index': True,
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
@@ -75,7 +74,7 @@ def test_cci_sat_data():
     resample = ('10D', 'mean')
     params_rename = {'sm': 'esa_cci_sm'}
 
-    fancyreader = GeoTsReader(GeoCCISMv4Ts, reader_kwargs, selfmaskingadapter_kwargs,
+    fancyreader = GeoTsReader(GeoCCISMv6Ts, reader_kwargs, selfmaskingadapter_kwargs,
                               climadapter_kwargs, resample, filter_months=None,
                               params_rename=params_rename)
 
@@ -84,8 +83,8 @@ def test_cci_sat_data():
     ts = ts.dropna(how='all')
     assert np.all(ts.columns.values == ['esa_cci_sm', 'flag', 'sm_uncertainty'])
     assert np.all(ts['flag'].dropna().values == 0.)
-    assert np.all(ts['esa_cci_sm'].values <= 0.1)
-    assert not ts.empty
+    assert np.all(ts['esa_cci_sm'].dropna().values <= 0.1)
+    assert not ts.dropna().empty
     print(ts)
 
 @pytest.mark.geo_test_data
@@ -158,39 +157,37 @@ def test_insitu_data():
     """
     reader_kwargs = {'dataset_or_path': ('ISMN', 'v20191211'),
                      'network': 'COSMOS',
-                     'force_path_group': '__test',
-                     'parameters': ['soil moisture', 'flag']}
+                     'force_path_group': '__test'}
 
     # keep only obs where temp >= 277.15°C
     selfmaskingadapter_kwargs = {'op' : '==', 'threshold' : 'G',
-                                 'column_name' : 'soil moisture_flag'}
-    climadapter_kwargs = {'columns' : ['soil moisture'],
+                                 'column_name' : 'soil_moisture_flag'}
+    climadapter_kwargs = {'columns' : ['soil_moisture'],
                           'wraparound' : True,
                           'timespan': [datetime(2010,1,1), datetime(2019,12,31)],
                           'moving_avg_clim' : 30}
     resample = None
-    params_rename = {'soil moisture': 'initu_sm'}
+    params_rename = {'soil_moisture': 'initu_sm'}
 
 
     fancyreader = GeoTsReader(GeoISMNTs, reader_kwargs, selfmaskingadapter_kwargs,
                               climadapter_kwargs, resample, filter_months=None,
                               params_rename=params_rename)
-    fancyreader.base_reader.reset_python_metadata()
+    fancyreader.base_reader.rebuild_metadata()
 
     nearest, dist = fancyreader.base_reader.find_nearest_station(-155.5, 19.9,
                                                             return_distance=True)
-    ids = fancyreader.base_reader.get_dataset_ids('soil moisture',
+    assert nearest.name == 'SilverSword'
+    ids = fancyreader.base_reader.get_dataset_ids('soil_moisture',
                                              min_depth=0, max_depth=0.17)
     ts = fancyreader.read(ids[0]) # read and mask
-    assert all(ts['soil moisture_flag'].values == 'G')
+    assert all(ts['soil_moisture_flag'].values == 'G')
     df_drop = ts['initu_sm'].dropna()
     assert not df_drop.empty
 
-
 if __name__ == '__main__':
+    test_cci_sat_data()
+    test_ascat_sat_data()
     test_era5land_rean_data()
-    # test_gldas_model_data()
-    # test_ascat_sat_data()
-    # test_cci_sat_data()
-    # test_insitu_data()
-
+    test_gldas_model_data()
+    test_insitu_data()

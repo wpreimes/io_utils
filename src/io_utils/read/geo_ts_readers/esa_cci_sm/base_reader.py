@@ -228,10 +228,10 @@ class CCITs(GriddedNcOrthoMultiTs):
 
         if self.exact_index:
             units = self.fid.dataset.variables[self.t0].units
+            df = df.loc[(df[self.t0] >= 0) & df[self.t0].notnull()]
             df = df.set_index(self.t0)
-            df = df[df.index.notnull()]
             if len(df.index.values) == 0:
-                df.index = pd.DatetimeIndex()
+                pass
             else:
                 df.index = pd.DatetimeIndex(
                     netCDF4.num2date(df.index.values, units=units,
@@ -269,12 +269,18 @@ class CCITs(GriddedNcOrthoMultiTs):
 
     def read_cells(self, cells):
         """ Read all data for one or multiple cells as a data frame """
-        cell_data = OrderedDict()
+        cell_data = []
         gpis, lons, lats = self.grid.grid_points_for_cell(list(cells))
         for gpi, lon, lat in zip(gpis, lons, lats):
             df = self.read(lon, lat)
-            cell_data[gpi] = df
-        return cell_data
+            df.columns = pd.MultiIndex.from_tuples((gpi, c) for c in df.columns)
+            if not df.empty:
+                cell_data.append(df)
+
+        if len(cell_data) == 0:
+            return pd.DataFrame()
+        else:
+            return pd.concat(cell_data, axis=0 if self.exact_index else 1)
 
     def read_agg_cell_data(self, cell, params, format='pd_multidx_df',
                            drop_coord_vars=True, to_replace=None,
@@ -503,18 +509,13 @@ class CCITs(GriddedNcOrthoMultiTs):
 
 
 
-
-
-
 if __name__ == '__main__':
-    path = r"C:\Temp\delete_me\adjusted_ts2img\ESA_CCI_SM_v061_COMBINED_ADJUSTED_QCM"
-
+    path = "/shares/wpreimes/radar/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v05.2/timeseries/combined/"
     dt_index = pd.date_range('2000-06-01', '2000-06-30', freq='D')
-
 
     ds = CCITs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
 
-    params = ['adjusted',
+    params = ['sm',
               'flag',
               'dnflag',
               'freqbandID',
@@ -522,7 +523,7 @@ if __name__ == '__main__':
               'sensor',
               't0']
 
-    param_fill_val = {'adjusted': -9999.,
+    param_fill_val = {'sm': -9999.,
                       'flag': 0,
                       'dnflag': 0,
                       'freqbandID': 0,

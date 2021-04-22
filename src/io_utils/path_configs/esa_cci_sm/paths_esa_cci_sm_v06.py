@@ -16,35 +16,6 @@ import io_utils.root_path as root_path
 
 path_settings = \
     {
-        ('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'):
-        # paths will be tried in this order
-            OrderedDict([
-                ('local',
-                 {
-                     'win': os.path.join(root_path.d,
-                                         'data-read',
-                                         'CCI_v06.0.3_tmi',
-                                         '063_images_to_ts',
-                                         'combined'),
-                     'lin': os.path.join(root_path.dr,
-                                         'USERS',
-                                         'wpreimes',
-                                         'CCI_v06.0.3_tmi',
-                                         '063_images_to_ts',
-                                         'combined'),
-                 }),
-                ('radar',
-                 {
-                     'win': os.path.join(r'\\project10',
-                                         'data-read',
-                                         'USERS',
-                                         'wpreimes',
-                                         'CCI_v06.0.3_tmi',
-                                         '063_images_to_ts',
-                                         'combined'),
-                     'lin': None,
-                 }),
-            ]),
         ('ESA_CCI_SM', 'v061', 'COMBINED'):
         # paths will be tried in this order
             OrderedDict([
@@ -63,20 +34,27 @@ path_settings = \
                 ('radar',
                  {
                      'win': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'combined'),
                      'lin': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'combined'),
                  }),
+                ('__test',
+                 {
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'combined'),
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'combined')
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
             ]),
         ('ESA_CCI_SM', 'v061', 'ACTIVE'):
         # paths will be tried in this order
@@ -96,20 +74,27 @@ path_settings = \
                 ('radar',
                  {
                      'win': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'active'),
                      'lin': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'active'),
                  }),
+                ('__test',
+                 {
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'active'),
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'active')
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
             ]),
         ('ESA_CCI_SM', 'v061', 'PASSIVE'):
         # paths will be tried in this order
@@ -129,19 +114,26 @@ path_settings = \
                 ('radar',
                  {
                      'win': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'passive'),
                      'lin': os.path.join(root_path.r,
-                                         'Projects',
-                                         'CCIplus_Soil_Moisture',
-                                         '07_data',
+                                         'Datapool',
+                                         'ESA_CCI_SM',
+                                         '02_processed',
                                          'ESA_CCI_SM_v06.1',
-                                         '063_images_to_ts',
+                                         'timeseries',
                                          'passive'),
                  }),
+                ('__test',
+                 {
+                     'win': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'passive'),
+                     'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                         'esa_cci_sm', 'v061', 'passive')
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
             ]),
     }

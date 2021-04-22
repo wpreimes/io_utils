@@ -20,7 +20,7 @@ class GeoCCISMv6Ts(CCITs):
     # Reader implementation that uses the PATH configuration from above
 
     # implememted subversion that have a set path configuration
-    _ds_implemented = [('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'),
+    _ds_implemented = [
                        ('ESA_CCI_SM', 'v061', 'COMBINED'),
                        ('ESA_CCI_SM', 'v061', 'ACTIVE'),
                        ('ESA_CCI_SM', 'v061', 'PASSIVE'),
@@ -82,8 +82,7 @@ class GeoCCISMv6Ts(CCITs):
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv6Ts._ds_implemented)
 
 if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import GeoCCISMv5Ts
-    ds = GeoCCISMv6Ts(('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'), exact_index=False)
+    ds = GeoCCISMv6Ts(('ESA_CCI_SM', 'v061', 'COMBINED'), exact_index=False)
     ts6 = ds.read(45, 15)
 
 

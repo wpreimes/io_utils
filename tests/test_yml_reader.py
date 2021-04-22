@@ -5,7 +5,6 @@ from io_utils.yml.read import spaceify, read_settings
 import numpy as np
 import sys
 import io_utils.root_path as root_path
-import yaml
 
 yml_path = os.path.join(root_path.test_root, '00_testdata', 'yml', 'test_config.yml')
 

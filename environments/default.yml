@@ -10,6 +10,7 @@ dependencies:
   - matplotlib
   - cartopy>=0.18
   - cftime>=1.1.2
+  - gdal
   - shapely
   - fiona
   - pyproj
@@ -28,3 +29,8 @@ dependencies:
       - cadati
       - country-bounding-boxes
       - pygenio
+      - git+https://github.com/awst-austria/ismn.git@master
+      - smecv_grid
+      # needed to run setup.py test
+      - pytest
+      - pytest-cov

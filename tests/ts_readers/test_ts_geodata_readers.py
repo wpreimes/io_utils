@@ -19,46 +19,16 @@ def print_test_config(dataset, path_group=None):
 def test_cciswi_v047_reader(verbose=False):
     if verbose: print('Test reading CCI47 SWI from storage.')
     vers = 'v047'
-    reader = GeoCCISWIv4Ts(dataset_or_path=('ESA_CCI_SWI', vers),
+    reader = GeoCCISWIv4Ts(
+        dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
+                                     'SWI', 'SWI_CCI_04.7', 'SWI_CCI_v04.7_TS'),
                           ioclass_kws={'read_bulk': True},
-                          exact_index=True,
                           parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
                           scale_factors={'SWI_001': 1.})
     #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
     ts = reader.read(*test_loc)
     assert not ts.empty
     if verbose: print(ts)
-
-@pytest.mark.geo_test_data
-def test_cci_v045_reader(verbose=False):
-    if verbose: print('Test reading CCI45, Combined, passive from storage.')
-    vers = 'v045'
-    for prod in ['COMBINED', 'ACTIVE', 'PASSIVE']:
-        reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, prod),
-                              exact_index=False, # not working before v47
-                              ioclass_kws={'read_bulk': True},
-                              parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
-                              scale_factors={'sm': 1.})
-        #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-        ts = reader.read(*test_loc)
-        assert not ts.empty
-        if verbose: print(ts)
-
-@pytest.mark.geo_test_data
-def test_cci_v044_reader(verbose=False):
-    vers = 'v044'
-    for prod in ['COMBINED', 'ACTIVE', 'PASSIVE']:
-        dataset = ('ESA_CCI_SM', vers, prod)
-        if verbose: print_test_config(dataset)
-        reader = GeoCCISMv4Ts(dataset_or_path=dataset,
-                              exact_index=False,
-                              ioclass_kws={'read_bulk': True},
-                              parameters=['sm', 'sm_uncertainty', 'flag', 't0'],
-                              scale_factors={'sm': 1.})
-        #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-        ts = reader.read(*test_loc)
-        assert not ts.empty
-        if verbose: print(ts)
 
 @pytest.mark.geo_test_data
 def test_cci_v061_reader(verbose=False):
@@ -110,7 +80,7 @@ def test_eraint_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_C3S201706_combined_readers(verbose=False):
     dataset = ('C3S', 'v201706', 'COMBINED',  'DAILY')
-    force_path_group = '__test'
+    force_path_group = 'radar'
     if verbose: print_test_config(dataset, force_path_group)
 
     reader = GeoC3Sv201706FullCDRTs(dataset=dataset,
@@ -253,7 +223,7 @@ def test_ascatssm_ts_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_ccigenio_ts_reader(verbose=False):
     path = os.path.join(root_path.r, 'Projects', "CCIplus_Soil_Moisture",
-                        "07_data", "ESA_CCI_SM_v04.7", "042_combined_MergedProd")
+                        "07_data", "ESA_CCI_SM_v06.1", "042_combined_MergedProd")
     reader = GeoCCISMv6GenioTs(path,
                                parameters=['sm', 'flag', 'freqband'],
                                exact_index=False)
@@ -263,25 +233,30 @@ def test_ccigenio_ts_reader(verbose=False):
 
 if __name__ == '__main__':
     v = True
+    test_SMAP_spl3_v6_reader(v)
+
+    test_C3S201706_combined_readers(v)
+
+    test_ascatssm_ts_reader(v)
+
+    test_cciswi_v047_reader(v)
+
     test_cci_v061_reader(v)
 
     test_ccigenio_ts_reader()
-    test_SMAP_spl3_v6_reader(v)
 
 
     test_C3S201912_single_monthly_readers(v)
     test_C3S201912_single_daily_readers(v)
 
-    test_ascatssm_ts_reader()
     test_amsr2ccids_ts_reader(v)
     test_amsr2lprm_ts_reader(mode='ASC', verbose=v)
-    test_cciswi_v047_reader(v)
     test_gldas20_ts_reader(v)
-    test_cci_v045_reader(v)
-    test_cci_v044_reader(v)
     test_era5land_merged_reader(v)
     test_era5land_snow_reader(v)
     test_eraint_reader(v)
-    test_C3S201706_combined_readers(v)
+
+
+
 
 

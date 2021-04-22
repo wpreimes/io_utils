@@ -6,14 +6,12 @@ Combines dataset config readers, adapters and some more features for all readers
 
 # TODO: pass multiple selfmasking adapters that are applied sequentially?
 
-import operator
 import pandas as pd
-from pytesmo.validation_framework.adapters import BasicAdapter
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter, SelfMaskingAdapter
 import numpy as np
 from io_utils.utils import filter_months
 import warnings
-from collections import Iterable
+from collections.abc import Iterable
 from pytesmo.validation_framework.adapters import BasicAdapter
 
 
@@ -26,7 +24,7 @@ class GeoTsReader(object):
 
     def __init__(self, cls, reader_kwargs=None, selfmaskingadapter_kwargs=None,
                  climadapter_kwargs=None, resample=None, filter_months=None,
-                 params_rename=None):
+                 params_rename=None, remove_nans=None):
 
         """
         Collects geopath-readers and calls them based on the dataset name,
@@ -59,6 +57,12 @@ class GeoTsReader(object):
         params_rename : dict, optional (default: None)
             A lookup table for renaming parameters. This is done at the very end.
             e.g. {'sm' : 'ESA CCI SM Soil Moisture'}
+        remove_nans : float or int or dict, optional (default: None)
+            Replace fill values in time series. Either
+                - dict of form {parameter: {val_to_replace: replacement_val}, ... }
+                - dict of form {parameter : val_to_set_NaN ...}
+                - A number to replace this number with nan anywhere
+                - None to do nothing
         """
 
         if reader_kwargs is None:
@@ -73,6 +77,12 @@ class GeoTsReader(object):
         self.params_rename = params_rename
         self.filter_months = filter_months
         self.resample = resample
+
+        if isinstance(remove_nans, dict):
+            for var, is_should in remove_nans.copy().items():
+                if not isinstance(is_should, dict):
+                    remove_nans[var] = {is_should: np.nan}
+        self.remove_nans = remove_nans
 
         self.selfmaskingadapter_kwargs = selfmaskingadapter_kwargs
         self.climadapter_kwargs = climadapter_kwargs
@@ -127,6 +137,12 @@ class GeoTsReader(object):
     def read(self, *args, **kwargs):
         """ Read data for a location, by gpi or by lonlat """
         df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
+
+        if self.remove_nans:
+            if isinstance(self.remove_nans, (int, float)):
+                df = df.replace(self.remove_nans, np.nan)
+            else:
+                df = df.replace(self.remove_nans)
 
         # filtering is done after adapting
         if self.filter_months is not None:

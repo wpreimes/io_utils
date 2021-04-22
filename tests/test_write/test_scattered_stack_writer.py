@@ -11,11 +11,11 @@ Module description
 
 import numpy as np
 import pandas as pd
-import tempfile
+from tempfile import TemporaryDirectory
 import os
 import time
 
-from io_utils.workspace.write.new import NcScatteredStack
+from io_utils.write.scattered_cube import NcScatteredStack
 from tests.test_write.test_regular_stack_writer import generate_random_data
 
 

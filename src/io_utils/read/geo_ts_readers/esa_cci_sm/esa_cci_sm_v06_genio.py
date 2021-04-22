@@ -8,7 +8,7 @@ from io_utils.read.path_config import PathConfig
 import numpy as np
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import CCIDs
 try:
-    from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v06_genio import path_settings
+    from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v06 import path_settings
 except ImportError:
     path_settings = {}
 
@@ -50,11 +50,6 @@ class GeoCCISMv6GenioTs(CCIDs):
         return ts.replace(self._fillval, np.nan)
 
 if __name__ == '__main__':
-    path = r"R:\Projects\CCIplus_Soil_Moisture\07_data\ESA_CCI_SM_v04.7\042_combined_MergedProd"
-
-    ds = GeoCCISMv6GenioTs(path, parameters=['sm', 'flag'])
-    ts = ds.read(45,15)
-
     from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import GeoCCISMv6Ts
     ds = GeoCCISMv6Ts(('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'), exact_index=False)
     ts6 = ds.read(45, 15)

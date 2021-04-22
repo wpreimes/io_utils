@@ -4,6 +4,7 @@
 Test the readers for which there is test data in this package
 """
 from io_utils.read.geo_ts_readers import *
+import pytest
 
 test_loc = (-155.875, 19.625)
 
@@ -77,181 +78,55 @@ def test_cci_v033_reader():
     assert not ts.empty
 
 
-
-def test_cci_v045_reader():
-    vers = 'v045'
+@pytest.mark.parametrize("version,Reader",[
+                         ("v045", GeoCCISMv4Ts),
+                         ("v047", GeoCCISMv4Ts),
+                         ("v052", GeoCCISMv5Ts),
+                         ("v061", GeoCCISMv6Ts),
+                         ])
+def test_cci_reader(version, Reader):
     force_path_group = '__test'
+
     ## == active
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=False,
+    reader = Reader(dataset_or_path=('ESA_CCI_SM', version, 'ACTIVE'),
+                          exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # not all enoty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
+    cell_data = reader.read_cells([165,166]) # all empty
+    for col in cell_data.columns: # all empty
+        assert cell_data[col].dropna().empty
     ts = reader.read(*test_loc)
-    assert ts.empty
+    assert ts.dropna().empty
+    reader.close()
 
     ## == combined
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=False,
+    reader = Reader(dataset_or_path=('ESA_CCI_SM', version, 'COMBINED'),
+                          exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # not all enoty
-    ts = reader.read(633697)
+    cell_data = reader.read_cells([165,166]) # not all empty
+    assert not cell_data[(632257, 'sm')].dropna().empty
+    ts = reader.read(632257).replace(-9999., np.nan)
     assert not ts.empty
+    reader.close()
 
     ## == passive
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=False,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-def test_cci_v044_reader():
-    vers = 'v044'
-    force_path_group = '__test'
-
-    ## == active
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=False,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-    ## == combined
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=False,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    ts = reader.read(633697)
-    assert not ts.empty
-
-    ## == passive
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=False,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-def test_cci_v047_reader():
-    vers = 'v047'
-    force_path_group = '__test'
-
-    ## == active
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
+    reader = Reader(dataset_or_path=('ESA_CCI_SM', version, 'PASSIVE'),
                           exact_index=True,
                           ioclass_kws={'read_bulk': True},
                           parameters=['sm', 'sm_uncertainty', 't0'],
                           scale_factors={'sm': 1.},
                           force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-    ## == combined
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    ts = reader.read(633697)
-    assert not ts.empty
-
-    ## == passive
-    reader = GeoCCISMv4Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-def test_cci_v052_reader():
-    vers = 'v052'
-    force_path_group = '__test'
-
-    ## == active
-    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'ACTIVE'),
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
-    ts = reader.read(*test_loc)
-    assert ts.empty
-
-    ## == combined
-    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'COMBINED'),
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     cell_data = reader.read_cells([165,166])
-    ts = reader.read(633697)
-    assert not ts.empty
-
-    ## == passive
-    reader = GeoCCISMv5Ts(dataset_or_path=('ESA_CCI_SM', vers, 'PASSIVE'),
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True},
-                          parameters=['sm', 'sm_uncertainty', 't0'],
-                          scale_factors={'sm': 1.},
-                          force_path_group=force_path_group)
-    #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
-    cell_data = reader.read_cells([165,166]) # all empty
-    for gpi, data in cell_data.items():
-        assert data.empty # all empty
+    assert isinstance(cell_data, pd.DataFrame)
     ts = reader.read(*test_loc)
-    assert ts.empty
+    assert ts.dropna().empty
 
 
 def test_era5_reader():
@@ -387,65 +262,69 @@ def test_gldas21_ts_reader():
 
 def test_ismn_good_sm_ts_reader_masking():
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
-                       parameters=('soil moisture', 'flag'),
                        force_path_group='__test', scale_factors=None)
-    reader.reset_python_metadata()
-    mreader = SelfMaskingAdapter(reader, '==', 'G', 'soil moisture_flag')
+    reader.rebuild_metadata()
+    mreader = SelfMaskingAdapter(reader, '==', 'G', 'soil_moisture_flag')
 
-    nearest = reader.find_nearest_station(-155.5, 19.9)
-    assert nearest.station == 'SilverSword'
-    ids = reader.get_dataset_ids('soil moisture', min_depth=0, max_depth=0.17)
+    nearest_station = reader.find_nearest_station(-155.5, 19.9)
+    assert nearest_station.name == 'SilverSword'
+    ids = reader.get_dataset_ids('soil_moisture', min_depth=0, max_depth=0.17)
     ts = mreader.read(ids[0]) # read and mask
-    assert np.all(ts['soil moisture_flag'] == 'G')
-    df_drop = ts['soil moisture'].dropna()
+    assert np.all(ts['soil_moisture_flag'] == 'G')
+    df_drop = ts['soil_moisture'].dropna()
     assert not df_drop.empty
 
 def test_ismn_good_sm_ts_reader_no_masking():
 
     reader = GeoISMNTs(('ISMN', 'v20191211'), network=['COSMOS'],
-                       parameters=('soil moisture'),
                        force_path_group='__test', scale_factors=None)
     nearest = reader.find_nearest_station(-155.5, 19.9)
 
     # todO: here the mask adapter cannot be applied because if expect fct read_ts..
-    dat, station, dist = reader.read_sm_nearest_station(
-        lon=nearest.longitude, lat=nearest.latitude, min_depth=0, max_depth=0.2)
-    sm = dat['soil moisture', 'COSMOS', 'SilverSword', 0.0, 0.17,
-            'Cosmic-ray-Probe'].loc[
-             dat['soil moisture_flag', 'COSMOS', 'SilverSword', 0.0, 0.17,
-                 'Cosmic-ray-Probe'].isin(['G'])]
+    dat, station, dist = reader.read_nearest_station(
+        lon=nearest.metadata['longitude'].val,
+        lat=nearest.metadata['latitude'].val,
+        variable='soil_moisture',
+        only_good=True,
+        return_flags=True,
+        depth=(0, 0.2))
 
-    also_sm = station.read_variable('soil moisture').data
-    also_sm = also_sm['soil moisture'].loc[also_sm['soil moisture_flag'].isin(['G'])]
+    sm_g = dat['soil_moisture 0.0 to 0.17 [m]']
+    flag_g = dat['soil_moisture_flag 0.0 to 0.17 [m]']
+    assert np.all(flag_g.values == 'G')
 
-    assert np.all(sm.values == also_sm.values)
+    also_sm = reader.read_ts(0)
+    also_g_sm = also_sm.loc[also_sm['soil_moisture_flag'] == 'G']['soil_moisture']
+    also_g_flag = also_sm.loc[also_sm['soil_moisture_flag'] == 'G']['soil_moisture_flag']
+    assert np.all(also_g_flag.values == 'G')
+    assert np.all(sm_g.values == also_g_sm.values)
+
     assert not dat.dropna().empty
 
-
 if __name__ == '__main__':
-    test_smap_spl3_v5_reader()
+    test_cci_reader('v061', GeoCCISMv6Ts)
+    test_cci_reader('v052', GeoCCISMv5Ts)
+    test_cci_reader('v045', GeoCCISMv4Ts)
+    test_cci_v033_reader()
 
-
+    test_era5_reader()
+    test_era5land_reader()
+    test_C3S201706_single_readers()
+    test_C3S201812_single_readers()
+    test_C3S201912_single_readers()
+    test_merra2_ts_reader()
+    test_era5_land_ts_reader()
+    test_era5_ts_reader()
+    test_gldas21_ts_reader()
     test_ismn_good_sm_ts_reader_masking()
     test_ismn_good_sm_ts_reader_no_masking()
 
     test_smosic_reader()
-    test_era5_land_ts_reader()
-    test_era5_ts_reader()
+    test_smap_spl3_v5_reader()
 
-    test_cci_v033_reader()
-    test_cci_v044_reader()
-    test_cci_v045_reader()
-    test_cci_v052_reader()
 
-    test_merra2_ts_reader()
 
-    test_C3S201706_single_readers()
-    test_C3S201812_single_readers()
-    test_C3S201912_single_readers()
 
-    test_gldas21_ts_reader()
 
-    test_era5_reader()
 
 

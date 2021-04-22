@@ -24,6 +24,10 @@ class SMAPTs(GriddedNcOrthoMultiTs):
 
         self.exact_index = exact_index
 
+        if self.exact_index and \
+                (self.parameters is not None and self._t0_var not in self.parameters):
+            self.parameters.append(self._t0_var)
+
     def _to_datetime(self, df):
         df['_date'] = df.index.values
         num = df[self._t0_var].dropna()

@@ -2,7 +2,6 @@
 
 from ascat.h_saf import AscatNc
 import os
-from pytesmo.validation_framework.adapters import AdvancedMaskingAdapter
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
 from collections import OrderedDict
@@ -14,10 +13,16 @@ class HSAFAscatSSMTs(AscatNc):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
 
+        if 'exact_index' in kwargs:
+            if not kwargs['exact_index']:
+                raise NotImplementedError("Use the resampling keyword instead.")
+            else:
+                kwargs.pop('exact_index')
+
         super(HSAFAscatSSMTs, self).__init__(path=ts_path,
-                                         fn_format=fn_format,
-                                         grid_filename=grid_path,
-                                         **kwargs)
+                                             fn_format=fn_format,
+                                             grid_filename=grid_path,
+                                             **kwargs)
 
 class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs):
     def __init__(self, ts_path, grid_path=None, **kwargs):
