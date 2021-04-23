@@ -172,8 +172,8 @@ class CCIDs(GriddedTsBase):
         return self.fid.idx, cell_data
 
 
-class CCITs(GriddedNcOrthoMultiTs):
-    # The basic CCI TS netcdf reader, with some features
+class SmecvTs(GriddedNcOrthoMultiTs):
+    # The basic CCI/C3S TS netcdf reader, with some features
 
     def __init__(self, ts_path, grid=None, exact_index=False, clip_dates=None,
                  ioclass_kws=None, **kwargs):
@@ -182,13 +182,20 @@ class CCITs(GriddedNcOrthoMultiTs):
 
         Parameters
         ----------
-        ts_path
-        grid
-        exact_index
-        clip_dates : tuple
-        ioclass_kws
-        kwargs
+        ts_path : str
+            Path to where the data is stored
+        grid : str or pygeogrids.CellGrid, optional (default: None)
+            Grid that the time series are searched on
+        exact_index : bool, optional (default: False)
+            Apply t0 to daily time stamps to read exact observations times.
+        clip_dates : tuple[datetime, datetime], optional (default: None)
+            Cut the time series to this date range (start, end)
+        ioclass_kws : dict, optional (default: None)
+            IO class kwargs used by pyntecf
+        kwargs:
+            Additional kwargs are given to pynetcf OrthoMultiTs.
         """
+        self.t0 = 't0' # observation time stamp variable
 
         if grid is None:
             grid = os.path.join(ts_path, "grid.nc")
@@ -204,17 +211,20 @@ class CCITs(GriddedNcOrthoMultiTs):
         else:
             grid = nc.load_grid(grid)
 
-        super(CCITs, self).__init__(ts_path, grid, ioclass_kws=ioclass_kws,
+        super(SmecvTs, self).__init__(ts_path, grid, automask=True,
+                                    ioclass_kws=ioclass_kws,
                                     **kwargs)
 
         self.clip_dates = clip_dates
 
         self.exact_index = exact_index
-        self.t0 = 't0' # observation time stamp variable
-        if (self.parameters is not None) and self.exact_index:
+
+        if (self.parameters is not None) and self.exact_index and \
+                (self.t0 not in self.parameters):
             self.parameters.append(self.t0)
 
     def _clip_dates(self, df) -> pd.DataFrame:
+        # clip data frame to date range based in datetime index
         if isinstance(df.index, pd.MultiIndex):
             return df[(df.index.get_level_values('time') >= self.clip_dates[0]) &
                       (df.index.get_level_values('time') <= self.clip_dates[1])]
@@ -222,12 +232,18 @@ class CCITs(GriddedNcOrthoMultiTs):
             return df[(df.index >= self.clip_dates[0]) &
                       (df.index <= self.clip_dates[1])]
 
-    def read(self, *args, **kwargs):
-        """ Read TS by gpi or by lonlat """
-        df = super(CCITs, self).read(*args, **kwargs)
+    def read(self, *args, **kwargs) -> pd.DataFrame:
+        """
+        Read time series based on lonlat or gpi
+        """
+        df = super(SmecvTs, self).read(*args, **kwargs)
 
         if self.exact_index:
-            units = self.fid.dataset.variables[self.t0].units
+            try:
+                units = self.fid.dataset.variables[self.t0].units
+            except AttributeError:
+                units = 'Days since 1970-01-01'
+
             df = df.loc[(df[self.t0] >= 0) & df[self.t0].notnull()]
             df = df.set_index(self.t0)
             if len(df.index.values) == 0:
@@ -243,7 +259,7 @@ class CCITs(GriddedNcOrthoMultiTs):
 
         return df
 
-    def read_cell(self, cell, param='sm'):
+    def read_cell_file(self, cell, param='sm'):
         """ Read a full cell file """
         if self.exact_index:
             warnings.warn("Reading cell with exact index not yet supported. Use read_cells()")
@@ -364,8 +380,6 @@ class CCITs(GriddedNcOrthoMultiTs):
             raise NotImplementedError
 
         return data
-
-
 
     def read_agg_cell_cube(
         self,
@@ -513,7 +527,7 @@ if __name__ == '__main__':
     path = "/shares/wpreimes/radar/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v05.2/timeseries/combined/"
     dt_index = pd.date_range('2000-06-01', '2000-06-30', freq='D')
 
-    ds = CCITs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
+    ds = SmecvTs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
 
     params = ['sm',
               'flag',

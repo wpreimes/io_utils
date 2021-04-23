@@ -11,12 +11,8 @@ Time series reader for CCI SM v04 data
 
 from io_utils.read.path_config import PathConfig
 from datetime import datetime
-from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import CCITs
-import pandas as pd
+from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import SmecvTs
 import numpy as np
-import netCDF4 as nc
-from datetime import timedelta
-import os
 try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04 import path_settings
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v04_ADJUSTMENT import \
@@ -25,7 +21,7 @@ try:
 except ImportError:
     path_settings = {}
 
-class GeoCCISMv4Ts(CCITs):
+class GeoCCISMv4Ts(SmecvTs):
     # Reader implementation that uses the PATH configuration from above
 
     # exact time variable (days) from reference date
@@ -78,38 +74,6 @@ class GeoCCISMv4Ts(CCITs):
     def read(self, *args, **kwargs):
         return self._replace_with_nan(super(GeoCCISMv4Ts, self).read(*args, **kwargs))
 
-    def read_cell_file(self, cell, var):
-        """
-        Read a whole cell file
-
-        Parameters
-        ----------
-        cell : int
-            Cell / filename to read.
-        var : str
-            Name of the variable to extract from the cellfile.
-
-        Returns
-        -------
-        data : np.array
-            Data for var in cell
-        """
-
-        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
-        with nc.Dataset(file_path) as ncfile:
-            loc_id = ncfile.variables['location_id'][:]
-            time = ncfile.variables['time'][:]
-            unit_time = ncfile.variables['time'].units
-            delta = lambda t: timedelta(t)
-            vfunc = np.vectorize(delta)
-            since = pd.Timestamp(unit_time.split('since ')[1])
-            time = since + vfunc(time)
-            variable = ncfile.variables[var][:]
-            variable = np.transpose(variable)
-            data = pd.DataFrame(variable, columns=loc_id, index=time)
-            if var in self._col_fillvalues.keys():
-                data = data.replace(self._col_fillvalues[var], np.nan)
-            return data
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv4Ts._ds_implemented)
 

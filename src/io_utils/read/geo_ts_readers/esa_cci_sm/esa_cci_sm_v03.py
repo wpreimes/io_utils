@@ -10,7 +10,7 @@ Time series reader for CCI SM v03 data
 #   -
 
 from io_utils.read.path_config import PathConfig
-from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import CCITs
+from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import SmecvTs
 import numpy as np
 try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v03 import path_settings
@@ -18,7 +18,7 @@ except ImportError:
     path_settings = {}
 from datetime import datetime
 
-class GeoCCISMv3Ts(CCITs):
+class GeoCCISMv3Ts(SmecvTs):
     # Reader implementation that uses the PATH configuration from above
 
     # exact time variable (days) from reference date

@@ -150,24 +150,27 @@ def test_C3S201706_single_readers():
     force_path_group = '__test'
     for record in ['TCDR', 'ICDR']:
         dataset = 'ACTIVE'
-        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
-            grid_path=None, ioclass_kws={'read_bulk': True},
+        reader = GeoC3Sv201706Ts(
+            dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
+            grid=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
         ts = reader.read(*test_loc)
         assert not ts.dropna(how='all').empty
 
         dataset = 'COMBINED'
-        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
-            grid_path=None, ioclass_kws={'read_bulk': True},
+        reader = GeoC3Sv201706Ts(
+            dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
+            grid=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
         ts = reader.read(*test_loc)
         assert not ts.dropna(how='all').empty
 
         dataset = 'PASSIVE'
-        reader = GeoC3Sv201706Ts(dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
-            grid_path=None, ioclass_kws={'read_bulk': True},
+        reader = GeoC3Sv201706Ts(
+            dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
+            grid=None, ioclass_kws={'read_bulk': True},
             parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
             force_path_group=force_path_group)
         ts = reader.read(*test_loc)
@@ -176,8 +179,9 @@ def test_C3S201706_single_readers():
 
 def test_C3S201812_single_readers():
     force_path_group = '__test'
-    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201812Ts(
+        dataset_or_path=('C3S', 'v201812', 'ACTIVE', 'DAILY', 'TCDR'),
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -185,8 +189,9 @@ def test_C3S201812_single_readers():
     assert not ts.dropna(how='all').empty
     #print(ts)
 
-    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'COMBINED', 'DAILY', 'TCDR'),
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201812Ts(
+        dataset_or_path=('C3S', 'v201812', 'COMBINED', 'DAILY', 'TCDR'),
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -195,8 +200,9 @@ def test_C3S201812_single_readers():
     #print(ts)
 
     # no data for the passive c3s there
-    reader = GeoC3Sv201812Ts(dataset_or_path=('C3S', 'v201812', 'PASSIVE', 'DAILY', 'TCDR'),
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201812Ts(
+        dataset_or_path=('C3S', 'v201812', 'PASSIVE', 'DAILY', 'TCDR'),
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -204,12 +210,20 @@ def test_C3S201812_single_readers():
     assert ts.empty # ATTENTION: passive data is empty here
     #print(ts)
 
-def test_C3S201912_single_readers():
+@pytest.mark.parametrize("version,Reader",[
+    ("v201706", GeoC3Sv201706Ts),
+    ("v201812", GeoC3Sv201812Ts),
+    ("v201912", GeoC3Sv201912Ts),
+    ("v202012", GeoC3Sv202012Ts),
+])
+def test_C3S_single_readers(version, Reader):
     force_path_group = '__test'
 
-    reader = GeoC3Sv201912Ts(dataset_or_path=('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR'),
-        grid_path=None, ioclass_kws={'read_bulk': True},
-        parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.},
+    reader = Reader(
+        dataset_or_path=('C3S', version, 'COMBINED', 'DAILY', 'TCDR'),
+        grid=None, ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'sm_uncertainty', 'flag'],
+                    scale_factors={'sm': 1.},
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
@@ -302,6 +316,10 @@ def test_ismn_good_sm_ts_reader_no_masking():
     assert not dat.dropna().empty
 
 if __name__ == '__main__':
+    test_C3S_single_readers('v202012', GeoC3Sv202012Ts)
+    test_C3S_single_readers('v201912', GeoC3Sv201912Ts)
+    test_C3S_single_readers('v201812', GeoC3Sv201812Ts)
+
     test_cci_reader('v061', GeoCCISMv6Ts)
     test_cci_reader('v052', GeoCCISMv5Ts)
     test_cci_reader('v045', GeoCCISMv4Ts)
@@ -311,7 +329,6 @@ if __name__ == '__main__':
     test_era5land_reader()
     test_C3S201706_single_readers()
     test_C3S201812_single_readers()
-    test_C3S201912_single_readers()
     test_merra2_ts_reader()
     test_era5_land_ts_reader()
     test_era5_ts_reader()

@@ -109,7 +109,7 @@ if __name__ == '__main__':
         for dataset in ['COMBINED', 'ACTIVE', 'PASSIVE']:
             reader = GeoC3Sv201706Ts(
                 dataset_or_path=('C3S', 'v201706', dataset, 'DAILY', record),
-                grid_path=None,
+                grid=None,
                 exact_index=True,
                 ioclass_kws={'read_bulk': True},
                 parameters=['sm', 'sm_uncertainty', 'flag'],

@@ -96,9 +96,8 @@ def dt_to_dec(dt):
     return dt.year + ((dt - startyear).total_seconds() / float((endyear - startyear).total_seconds()))
 
 
-def dates_to_num(dates):
+def dates_to_num(dates, units='days since 1900-01-01 00:00:00'):
     calendar = 'standard'
-    units = 'days since 1900-01-01 00:00:00'
     timestamps=[]
     for date in dates:
         timestamps.append(pd.Timestamp(date).to_datetime())

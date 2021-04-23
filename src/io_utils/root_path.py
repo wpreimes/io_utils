@@ -44,6 +44,8 @@ elif platform.system() == "Mac":
 
 else: # Linux
     user = os.getenv('USER')
+    if '\\' in user:
+        user = user.split('\\')[1]
     path = '/shares/' + user
     c = '/home/' + user + '/'
     d = '/data/'

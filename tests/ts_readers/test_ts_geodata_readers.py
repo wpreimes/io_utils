@@ -83,8 +83,9 @@ def test_C3S201706_combined_readers(verbose=False):
     force_path_group = 'radar'
     if verbose: print_test_config(dataset, force_path_group)
 
-    reader = GeoC3Sv201706FullCDRTs(dataset=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201706FullCDRTs(
+        dataset=dataset,
+        grid=None, ioclass_kws={'read_bulk': True},
         exact_index=True, parameters=['sm', 'flag', 'sm_uncertainty'],
         scale_factors={'sm': 1.}, force_path_group=force_path_group)
     #reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
@@ -97,8 +98,9 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'COMBINED', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
     if verbose: print(ts)
@@ -106,8 +108,9 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'ACTIVE', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
     if verbose: print(ts)
@@ -115,8 +118,9 @@ def test_C3S201912_single_monthly_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'PASSIVE', 'MONTHLY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True},
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True},
         parameters=['sm', 'freqbandID', 'nobs'], scale_factors={'sm': 1.})
     ts = reader.read(*test_loc)
     if verbose: print(ts)
@@ -128,8 +132,9 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'COMBINED', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True}, exact_index=True,
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True}, exact_index=True,
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
@@ -138,8 +143,9 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'ACTIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True}, exact_index=True,
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True}, exact_index=True,
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
@@ -148,8 +154,9 @@ def test_C3S201912_single_daily_readers(verbose=False):
 
     dataset = ('C3S', 'v201912', 'PASSIVE', 'DAILY', 'TCDR')
     if verbose: print_test_config(dataset)
-    reader = GeoC3Sv201912Ts(dataset_or_path=dataset,
-        grid_path=None, ioclass_kws={'read_bulk': True}, exact_index=True,
+    reader = GeoC3Sv201912Ts(
+        dataset_or_path=dataset,
+        grid=None, ioclass_kws={'read_bulk': True}, exact_index=True,
         parameters=['sm', 'sm_uncertainty', 'flag'], scale_factors={'sm': 1.})
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
