@@ -9,7 +9,7 @@ Combines dataset config readers, adapters and some more features for all readers
 import pandas as pd
 from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter, SelfMaskingAdapter
 import numpy as np
-from io_utils.utils import filter_months
+from io_utils.utils import filter_months, ddek
 import warnings
 from collections.abc import Iterable
 from pytesmo.validation_framework.adapters import BasicAdapter
@@ -150,18 +150,33 @@ class GeoTsReader(object):
 
         # Resampling is done AFTER reading the original data, masking, climadapt.etc
         if self.resample is not None:
-            method = self.resample[1]
-            df = df.select_dtypes(np.number)
-            if isinstance(method, str):
-                df = eval('df.resample(self.resample[0]).{}()'.format(method)) # todo: ?? better solution?
-            else:
-                warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
-                df = df.resample(self.resample[0]).apply(method, axis=0)
-            df.freq = self.resample[0]
+            df = self._resample(df)
 
         # Renaming is done last.
         if self.params_rename is not None:
             df.rename(columns=self.params_rename, inplace=True)
+
+        return df
+
+    def _resample(self, df):
+        method = self.resample[1]
+
+        if self.resample[0].lower() == 'ddekad':
+            groups = df.groupby(ddek)
+        else:
+            groups = None
+
+        df = df.select_dtypes(np.number)
+        if isinstance(method, str):
+            a = groups if groups is not None else df.resample(self.resample[0])
+            df = eval('a.{}()'.format(method)) # todo: ?? better solution?
+        else:
+            warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
+            if groups is None:
+                groups = df.resample(self.resample[0])
+            df = groups.apply(method, axis=0)
+
+        df.freq = self.resample[0]
 
         return df
 
@@ -223,11 +238,12 @@ class GeoTsReader(object):
 
 if __name__ == '__main__':
     from io_utils.read.geo_ts_readers import GeoC3Sv202012Ts
-    from io_utils.read.geo_ts_readers import GeoTsReader
 
     reader = GeoTsReader(GeoC3Sv202012Ts,
                          reader_kwargs={'dataset_or_path':
-                                            ['C3S', 'v202012', 'PASSIVE', 'MONTHLY', 'TCDR']})
+                                            ['C3S', 'v202012', 'PASSIVE', 'DAILY', 'TCDR'],
+                                        },
+                         resample=('ddekad', np.max))
     ds = reader.read(15,45)
 
 

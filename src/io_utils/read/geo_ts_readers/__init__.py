@@ -50,7 +50,7 @@ from io_utils.read.geo_ts_readers.smap.spl3smp import *
 from io_utils.read.geo_ts_readers.smap.smap_lprm import *
 
 # ISMN version readers
-from io_utils.read.geo_ts_readers.ismn.ismn_sm import *
+from io_utils.read.geo_ts_readers._ismn.ismn_sm import *
 
 try:
     # SCATSAR reading uses many other packages, therefore it's optional here

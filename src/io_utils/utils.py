@@ -19,6 +19,8 @@ import pandas as pd
 from matplotlib.dates import date2num
 from pygeogrids.grids import CellGrid
 from io_utils.grid.grid_shp_adapter import GridShpAdapter
+from cadati.dekad import dekad_startdate_from_date
+
 
 def mjd2jd(mjd):
     return mjd + 2400000.5
@@ -210,6 +212,13 @@ def filter_months(df, months, dropna=False):
     else:
         dat.loc[dat.index.difference(selection)] = np.nan
         return dat
+
+def ddek(index):
+    """ Group index by c3s dekads,
+    i.e. days 1-10 --> 1 11-21 --> 11, 21-31 -->21
+    """
+    func = np.vectorize(dekad_startdate_from_date)
+    return func(index.to_pydatetime())
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
