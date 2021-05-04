@@ -56,4 +56,3 @@ class GeoC3Sv202012Ts(base_reader.GeoC3STs):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoC3Sv202012Ts._ds_implemented)
 
-

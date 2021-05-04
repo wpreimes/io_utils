@@ -139,14 +139,14 @@ class NcVarCombPlotter(object):
             Resolution (dots per inch) of the map (also affects rasterised parts of
             vector plots!!)
         """
+        self.resxy = resxy
 
-        self.ds1 = NcVarPlotter(filepath=filepath1, resxy=resxy,
+        self.ds1 = NcVarPlotter(filepath=filepath1, resxy=self.resxy,
                                 out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
                                 z_var=z_var, cell_center_origin=cell_center_origin)
-        self.ds2 = NcVarPlotter(filepath=filepath2, resxy=resxy,
+        self.ds2 = NcVarPlotter(filepath=filepath2, resxy=self.resxy,
                                 out_dir=out_dir, lat_var=lat_var, lon_var=lon_var,
                                 z_var=z_var, cell_center_origin=cell_center_origin)
-
         # ds1 parent if out_dir is None, otherwise the correct one was passed to ds1
         self.out_dir = self.ds1.out_dir
         self.dpi = dpi
@@ -242,7 +242,7 @@ class NcVarCombPlotter(object):
             plot_kwargs['show_cbar'] = False
 
         if not self.ds1.irregular and not self.ds2.irregular:
-            f, imax, im = cp_map(df, name, **plot_kwargs)
+            f, imax, im = cp_map(df, name, resxy=self.resxy, **plot_kwargs)
         else:
             f, imax, im = cp_scatter_map(lats=df.index.get_level_values(self.ds1.index_name[0]),
                                          lons=df.index.get_level_values(self.ds1.index_name[1]),

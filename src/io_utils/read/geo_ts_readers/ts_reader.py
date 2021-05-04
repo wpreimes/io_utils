@@ -222,70 +222,13 @@ class GeoTsReader(object):
         return data
 
 if __name__ == '__main__':
-    from datetime import datetime
-    from io_utils.read.geo_ts_readers import GeoHsafAscatSsmTs, GeoScatSarSWIDrypanAbsReader,\
-    GeoScatSarSWIDrypanAnomsReader
-    import os
-    from pytesmo.time_series.anomaly import calc_climatology, calc_anomaly
+    from io_utils.read.geo_ts_readers import GeoC3Sv202012Ts
+    from io_utils.read.geo_ts_readers import GeoTsReader
 
-    path = r'C:\Temp\laura'
-
-    make_data = False
-    if make_data:
-        reader = GeoTsReader(GeoScatSarSWIDrypanAnomsReader,
-                             reader_kwargs={'dataset_or_path':
-                                                ['SCATSAR', 'SWI', 'Drypan', 'Anoms'],
-                                            'switchflip': False},
-                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ANOMS'})
-
-        ts_noms = reader.read(19.1222, 47.201232)
-
-        ts_noms.to_csv(os.path.join(path, 'anoms.csv'))
-
-
-        reader = GeoTsReader(GeoScatSarSWIDrypanAnomsReader,
-                             reader_kwargs={'dataset_or_path':
-                                                r"R:\Projects\DryPan\07_data\SCATSAR_SWI_anomalies_old",
-                                            'switchflip': False},
-                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ANOMS_OLD'})
-
-        ts_noms_old = reader.read(19.1222, 47.201232)
-
-        ts_noms_old.to_csv(os.path.join(path, 'anoms_old.csv'))
-        print(ts_noms_old)
-
-        reader = GeoTsReader(GeoScatSarSWIDrypanAbsReader,
-                             reader_kwargs={'dataset_or_path':
-                                                ['SCATSAR', 'SWI', 'Drypan', 'Abs']},
-                             params_rename={'SCATSAR_SWI': 'SCATSAR_SWI_ABS'})
-
-        ts_abs = reader.read(19.1222, 47.201232)
-        print(ts_abs)
-
-        ts_abs.to_csv(os.path.join(path, 'abs.csv'))
-
-
-    ts_abs = pd.read_csv(os.path.join(path, 'abs.csv'), index_col=0, parse_dates=True).resample('D').mean()
-    ts_anoms = pd.read_csv(os.path.join(path, 'anoms.csv'), index_col=0, parse_dates=True).resample('D').mean()
-    ts_anoms_old = pd.read_csv(os.path.join(path, 'anoms_old.csv'), index_col=0, parse_dates=True).resample('D').mean()
-    ts_abs_cgls = pd.read_csv(os.path.join(path, 'abs_cgls.csv'), index_col=0, parse_dates=True).resample('D').mean()
-    ts_abs_cgls = ts_abs_cgls.resample('D').mean()
-
-    clim = calc_climatology(ts_abs['SCATSAR_SWI_ABS'])
-    anom_from_abs = calc_anomaly(ts_abs['SCATSAR_SWI_ABS'], climatology=clim)
-    anom_from_abs.name = 'SCATSAR_SWI_ANOMS_from_abs'
-
-    clim_cgls = calc_climatology(ts_abs_cgls['swi_t005'])
-    anom_from_abs_cgls = calc_anomaly(ts_abs_cgls['swi_t005'], climatology=clim_cgls)
-    anom_from_abs_cgls.name = 'SCASAR_CGLS_T5_ANOM_from_abs'
-
-    df = pd.concat([ts_anoms, ts_anoms_old, ts_abs, anom_from_abs,anom_from_abs_cgls], axis=1)
-    df.plot(title='Different SCATSAR SWI data at lon=19.1222, lat=47.201232)')
-
-
-
-
-
+    reader = GeoTsReader(GeoC3Sv202012Ts,
+                         reader_kwargs={'dataset_or_path':
+                                            ['C3S', 'v202012', 'PASSIVE', 'MONTHLY', 'TCDR']})
+    ds = reader.read(15,45)
 
 
     # reader = GeoTsReader(GeoHsafAscatSsmTs,

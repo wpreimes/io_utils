@@ -9,6 +9,7 @@ from datetime import datetime
 from collections import OrderedDict
 import shutil
 import warnings
+from io_utils.utils import safe_arange
 
 #TODO:
 # (++) Make the time optional (now placeholder), in case only 1 time per image is saved
@@ -613,10 +614,26 @@ class ReadNcImg(object):
         Create a grid (gpis, lats, lons) with the selected resolution. This is
         used to store the data in a gridded fashion.
         """
-        c = 2 if self.cell_center_origin else 1.
-        lons = (np.arange(360 * int(1. / self.resxy[0])) * self.resxy[0]) - (180. - (self.resxy[0] / c))
-        lats = (np.arange(180 * int(1. / self.resxy[1])) * self.resxy[1]) - (90. - (self.resxy[1] / c))
-        gpis = np.array(range(0, int(180. * (1. / self.resxy[0]) * 360. * (1. / self.resxy[1]))))
+        dx = self.resxy[0]
+        dy = self.resxy[1]
+
+        lon_start = -180
+        lon_end = 180 - dx
+        if self.cell_center_origin:
+            lon_start += dx * 0.5
+            lon_end += dy * 0.5
+        lons = safe_arange(lon_start, lon_end, dx)
+        n_lons = len(lons)
+
+        lat_start = -90
+        lat_end = 90 - dy
+        if self.cell_center_origin:
+            lat_start += dy * 0.5
+            lat_end += dy * 0.5
+        lats = safe_arange(lat_start, lat_end, dy)
+        n_lats = len(lats)
+
+        gpis = np.array(range(0, n_lats*n_lons), dtype=int)
 
         return gpis, lons, lats
 

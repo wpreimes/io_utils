@@ -12,6 +12,7 @@ import matplotlib as mpl
 from smecv_grid.grid import SMECV_Grid_v042
 import matplotlib.ticker as ticker
 import warnings
+from io_utils.utils import safe_arange
 import io_utils.plot.colormaps as my_colormaps
 
 
@@ -563,9 +564,25 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
 
     dy, dx = float(resxy[1]), float(resxy[0])
     offsetx, offsety = float(offset[0]), float(offset[1])
+    for o in (offsetx, offsety):
+        if (o > 1) or (o < 0):
+            raise ValueError('Invalid offset, pass anything between 0 and 1')
 
-    glob_lons = (np.arange(360 * int(1. / dx), dtype=np.float32) * dx) - (180. - (dx * offsetx))
-    glob_lats = (np.arange(180 * int(1. / dy), dtype=np.float32) * dy) - (90. - (dy * offsety))
+    lon_start = -180
+    lon_end = 180 - dx
+    if offsetx != 0:
+        lon_start += dx * offsetx
+        lon_end += dx * offsetx
+    glob_lons = safe_arange(lon_start, lon_end, dx)
+    n_lons = glob_lons.size
+
+    lat_start = -90
+    lat_end = 90 - dy
+    if offsety != 0:
+        lat_start += dy * offsety
+        lat_end += dy * offsety
+    glob_lats = safe_arange(lat_start, lat_end, dy)
+    n_lats = glob_lats.size
 
     glob_lons, glob_lats = np.meshgrid(glob_lons, glob_lats)
 
@@ -601,8 +618,7 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
         if layer_name == col:
             img[index] = glob_df[col].values * scale_factor
 
-        img_masked = np.ma.masked_invalid(img.reshape(180 * int(1. / dy),
-                                                      360 * int(1. / dx)))
+        img_masked = np.ma.masked_invalid(img.reshape(n_lats, n_lons))
         if flip_ud:
             img_masked = np.flipud(img_masked)
 
