@@ -9,7 +9,6 @@ Reader for the ESA CCI SWI time series data of different versions
 # NOTES:
 #   -
 
-from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
 import pandas as pd
@@ -26,7 +25,7 @@ class GeoSmecvSwiRzsmTs(SmecvTs):
 
     def __init__(self, ts_path, grid_path=None, **kwargs):
 
-        super(GeoSmecvSwiRzsmTs, self).__init__(ts_path, grid_path=grid_path, **kwargs)
+        super(GeoSmecvSwiRzsmTs, self).__init__(ts_path, grid=grid_path, **kwargs)
 
     def read(self, *args, **kwargs):
         return super(GeoSmecvSwiRzsmTs, self).read(*args, **kwargs)

@@ -9,8 +9,8 @@ name: Automated Tests
 on:
   push:
   pull_request:
-#  schedule:
-#    - cron: '0 0 * * *' # daily
+  schedule:
+    - cron: '0 0 * * *' # daily
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
       matrix:
         python-version: ['3.9']
         os: ["ubuntu-latest"]
-        env: ["default.yml"]
+        env: ["latest.yml"]
 
     steps:
       - uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           environment-file: environments/${{ matrix.env }}
-          activate-environment: ismn
+          activate-environment: io_utils
           auto-activate-base: false
       - name: Print environment infos
         shell: bash -l {0}
