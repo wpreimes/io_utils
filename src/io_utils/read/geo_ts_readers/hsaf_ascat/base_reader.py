@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from ascat.h_saf import AscatNc
+from ascat.h_saf import AscatGriddedNcTs
 import os
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
 from collections import OrderedDict
 
-class HSAFAscatSSMTs(AscatNc):
+class HSAFAscatSSMTs(AscatGriddedNcTs):
     def __init__(self, ts_path, grid_path=None,
                  fn_format="H115_H116_{:04d}", **kwargs):
 

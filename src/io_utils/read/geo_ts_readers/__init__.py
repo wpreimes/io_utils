@@ -4,7 +4,6 @@
 Collects all the GeoTsReaders that have a path implementation and work in the
 same way.
 """
-import warnings
 
 # ASCAT readers
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_ssm import *
@@ -15,7 +14,7 @@ from io_utils.read.geo_ts_readers.amsr2.ccids_amsr2 import *
 from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
 
 # CCI SWI readers
-from io_utils.read.geo_ts_readers.esa_cci_swi.esa_cci_swi_v04 import *
+from io_utils.read.geo_ts_readers.smecv_swi_rzsm.smecv_swi_rzsm_v0 import *
 
 ## CCI version readers
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06_genio import *
@@ -63,5 +62,7 @@ try:
         GeoCSarSsmTiffReader
     from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_swi import \
         GeoCSarSwiTiffReader
+    hr_available = True
 except ImportError:
+    hr_available = False
     warnings.warn('Could not import SAR reader')

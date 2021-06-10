@@ -29,8 +29,9 @@ dependencies:
       - cadati
       - country-bounding-boxes
       - pygenio
-      - git+https://github.com/TUW-GEO/ismn.git@master
+      - ismn
+      - ascat
+      -
       - smecv_grid
-      # needed to run setup.py test
       - pytest
       - pytest-cov

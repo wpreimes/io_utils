@@ -227,7 +227,10 @@ def test_C3S_single_readers(version, Reader):
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
-    assert not ts.dropna(how='all').empty
+    if version == 'v201706': # this version is empty
+        assert ts.dropna(how='all').empty
+    else:
+        assert not ts.dropna(how='all').empty
     print(ts)
 
 def test_merra2_ts_reader():
@@ -316,6 +319,7 @@ def test_ismn_good_sm_ts_reader_no_masking():
     assert not dat.dropna().empty
 
 if __name__ == '__main__':
+    test_C3S_single_readers('v201706', GeoC3Sv201706Ts)
     test_C3S_single_readers('v202012', GeoC3Sv202012Ts)
     test_C3S_single_readers('v201912', GeoC3Sv201912Ts)
     test_C3S_single_readers('v201812', GeoC3Sv201812Ts)

@@ -18,13 +18,26 @@ def print_test_config(dataset, path_group=None):
 @pytest.mark.geo_test_data
 def test_cciswi_v047_reader(verbose=False):
     if verbose: print('Test reading CCI47 SWI from storage.')
-    vers = 'v047'
-    reader = GeoCCISWIv4Ts(
+    reader = GeoSmecSwiRzsmnv0Ts(
         dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
                                      'SWI', 'SWI_CCI_04.7', 'SWI_CCI_v04.7_TS'),
                           ioclass_kws={'read_bulk': True},
                           parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
                           scale_factors={'SWI_001': 1.})
+    #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
+    ts = reader.read(*test_loc)
+    assert not ts.empty
+    if verbose: print(ts)
+
+@pytest.mark.geo_test_data
+def test_smecvrzsm_v0_reader(verbose=False):
+    if verbose: print('Test reading C3S RZSMv0 from storage.')
+    reader = GeoSmecSwiRzsmnv0Ts(
+        dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
+                                     'C3S_v202012_RZSM', 'time_series'),
+        ioclass_kws={'read_bulk': True},
+        parameters=['QFLAG_0-10cm', 'SSM', 'RZSM_0-10cm'],
+        scale_factors={'SSM': 1.})
     #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
     ts = reader.read(*test_loc)
     assert not ts.empty
@@ -223,7 +236,7 @@ def test_ccigenio_ts_reader(verbose=False):
 #     v = True
 #     test_SMAP_spl3_v6_reader(v)
 #
-#     test_C3S201706_combined_readers(v)
+    # test_C3S201706_combined_readers(v)
 #
 #     test_ascatssm_ts_reader(v)
 #
