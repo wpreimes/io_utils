@@ -8,6 +8,19 @@ import pytest
 
 test_loc = (-155.875, 19.625)
 
+def test_read_applied():
+    force_path_group = '__test'
+    reader = GeoCCISMv6Ts(dataset_or_path=('ESA_CCI_SM', 'v061', 'COMBINED'),
+                    exact_index=True,
+                    ioclass_kws={'read_bulk': True},
+                    parameters=['sm', 'sm_uncertainty', 't0'],
+                    scale_factors={'sm': 1.},
+                    force_path_group=force_path_group)
+    ts_mean = reader.read_applied(*test_loc, func=pd.DataFrame.mean,
+                     params=['sm', 'sm_uncertainty'],
+                     name='something', func_kwargs=dict(skipna=True))
+    assert not ts_mean['something'].empty
+
 def test_smosic_reader():
     force_path_group = '__test'
     smos_reader = GeoSMOSICTs(dataset_or_path=('SMOS', 'IC', 'ASC'),
@@ -319,6 +332,8 @@ def test_ismn_good_sm_ts_reader_no_masking():
     assert not dat.dropna().empty
 
 if __name__ == '__main__':
+    test_read_applied()
+
     test_C3S_single_readers('v201706', GeoC3Sv201706Ts)
     test_C3S_single_readers('v202012', GeoC3Sv202012Ts)
     test_C3S_single_readers('v201912', GeoC3Sv201912Ts)

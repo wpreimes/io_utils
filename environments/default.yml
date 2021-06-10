@@ -31,7 +31,7 @@ dependencies:
       - pygenio
       - ismn
       - ascat
-      -
+      - lxml
       - smecv_grid
       - pytest
       - pytest-cov

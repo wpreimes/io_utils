@@ -26,6 +26,7 @@ import numpy as np
 from datetime import timedelta
 import xarray as xr
 import warnings
+from typing import Callable
 
 def julian2datetimeindex(j, tz=pytz.UTC):
     """
@@ -520,6 +521,44 @@ class SmecvTs(GriddedNcOrthoMultiTs):
             return cube
         else:
             return data_arr, {'lon': cell_lons, 'lat': cell_lats, 'gpi': cell_gpi}
+
+    def read_applied(self,
+                     *read_args,
+                     params:list,
+                     func:Callable=np.average,
+                     func_kwargs=None,
+                     name='merged',
+                     **read_kwargs):
+        """
+        For a location combine the time series of multiple variables into
+        a single time series using the passed numpy method applied to all arrays.
+
+        Examples:
+            GeoSmecvSwiRzsmTs.read_applied(45, 15, pd.mean, name='mean', func_kwargs={'axis': 1)
+            GeoSmecvSwiRzsmTs.read_applied(45, 15, np.average, name='mean', func_kwargs={'axis': 1)
+
+        Parameters
+        ----------
+        read_args, read_kwargs : passed to read(), gpi, lon, lat
+        params : list[str]
+            List of parameters that are merged (must be available for each location
+        func : Callable, optional (default: np.average)
+            Will be applied to dataframe columns using pd.DataFrame.apply(..., axis=1)
+            additional kwargs for this must be given in func_kwargs
+        method_kwargs : dict
+            kwargs that are passed to method
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Same as read but from multiple columns
+        """
+        func_kwargs = dict() if func_kwargs is None else func_kwargs
+        func_kwargs['axis'] = 1
+
+        df = self.read(*read_args, **read_kwargs)
+
+        return df[params].apply(func, **func_kwargs).to_frame(name=name)
 
 
 

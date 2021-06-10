@@ -16,22 +16,9 @@ import pandas as pd
 from collections import OrderedDict
 import numpy as np
 from datetime import timedelta
+from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import SmecvTs
 
-class SmecvSwiRzsmTs(GriddedNcOrthoMultiTs):
-    # The basic CCI TS netcdf reader, with some features
-    def __init__(self, ts_path, grid_path=None, **kwargs):
-        if grid_path is None:
-            grid_path = os.path.join(ts_path, "grid.nc")
-
-        grid = nc.load_grid(grid_path)
-        super(SmecvSwiRzsmTs, self).__init__(ts_path, grid, **kwargs)
-
-    def read_ts(self, *args, **kwargs):
-        df = super(SmecvSwiRzsmTs, self).read(*args, **kwargs)
-        return df
-
-
-class GeoSmecvSwiRzsmTs(SmecvSwiRzsmTs):
+class GeoSmecvSwiRzsmTs(SmecvTs):
     # Reader implementation that uses the PATH configuration from above
 
     # fill values in the data columns
@@ -84,3 +71,9 @@ class GeoSmecvSwiRzsmTs(SmecvSwiRzsmTs):
             df = self.read(lon, lat)
             cell_data[gpi] = df
         return cell_data
+
+if __name__ == '__main__':
+    ds = GeoSmecvSwiRzsmTs("/home/wpreimes/shares/radar/Projects/G3P/07_data/C3S_v202012_RZSM/time_series/")
+    ts = ds.read_applied(45, 15, func=pd.DataFrame.mean,
+                         params=['RZSM_0-10cm', 'RZSM_10-20cm', 'RZSM_20-30cm'], 
+                         name='layer1_mean_rzsm', func_kwargs=dict(skipna=True))
