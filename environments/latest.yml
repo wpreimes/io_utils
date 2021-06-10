@@ -3,6 +3,7 @@
 name: io_utils
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - numpy
   - pandas
