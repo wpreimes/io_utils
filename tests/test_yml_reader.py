@@ -22,9 +22,9 @@ def test_read_yml():
     assert(LEVEL1.A_MODULE == np.ma)
 
     if 'win' in sys.platform:
-        assert(LEVEL1.PATH == r'D:\data')
+        assert(LEVEL1.PATH == r'C:\Users')
     else:
-        assert(LEVEL1.PATH == '/data')
+        assert(LEVEL1.PATH == '/home')
 
     assert(OTHER.TEST_1 == 'TEST1')
     assert(OTHER.TEST_2 == 2)

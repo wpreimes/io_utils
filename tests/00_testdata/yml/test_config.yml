@@ -1,8 +1,8 @@
 LEVEL1:
   A_CLASS<CLASS> : [numpy.ma, masked_array]
   A_FUNCTION<FUNCTION> : [numpy.ma, unique]
-  PATH<PATH><WIN> : ['D:\', 'data']
-  PATH<PATH><LINUX> : ['/', 'data']
+  PATH<PATH><WIN> : ['C:\', 'Users']
+  PATH<PATH><LINUX> : ['/', 'home']
   A_MODULE<MODULE> : numpy.ma
 A_LEVEL2:
   NOTHING: None
