@@ -151,8 +151,11 @@ def test_era5_reader():
     #print(ts)
 
 def test_era5land_reader():
+    force_path_group = '__test'
     reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1']},
-                           ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.})
+                           ioclass_kws={'read_bulk': True},
+                           scale_factors={'swvl1': 1.},
+                           force_path_group=force_path_group)
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
     #print(ts)

@@ -21,8 +21,7 @@ class GeoPathEra5LandTs(ERATs):
     # Reader implementation that uses the PATH configuration from above
     _ds_implemented = [('ERA5-Land', 'sm_precip_lai'),
                        ('ERA5-Land', 'snow'),
-                       ('ERA5-Land', 'temperature'),
-                       ('ERA5-Land', 'testdata')]
+                       ('ERA5-Land', 'temperature')]
 
     def __init__(self, dataset_or_path, force_path_group=None, **kwargs):
 
