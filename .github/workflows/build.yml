@@ -52,7 +52,8 @@ jobs:
       - name: Install package and test
         shell: bash -l {0}
         run: |
-          pip install .
+          pip install setuptools_scm
+          python setup.py develop
           pytest -m "not geo_test_data"
       - name: Upload Coverage
         shell: bash -l {0}
