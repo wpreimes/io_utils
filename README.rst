@@ -2,20 +2,14 @@
 io_utils
 ========
 
-
-Optional packages:
-
-- pygenio (TUW internal) for GenioCCI time series
-- yeoda, veranda for S1 time series from original images
-
-
 Description
 ===========
 
-A longer description of your project goes here...
+Optional packages:
 
+- pygenio (TUW internal, via pip) for GenericIO time series (old)
+- yeoda, veranda for S1 time series from original imagess
 
-.. _pyscaffold-notes:
 
 Note
 ====

@@ -16,7 +16,7 @@ def print_test_config(dataset, path_group=None):
     print('Test reading {} data from {}.'.format(ds, pg))
 
 @pytest.mark.geo_test_data
-def test_cciswi_v047_reader(verbose=False):
+def test_smecv_rzsm_v0_reader(verbose=False):
     if verbose: print('Test reading CCI47 SWI from storage.')
     reader = GeoSmecSwiRzsmnv0Ts(
         dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
@@ -25,7 +25,8 @@ def test_cciswi_v047_reader(verbose=False):
                           parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
                           scale_factors={'SWI_001': 1.})
     #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
-    ts = reader.read(*test_loc)
+    ts = reader.read_param_mean(*test_loc, params=['SWI_001', 'SWI_010'])
+    assert ts.columns == ['mean']
     assert not ts.empty
     if verbose: print(ts)
 

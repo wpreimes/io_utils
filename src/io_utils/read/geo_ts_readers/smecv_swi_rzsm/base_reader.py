@@ -71,8 +71,43 @@ class GeoSmecvSwiRzsmTs(SmecvTs):
             cell_data[gpi] = df
         return cell_data
 
+    def read_param_mean(self, *read_args, params=None, name='mean', skipna=False,
+                        **read_kwargs):
+        """
+        Read average of multiple parameters. e.g. the overage of 2 soil moisture
+        layers.
+
+        Parameters
+        ----------
+        read_args
+            lon, lat or gpi, is given to the read function.
+        params: list, optinal (default: None)
+            Parameters to average
+        name: str, optional (default: 'mean')
+            Name of the merged time series column
+        skipna: bool, optional (default: False)
+            If True, Nans are ignored. If false, the mean value for a
+            time stamp is NaN as soon as one param is NaN.
+
+        Returns
+        -------
+        df_mean : pd.DataFrame
+            The averaged df, with a single column of the chosen name.
+        """
+
+        if params is None:
+            params = self.parameters
+
+        func_kwargs = {'skipna': skipna}
+
+        return self.read_applied(*read_args, func=pd.DataFrame.mean,
+                                 params=params, name=name,
+                                 func_kwargs=func_kwargs,
+                                 **read_kwargs)
+
 if __name__ == '__main__':
     ds = GeoSmecvSwiRzsmTs("/home/wpreimes/shares/radar/Projects/G3P/07_data/C3S_v202012_RZSM/time_series/")
-    ts = ds.read_applied(45, 15, func=pd.DataFrame.mean,
-                         params=['RZSM_0-10cm', 'RZSM_10-20cm', 'RZSM_20-30cm'], 
-                         name='layer1_mean_rzsm', func_kwargs=dict(skipna=True))
+    ts = ds.read_param_mean(45, 15,
+                        params=['RZSM_0-10cm', 'RZSM_10-20cm', 'RZSM_20-30cm'],
+                        name='test',
+                         )

@@ -374,8 +374,8 @@ class SmecvTs(GriddedNcOrthoMultiTs):
 
     def read_applied(self,
                      *read_args,
-                     params:list,
-                     func:Callable=np.average,
+                     func:Callable,
+                     params:list=None,
                      func_kwargs=None,
                      name='merged',
                      **read_kwargs):
@@ -390,18 +390,21 @@ class SmecvTs(GriddedNcOrthoMultiTs):
         Parameters
         ----------
         read_args, read_kwargs : passed to read(), gpi, lon, lat
-        params : list[str]
-            List of parameters that are merged (must be available for each location
-        func : Callable, optional (default: np.average)
+        func : Callable
             Will be applied to dataframe columns using pd.DataFrame.apply(..., axis=1)
-            additional kwargs for this must be given in func_kwargs
-        method_kwargs : dict
+            additional kwargs for this must be given in func_kwargs, e.g. np.mean
+        params : list[str], optional (default: None)
+            List of parameters that are merged (must be available for each location
+            None merges all params
+        func_kwargs : dict
             kwargs that are passed to method
+        name : str, optional (default: merged)
+            Name that the merged column will have.
 
         Returns
         -------
         df : pd.DataFrame
-            Same as read but from multiple columns
+            Same as read but multiple columns merged into one.
         """
         func_kwargs = dict() if func_kwargs is None else func_kwargs
         func_kwargs['axis'] = 1
