@@ -7,7 +7,7 @@ TODO:
     - masking: Mask missing values by default?
     - clean up data more as returned by base reader or do it in the val frmwk?
 """
-from io_utils.read.geo_ts_readers.other_base_readers.cci_comm_format import base_reader
+from io_utils.read.geo_ts_readers.other_base_readers.cci_genio_base_reader import CCIDs
 from io_utils.read.path_config import PathConfig
 from cadati.jd_date import jd2dt
 try:
@@ -15,7 +15,7 @@ try:
 except ImportError:
     path_settings = {}
 
-class GeoCCIDsAmsr2Ts(base_reader.CCIDs):
+class GeoCCIDsAmsr2Ts(CCIDs):
     _ds_implemented = [('CCIDs', 'v052', 'AMSR2', 'DES')]
 
     _t0 = 'jd0'

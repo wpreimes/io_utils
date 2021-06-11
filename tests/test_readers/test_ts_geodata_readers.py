@@ -195,6 +195,8 @@ def test_amsr2lprm_ts_reader(mode, verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
+@pytest.mark.skipif(not pygenio_available,
+                    reason="Pygenio is not installed.")
 @pytest.mark.geo_test_data
 def test_amsr2ccids_ts_reader(verbose=False):
     dataset = ('CCIDs', 'v052', 'AMSR2', 'DES')
@@ -221,6 +223,8 @@ def test_ascatssm_ts_reader(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
+@pytest.mark.skipif(not pygenio_available,
+                    reason="Pygenio is not installed.")
 @pytest.mark.geo_test_data
 def test_ccigenio_ts_reader(verbose=False):
     path = os.path.join(root_path.r, 'Projects', "CCIplus_Soil_Moisture",

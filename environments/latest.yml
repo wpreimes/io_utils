@@ -29,7 +29,6 @@ dependencies:
       - pytileproj
       - cadati
       - country-bounding-boxes
-      - pygenio
       - ismn
       - ascat
       - lxml

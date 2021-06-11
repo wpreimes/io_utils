@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from io_utils.read.geo_ts_readers.other_base_readers.lprm import base_reader
+import io_utils.read.geo_ts_readers.other_base_readers.lprm_base_reader as base_reader
 from io_utils.read.path_config import PathConfig
 path_settings = {}
 

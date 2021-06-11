@@ -3,7 +3,10 @@ io_utils
 ========
 
 
-Add a short description here!
+Optional packages:
+
+- pygenio (TUW internal) for GenioCCI time series
+- yeoda, veranda for S1 time series from original images
 
 
 Description

@@ -37,7 +37,7 @@ def test_cgls_swi_ts_reader(verbose=False):
     assert not ts.dropna(how='all').empty
 
 @pytest.mark.skipif(not hr_available,
-                    reason="Original HR readers not available")
+                    reason="Hires Image readers not available")
 @pytest.mark.geo_test_data
 def test_scatsar_swi_ts_reader(verbose=False):
     reader = GeoScatSarCglsSwiReader(dataset_or_path=('SCATSAR', 'CGLS', 'C0418', 'E7'))
