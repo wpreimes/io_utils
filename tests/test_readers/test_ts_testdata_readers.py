@@ -259,8 +259,10 @@ def test_merra2_ts_reader():
 
 def test_era5_land_ts_reader():
     force_path_group = '__test'
-    reader = GeoEra5LandTs(group_vars={'testdata': ['swvl1', 'stl1']},
-                           ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.},
+    reader = GeoEra5LandTs(group_vars={'temperature': ['stl1'],
+                                       'sm_precip_lai': ['swvl1']},
+                           ioclass_kws={'read_bulk': True},
+                           scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '>=', 273.15, 'stl1')
     ts = reader.read(*test_loc)
