@@ -25,8 +25,8 @@ def test_smecv_rzsm_v0_reader(verbose=False):
                           parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
                           scale_factors={'SWI_001': 1.})
     #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
-    ts = reader.read_param_mean(*test_loc, params=['SWI_001', 'SWI_010'])
-    assert ts.columns == ['mean']
+    ts = reader.read(*test_loc)
+    assert 'SWI_001' in ts.columns
     assert not ts.empty
     if verbose: print(ts)
 

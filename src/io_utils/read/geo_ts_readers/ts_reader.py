@@ -12,19 +12,24 @@ import numpy as np
 from io_utils.utils import filter_months, ddek
 import warnings
 from collections.abc import Iterable
-from pytesmo.validation_framework.adapters import BasicAdapter
-
+import io_utils.read.geo_ts_readers.adapters as adapters
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
     settings = eval(s)
     return settings
 
+
 class GeoTsReader(object):
 
-    def __init__(self, cls, reader_kwargs=None, selfmaskingadapter_kwargs=None,
-                 climadapter_kwargs=None, resample=None, filter_months=None,
-                 params_rename=None, remove_nans=None):
+    def __init__(self,
+                 cls,
+                 reader_kwargs=None,
+                 adapters=None,
+                 resample=None,
+                 filter_months=None,
+                 params_rename=None,
+                 remove_nans=None):
 
         """
         Collects geopath-readers and calls them based on the dataset name,
@@ -38,14 +43,16 @@ class GeoTsReader(object):
         parameters : list
             A list of parameters that are read for the dataset
             e.g. ['sm', 'swvl1', 'flag']
-        selfmaskingadapter_kwargs : list, optional (default: None)
-            Dictionary that provides options to create ONE SelfMaskingAdapter
-            for the dataset. Thas is applied after reading the params.
-            e.g. dict(op='==', threshold=0, column_name='flag')}
-        climadapter_kwargs : dict, optional (default: None)
-            Dictionary that provides options to create a AnomalyClimAdapter
-            for the dataset. That is applied after reading and masking the params.
-            e.g. dict(columns=['sm'], timespan=[datetime(1991,1,1), datetime(2010,12,31)])
+        adapters : list[tuple[str, dict]], optional (default: None)
+            The names of adapters that are implemented. Either in
+            adapters.py or in pytesmo.validation_framework.adapters as keys.
+            Will be applied in the passed order.
+            e.g.
+                [('SelfMaskingAdapter', {'op' : '<=', 'threshold' : 50,
+                                        'column_name' : 'sm'}),
+                ('AnomalyClimAdapter', {'columns': ['sm'],
+                                        'wraparound': True,
+                                        'timespan': ['1900-01-01', '2099-12-31']})]
         resample : tuple, optional (default: None)
             A frequency and method to resample the read, masked, transformed, data
             e.g. ('M', 'mean'), calls resample('M').mean(), other predefined methods
@@ -84,8 +91,7 @@ class GeoTsReader(object):
                     remove_nans[var] = {is_should: np.nan}
         self.remove_nans = remove_nans
 
-        self.selfmaskingadapter_kwargs = selfmaskingadapter_kwargs
-        self.climadapter_kwargs = climadapter_kwargs
+        self.adapters = adapters
 
         cls = cls(**self.reader_kwargs)
 
@@ -98,13 +104,8 @@ class GeoTsReader(object):
     def __str__(self):
         reader_class_str = self.reader.__class__.__name__
 
-        adapters = []
-        if self.selfmaskingadapter_kwargs is not None:
-            adapters.append('SelfMaskingAdapter')
-        if self.climadapter_kwargs is not None:
-            adapters.append('AnomalyAdapter')
-        if len(adapters) == 0:
-            adapters.append('no Adapters')
+        adapters = [name for name, sets in self.adapters] \
+            if self.adapters is not None else ['no Adapters']
 
         adapters_str = ', '.join(adapters)
 
@@ -113,24 +114,12 @@ class GeoTsReader(object):
 
     def _adapt(self, reader):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
-
-        if self.selfmaskingadapter_kwargs is None and self.climadapter_kwargs is None:
-            reader = BasicAdapter(reader)
+        if self.adapters is None:
+            reader = adapters.BasicAdapter(reader)
         else:
-            if self.selfmaskingadapter_kwargs is not None:
-                # Multiple self masking adapters are possible
-                if isinstance(self.selfmaskingadapter_kwargs, dict):
-                    self.selfmaskingadapter_kwargs = [self.selfmaskingadapter_kwargs]
-                for kwargs in self.selfmaskingadapter_kwargs:
-                    reader = SelfMaskingAdapter(reader, **kwargs)
-
-            if self.climadapter_kwargs is not None:
-                if 'timespan' in self.climadapter_kwargs.keys():
-                    anom_adapter = AnomalyClimAdapter
-                else:
-                    anom_adapter = AnomalyAdapter
-
-                reader = anom_adapter(reader, **self.climadapter_kwargs)
+            for adapter_name, adapter_kwargs in self.adapters:
+                Adapter = getattr(adapters, adapter_name)
+                reader = Adapter(reader, **adapter_kwargs)
 
         self.reader = reader
 

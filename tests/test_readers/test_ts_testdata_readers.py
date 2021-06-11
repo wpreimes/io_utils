@@ -16,10 +16,8 @@ def test_read_applied():
                     parameters=['sm', 'sm_uncertainty', 't0'],
                     scale_factors={'sm': 1.},
                     force_path_group=force_path_group)
-    ts_mean = reader.read_applied(*test_loc, func=pd.DataFrame.mean,
-                     params=['sm', 'sm_uncertainty'],
-                     name='something', func_kwargs=dict(skipna=True))
-    assert not ts_mean['something'].empty
+    ts = reader.read(*test_loc)
+    assert not ts.empty
 
 def test_smosic_reader():
     force_path_group = '__test'
