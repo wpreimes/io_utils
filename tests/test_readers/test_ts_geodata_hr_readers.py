@@ -19,7 +19,7 @@ def print_test_config(dataset, path_group=None):
     print('Test reading {} data from {}.'.format(ds, pg))
 
 @pytest.mark.skipif(not hr_available,
-                    reason="Original HR readers not available")
+                    reason="Hires Image readers not available")
 @pytest.mark.geo_test_data
 def test_cgls_ssm_ts_reader(verbose=False):
     reader = GeoCSarSsmTiffReader(dataset_or_path=('CSAR', 'CGLS', 'SSM', '1km', 'V1.1', 'tiff'))
@@ -28,7 +28,7 @@ def test_cgls_ssm_ts_reader(verbose=False):
     assert not ts.dropna(how='all').empty
 
 @pytest.mark.skipif(not hr_available,
-                    reason="Original HR readers not available")
+                    reason="Hires Image readers not available")
 @pytest.mark.geo_test_data
 def test_cgls_swi_ts_reader(verbose=False):
     reader = GeoCSarSwiTiffReader(dataset_or_path=('CSAR', 'CGLS', 'SWI', '1km', 'V1.0', 'geotiff'))
