@@ -1,5 +1,5 @@
 from io_utils.read.path_config import PathConfig
-from io_utils.read.geo_ts_readers.csar_cgls.base_reader import CSarTiffReader
+from io_utils.read.geo_ts_readers.csar_cgls.base_reader_tiff import CSarTiffReader
 import os
 import warnings
 try:

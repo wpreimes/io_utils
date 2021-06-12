@@ -4,21 +4,18 @@
 Collects all the GeoTsReaders that have a path implementation and work in the
 same way.
 """
-import warnings
 
 # ASCAT readers
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_ssm import *
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_smdas import *
 
 # AMSR2 readers
-from io_utils.read.geo_ts_readers.amsr2.ccids_amsr2 import *
 from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
 
 # CCI SWI readers
-from io_utils.read.geo_ts_readers.esa_cci_swi.esa_cci_swi_v04 import *
+from io_utils.read.geo_ts_readers.smecv_swi_rzsm.smecv_swi_rzsm_v0 import *
 
 ## CCI version readers
-from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06_genio import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v04 import *
@@ -52,6 +49,18 @@ from io_utils.read.geo_ts_readers.smap.smap_lprm import *
 # ISMN version readers
 from io_utils.read.geo_ts_readers._ismn.ismn_sm import *
 
+
+# Optional readers (using packages that are difficult to install)
+
+try:
+    from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06_genio import *
+    from io_utils.read.geo_ts_readers.amsr2.ccids_amsr2 import *
+    pygenio_available = True
+except ImportError:
+    pygenio_available = False
+    warnings.warn('Could not import pygenio. Pygenio is a TUW internal package (deprecated).')
+
+
 try:
     # SCATSAR reading uses many other packages, therefore it's optional here
     from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_cgls_equi7 import \
@@ -63,5 +72,9 @@ try:
         GeoCSarSsmTiffReader
     from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_swi import \
         GeoCSarSwiTiffReader
+    hr_available = True
 except ImportError:
-    warnings.warn('Could not import SAR reader')
+    hr_available = False
+    warnings.warn('Could not import SAR reader. One of the following packages is not installed:'
+                  'geopathfinder, yeoda'
+                  ' - Sentinel SM product reading not available.')

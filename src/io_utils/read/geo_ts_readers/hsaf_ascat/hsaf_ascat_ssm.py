@@ -38,9 +38,9 @@ class GeoHsafAscatSsmTs(base_reader.HSAFAscatSSMTs):
     def read(self, *args, **kwargs):
         ts = super(GeoHsafAscatSsmTs, self).read(*args, **kwargs)
         if self.parameters is not None:
-            ts.data = ts.data[self.parameters]
+            ts = ts[self.parameters]
 
-        return ts.data
+        return ts
 
 
 # check if datasets in reader and in dict match
@@ -48,6 +48,6 @@ assert sorted(list(path_settings.keys())) == sorted(GeoHsafAscatSsmTs._ds_implem
 
 if __name__ == '__main__':
     ds = GeoHsafAscatSsmTs(('HSAF_ASCAT', 'SSM', 'H115+H116'),
-            grid_path=r"R:\Projects\H_SAF_CDOP3\05_deliverables_products\auxiliary\warp5_grid\TUW_WARP5_grid_info_2_3.nc")
+            grid_path="/home/wpreimes/shares/radar/projects/H_SAF_CDOP3/05_deliverables_products/auxiliary/warp5_grid/TUW_WARP5_grid_info_2_3.nc")
     ts = ds.read(-14,14)
     print(ts)

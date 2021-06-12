@@ -21,8 +21,7 @@ class GeoPathEra5LandTs(ERATs):
     # Reader implementation that uses the PATH configuration from above
     _ds_implemented = [('ERA5-Land', 'sm_precip_lai'),
                        ('ERA5-Land', 'snow'),
-                       ('ERA5-Land', 'temperature'),
-                       ('ERA5-Land', 'testdata')]
+                       ('ERA5-Land', 'temperature')]
 
     def __init__(self, dataset_or_path, force_path_group=None, **kwargs):
 
@@ -73,6 +72,10 @@ class GeoEra5LandTs(object):
                          axis=1)
 
 if __name__ == '__main__':
+    force_path_group = '__test'
     reader = GeoEra5LandTs(group_vars={'temperature': ['stl1'],
-                                       'sm_precip_lai': ['swvl1']})
+                                       'sm_precip_lai': ['swvl1']},
+                           ioclass_kws={'read_bulk': True},
+                           scale_factors={'swvl1': 1.},
+                           force_path_group=force_path_group)
     ts = reader.read(15,45)

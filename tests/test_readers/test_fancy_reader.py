@@ -15,9 +15,13 @@ def test_ascat_sat_data():
     Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
     sm anomalies based on 1991-2010 clim.
     """
+    """
+    Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
+    sm anomalies based on 1991-2010 clim.
+    """
     grid_path = os.path.join(root_path.r, 'Projects',
-                        'H_SAF_CDOP3', '05_deliverables_products',
-                        'auxiliary','warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
+                             'H_SAF_CDOP3', '05_deliverables_products',
+                             'auxiliary','warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
 
     reader_kwargs = {'dataset_or_path': ('HSAF_ASCAT', 'SSM', 'H115+H116'),
                      'force_path_group': 'radar',
@@ -25,31 +29,40 @@ def test_ascat_sat_data():
                      'parameters': ['sm', 'proc_flag', 'conf_flag'],
                      'ioclass_kws': {'read_bulk': True}}
 
-    selfmaskingadapter_kwargs = [{'op' : '==', 'threshold' : 0,
-                                 'column_name' : 'proc_flag'},
-                                 {'op': '==', 'threshold': 0,
-                                  'column_name': 'conf_flag'},
-                                 {'op': '<=', 'threshold': 50,
-                                  'column_name': 'sm'}]
-
-    climadapter_kwargs = None
+    adapters = [('SelfMaskingAdapter', {'op' : '==', 'threshold' : 0,
+                                        'column_name' : 'proc_flag'}),
+                ('SelfMaskingAdapter', {'op' : '==', 'threshold' : 0,
+                                        'column_name' : 'conf_flag'}),
+                ('SelfMaskingAdapter', {'op' : '<=', 'threshold' : 50,
+                                        'column_name' : 'sm'}),
+                ('AnomalyClimAdapter', {'columns': ['sm'],
+                                        'wraparound': True,
+                                        'timespan': ['1900-01-01', '2099-12-31']}),
+                ('ColumnCombAdapter', {'func': 'pd.DataFrame.mean',
+                                       'columns': ['sm', 'proc_flag'],
+                                       'func_kwargs': {'skipna': True},
+                                       'new_name': 'mean_sm_procflag'})
+                ]
 
     resample = ('1D', 'mean')
     params_rename = {'sm': 'ascat_sm'}
 
-    fancyreader = GeoTsReader(GeoHsafAscatSsmTs, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, filter_months=None,
+    fancyreader = GeoTsReader(GeoHsafAscatSsmTs,
+                              reader_kwargs,
+                              adapters,
+                              resample,
+                              filter_months=None,
                               params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
 
     ts = ts.dropna(how='all')
-    assert np.all(ts.columns.values == ['ascat_sm', 'proc_flag', 'conf_flag'])
+    assert np.all(ts.columns.values == ['ascat_sm', 'proc_flag', 'conf_flag', 'mean_sm_procflag'])
     assert np.all(ts['proc_flag'].dropna().values == 0.)
     assert np.all(ts['conf_flag'].dropna().values == 0.)
     assert np.all(ts['ascat_sm'].dropna().values <= 50.)
+    assert not ts['mean_sm_procflag'].dropna().empty
     assert not ts.empty
-    print(ts)
 
 
 @pytest.mark.geo_test_data
@@ -64,18 +77,20 @@ def test_cci_sat_data():
                      'parameters': ['sm', 'flag', 't0', 'sm_uncertainty'],
                      'ioclass_kws': {'read_bulk': True}}
 
-    selfmaskingadapter_kwargs = [{'op' : '==', 'threshold' : 0,
-                                 'column_name' : 'flag'}]
+    adapters = [('SelfMaskingAdapter', {'op' : '==', 'threshold' : 0,
+                                        'column_name' : 'flag'}),
+                ('AnomalyClimAdapter', {'columns': ['sm'],
+                                        'wraparound': True,
+                                        'moving_avg_clim' : 30,
+                                        'timespan': [datetime(1991, 1, 1),
+                                                     datetime(2010, 12, 31)]}),
+                ]
 
-    climadapter_kwargs = {'columns' : ['sm'],
-                          'timespan': [datetime(1991, 1, 1), datetime(2010, 12, 31)],
-                          'wraparound' : True,
-                          'moving_avg_clim' : 30}
     resample = ('10D', 'mean')
     params_rename = {'sm': 'esa_cci_sm'}
 
-    fancyreader = GeoTsReader(GeoCCISMv6Ts, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, filter_months=None,
+    fancyreader = GeoTsReader(GeoCCISMv6Ts, reader_kwargs, adapters,
+                              resample, filter_months=None,
                               params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
@@ -98,18 +113,23 @@ def test_gldas_model_data():
                      'parameters': ['SoilMoi0_10cm_inst', 'SoilTMP0_10cm_inst'],
                      'ioclass_kws': {'read_bulk': True}}
 
-    # keep only obs where temp >= 277.15°C
-    selfmaskingadapter_kwargs = {'op' : '>=', 'threshold' : 277.15,
-                                 'column_name' : 'SoilTMP0_10cm_inst'}
-    climadapter_kwargs = {'columns' : ['SoilMoi0_10cm_inst'],
-                          'wraparound' : True,
-                          'timespan': [datetime(2000,1,1), datetime(2010,12,31)],
-                          'moving_avg_clim' : 30}
+    adapters = [('SelfMaskingAdapter', {'op' : '>=', 'threshold' : 277.15,
+                                        'column_name' : 'SoilTMP0_10cm_inst'}),
+                ('AnomalyClimAdapter', {'columns': ['SoilMoi0_10cm_inst'],
+                                        'wraparound': True,
+                                        'moving_avg_clim' : 30,
+                                        'timespan': [datetime(2000,1,1),
+                                                     datetime(2010,12,31)]}),
+                ]
+
     resample = ('1D', 'mean')
     params_rename = {'SoilMoi0_10cm_inst': 'sm', 'SoilTMP0_10cm_inst': 'tmp'}
 
-    fancyreader = GeoTsReader(GeoGLDAS21Ts, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, filter_months=None,
+    fancyreader = GeoTsReader(GeoGLDAS21Ts,
+                              reader_kwargs,
+                              adapters=adapters,
+                              resample=resample,
+                              filter_months=None,
                               params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
@@ -126,20 +146,23 @@ def test_era5land_rean_data():
                                       'temperature': ['stl1']},
                           'ioclass_kws': {'read_bulk': True}}
 
-    # keep only obs where temp >= 277.15°C
-    selfmaskingadapter_kwargs = {'op' : '>=',
-                                 'threshold' : 277.15,
-                                 'column_name' : 'stl1'}
+    adapters = [('SelfMaskingAdapter', {'op' : '>=', 'threshold' : 277.15,
+                                        'column_name' : 'stl1'}),
+                ('AnomalyClimAdapter', {'columns': ['swvl1'],
+                                        'wraparound': True,
+                                        'moving_avg_clim' : 30,
+                                        'timespan': [datetime(2000,1,1),
+                                                     datetime(2010,12,31)]}),
+                ]
 
-    climadapter_kwargs = {'columns' : ['swvl1'],
-                          'wraparound' : True,
-                          'timespan': [datetime(2000,1,1), datetime(2010,12,31)],
-                          'moving_avg_clim' : 30}
     resample = None
     params_rename = {'swvl1': 'swvl1', 'stl1': 'stl1'}
 
-    fancyreader = GeoTsReader(GeoEra5LandTs, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, filter_months=None,
+    fancyreader = GeoTsReader(GeoEra5LandTs,
+                              reader_kwargs,
+                              adapters=adapters,
+                              resample=resample,
+                              filter_months=None,
                               params_rename=params_rename)
 
     ts = fancyreader.read(*test_loc)
@@ -159,24 +182,28 @@ def test_insitu_data():
                      'network': 'COSMOS',
                      'force_path_group': '__test'}
 
-    # keep only obs where temp >= 277.15°C
-    selfmaskingadapter_kwargs = {'op' : '==', 'threshold' : 'G',
-                                 'column_name' : 'soil_moisture_flag'}
-    climadapter_kwargs = {'columns' : ['soil_moisture'],
-                          'wraparound' : True,
-                          'timespan': [datetime(2010,1,1), datetime(2019,12,31)],
-                          'moving_avg_clim' : 30}
+    adapters = [('SelfMaskingAdapter', {'op' : '==', 'threshold' : "G",
+                                        'column_name' : 'soil_moisture_flag'}),
+                ('AnomalyClimAdapter', {'columns': ['soil_moisture'],
+                                        'wraparound': True,
+                                        'moving_avg_clim' : 30,
+                                        'timespan': [datetime(2010,1,1), datetime(2019,12,31)],
+                                        }),
+                ]
     resample = None
     params_rename = {'soil_moisture': 'initu_sm'}
 
 
-    fancyreader = GeoTsReader(GeoISMNTs, reader_kwargs, selfmaskingadapter_kwargs,
-                              climadapter_kwargs, resample, filter_months=None,
+    fancyreader = GeoTsReader(GeoISMNTs,
+                              reader_kwargs,
+                              adapters=adapters,
+                              resample=resample,
+                              filter_months=None,
                               params_rename=params_rename)
     fancyreader.base_reader.rebuild_metadata()
 
-    nearest, dist = fancyreader.base_reader.find_nearest_station(-155.5, 19.9,
-                                                            return_distance=True)
+    nearest, dist = fancyreader.base_reader.find_nearest_station(
+        -155.5, 19.9, return_distance=True)
     assert nearest.name == 'SilverSword'
     ids = fancyreader.base_reader.get_dataset_ids('soil_moisture',
                                              min_depth=0, max_depth=0.17)
@@ -186,8 +213,8 @@ def test_insitu_data():
     assert not df_drop.empty
 
 if __name__ == '__main__':
-    test_cci_sat_data()
     test_ascat_sat_data()
+    test_cci_sat_data()
     test_era5land_rean_data()
     test_gldas_model_data()
     test_insitu_data()

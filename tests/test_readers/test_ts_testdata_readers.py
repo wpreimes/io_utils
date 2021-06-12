@@ -8,6 +8,17 @@ import pytest
 
 test_loc = (-155.875, 19.625)
 
+def test_read_applied():
+    force_path_group = '__test'
+    reader = GeoCCISMv6Ts(dataset_or_path=('ESA_CCI_SM', 'v061', 'COMBINED'),
+                    exact_index=True,
+                    ioclass_kws={'read_bulk': True},
+                    parameters=['sm', 'sm_uncertainty', 't0'],
+                    scale_factors={'sm': 1.},
+                    force_path_group=force_path_group)
+    ts = reader.read(*test_loc)
+    assert not ts.empty
+
 def test_smosic_reader():
     force_path_group = '__test'
     smos_reader = GeoSMOSICTs(dataset_or_path=('SMOS', 'IC', 'ASC'),
@@ -140,8 +151,11 @@ def test_era5_reader():
     #print(ts)
 
 def test_era5land_reader():
+    force_path_group = '__test'
     reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1']},
-                           ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.})
+                           ioclass_kws={'read_bulk': True},
+                           scale_factors={'swvl1': 1.},
+                           force_path_group=force_path_group)
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
     #print(ts)
@@ -227,7 +241,10 @@ def test_C3S_single_readers(version, Reader):
         force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '==', 0, 'flag')
     ts = reader.read(*test_loc)
-    assert not ts.dropna(how='all').empty
+    if version == 'v201706': # this version is empty
+        assert ts.dropna(how='all').empty
+    else:
+        assert not ts.dropna(how='all').empty
     print(ts)
 
 def test_merra2_ts_reader():
@@ -242,8 +259,10 @@ def test_merra2_ts_reader():
 
 def test_era5_land_ts_reader():
     force_path_group = '__test'
-    reader = GeoEra5LandTs(group_vars={'testdata': ['swvl1', 'stl1']},
-                           ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.},
+    reader = GeoEra5LandTs(group_vars={'temperature': ['stl1'],
+                                       'sm_precip_lai': ['swvl1']},
+                           ioclass_kws={'read_bulk': True},
+                           scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
     reader = SelfMaskingAdapter(reader, '>=', 273.15, 'stl1')
     ts = reader.read(*test_loc)
@@ -316,6 +335,9 @@ def test_ismn_good_sm_ts_reader_no_masking():
     assert not dat.dropna().empty
 
 if __name__ == '__main__':
+    test_read_applied()
+
+    test_C3S_single_readers('v201706', GeoC3Sv201706Ts)
     test_C3S_single_readers('v202012', GeoC3Sv202012Ts)
     test_C3S_single_readers('v201912', GeoC3Sv201912Ts)
     test_C3S_single_readers('v201812', GeoC3Sv201812Ts)

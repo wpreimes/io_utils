@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from io_utils.read.geo_ts_readers.other_base_readers.lprm import base_reader
+from io_utils.read.geo_ts_readers.other_base_readers.lprm_base_reader import LPRMTs
 from io_utils.read.path_config import PathConfig
 try:
     from io_utils.path_configs.amsr2.paths_amsr2_lprm_v6 import path_settings
 except ImportError:
     path_settings = {}
 
-class GeoAmsr2LPRMv6Ts(base_reader.LPRMTs):
+class GeoAmsr2LPRMv6Ts(LPRMTs):
     # Reader implementation that uses the PATH configuration from above
 
     # implememted subversion that have a set path configuration

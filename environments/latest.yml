@@ -3,6 +3,7 @@
 name: io_utils
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - numpy
   - pandas
@@ -28,9 +29,9 @@ dependencies:
       - pytileproj
       - cadati
       - country-bounding-boxes
-      - pygenio
-      - git+https://github.com/TUW-GEO/ismn.git@master
+      - ismn
+      - ascat
+      - lxml
       - smecv_grid
-      # needed to run setup.py test
       - pytest
       - pytest-cov

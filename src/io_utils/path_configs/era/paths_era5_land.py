@@ -56,7 +56,15 @@ path_settings = \
                                             'datasets',
                                             'sm_precip_lai'),
                     }),
-        ]),
+                ('__test',
+                {
+                    'win': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                        'era5_land', 'sm_precip_lai'),
+                    'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
+                                        'era5_land', 'sm_precip_lai'),
+                } if root_path.test_root is not None else {'win' : None, 'lin' : None})
+
+]),
 
         ('ERA5-Land', 'snow'):
             # paths will be tried in this order
@@ -142,17 +150,13 @@ path_settings = \
                                          'datasets',
                                          'temperature'),
                  }),
-            ]),
-
-        ('ERA5-Land', 'testdata'):
-        # paths will be tried in this order
-            OrderedDict([
                 ('__test',
                  {
                      'win': os.path.join(root_path.test_root, '00_testdata', 'read',
                                          'era5_land', 'sm_tmp'),
                      'lin': os.path.join(root_path.test_root, '00_testdata', 'read',
-                                         'era5_land', 'sm_tmp')
-                 } if root_path.test_root is not None else {'win' : None, 'lin' : None}),
+                                         'era5_land', 'sm_tmp'),
+                 } if root_path.test_root is not None else {'win' : None, 'lin' : None})
+
             ]),
     }
