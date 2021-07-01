@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-import ogr
+try:
+    import ogr
+except ImportError:
+    from osgeo import ogr
 import os
 import numpy as np
 import pandas as pd

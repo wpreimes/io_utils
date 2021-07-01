@@ -268,16 +268,24 @@ class NcVarCombPlotter(object):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    file = r"\\project9\data-read\RADAR\Datapool_raw\LPRM\v6.1\SMAP_S3_VEGC\daily_images\D201910\SMAP_LPRM_VEGC_D20191008_v061.nc"
-    out_dir = r'C:\Temp'
+    import xarray as xr
+    import cartopy.crs as ccrs
+    from plot_maps import map_add_cbar
 
-    plotter = NcVarPlotter(filepath=file,
-                           lat_var='LAT', lon_var='LON', resxy=(0.25,0.25),
-                           cell_center_origin=True, out_dir=out_dir)
+    file = "/home/wpreimes/shares/home/code/smecv-grid/src/smecv_grid/definition_files/ESA-CCI-SOILMOISTURE-LAND_AND_RAINFOREST_MASK-fv06.2.nc"
+    out_dir = "/home/wpreimes/Temp/"
 
-    plotter.plot_variable('FLAGS', veg_mask=False,
-                          cbrange=(0,134219268), scale_factor=1.,
-                          cmap=plt.get_cmap('jet'), title_size=5,grid_label_loc='0001',
-                          plotfile_name='flags', cb_labelsize=7,
-                          title='flags LPRM 6.1 SMAP D20191008',
-                          cb_extend='neither', cb_label='Flag value', file_format='png')
+    ds = xr.open_dataset(file)
+    df = ds.to_dataframe()
+    df['points'] = df['gpi']
+    df['rainforest'] = df['rainforest'].replace({0:np.nan})
+    max_gpi = df['points'].max()
+    df.loc[df['land'] == 0, 'points'] = np.nan
+    df['land'] = df['land'].replace({0:np.nan})
+
+    f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
+    ax = plt.axes(projection=ccrs.Robinson())
+    _, ax, im = cp_map(df, col='points', ax=ax, cmap='jet', cbrange=(0, max_gpi), show_cbar=False)
+    _, ax, _ = cp_map(df, col='rainforest', ax=ax, cmap='Greens', show_cbar=False)
+    map_add_cbar(f, ax, im, cb_label='Grid Point Index', cb_extend='neither', cb_loc='right')
+

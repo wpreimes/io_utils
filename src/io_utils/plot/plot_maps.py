@@ -23,8 +23,8 @@ Requires: matplotlib, numpy, cartopy, pandas
 Optional: smecv_grid 
 '''
 # TODO # (+) Make the vegetation mask work for different resolutions as well
-       # (+) Make this a class instead
-       # Add function to draw markers/pointers
+# (+) Make this a class instead
+# Add function to draw markers/pointers
 
 # NOTES # -
 
@@ -137,14 +137,14 @@ def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
     transform = ccrs.PlateCarree()._as_mpl_transform(imax)
     for start, end, label in zip(tip_loc, text_loc, pointer_label):
         imax.annotate(label, xy=start, xytext=end,
-                    arrowprops=dict(facecolor='black',
-                                    arrowstyle="-",
-                                    connectionstyle="arc3,rad=0",
-                                    alpha=1., linewidth=linewidth),
-                    xycoords=transform,
-                    fontsize=fontsize,
-                    fontweight='bold',
-                    ha='center', va='center')
+                      arrowprops=dict(facecolor='black',
+                                      arrowstyle="-",
+                                      connectionstyle="arc3,rad=0",
+                                      alpha=1., linewidth=linewidth),
+                      xycoords=transform,
+                      fontsize=fontsize,
+                      fontweight='bold',
+                      ha='center', va='center')
 
     return f, imax, im
 
@@ -189,12 +189,12 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
 
     return imax
 
-def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
+def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, title_size=10,
                    llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0,1),
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
                    gridspace=(60,20), grid_label_loc='1001', style=None, markersize=None,
                    ocean=False, land='white', states=False, borders=False,
-                   scale_factor=1., watermark=None, show_cbar=True, **cbar_kwargs):
+                   scale_factor=1., watermark=None, show_cbar=True, ax=None, **cbar_kwargs):
 
     '''
     Plot data as scatterplot on a map
@@ -247,6 +247,8 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
         A factor that the values are multiplied with before plotting them
     show_cbar : bool, optional (default: True)
         Add visualization of the colorbar at the bottom
+    ax : matplotlib.Axes.ax
+        Ax to use, if None is passed a new one is created.
     -------------------------
     Optional keywords that are passed when making the colorbar
     -------------------------
@@ -278,11 +280,17 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     set_style(style)
 
     values = values * scale_factor
-    f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
+
+    if ax is None:
+        f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
+        imax = plt.axes(projection=projection)
+    else:
+        f = None
+        imax = ax
+
 
     data_crs = ccrs.PlateCarree()
 
-    imax = plt.axes(projection=projection)
     imax.coastlines(resolution=coastline_size, color='black', linewidth=0.25)
 
     if ocean:
@@ -310,7 +318,7 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
     lon_interval = max([llc[0], urc[0]]) - min([llc[0], urc[0]])
     markersize = 1.5 * (360 / lon_interval) if markersize is None else markersize
     im = plt.scatter(lons, lats, c=values, cmap=cmap, s=markersize,
-        vmin=cbrange[0], vmax=cbrange[1], edgecolors='black', linewidths=0.05,
+                     vmin=cbrange[0], vmax=cbrange[1], edgecolors='black', linewidths=0.05,
                      zorder=3, transform=data_crs)
 
     if veg_mask:
@@ -335,8 +343,8 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None,
                         veg_img_masked, cmap=vegcmap, transform=data_crs, rasterized=True)
 
     if title:
-        imax.set_title(title, fontsize=10)
-        #f.suptitle(title, fontsize=10)
+        imax.set_title(title, fontsize=title_size)
+
     if watermark:
         # todo: add text to plot corner
         raise NotImplementedError
@@ -394,7 +402,10 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
                                      extend=cb_extend, shrink=0.7, use_gridspec=True,
                                      pad=0.07 if not exteme_labels else 0.08)
 
-    cb = f.colorbar(im, cax=cax, **kw)
+    if f:
+        cb = f.colorbar(im, cax=cax, **kw)
+    else:
+        cb = plt.colorbar(im, cax=cax, **kw)
     cb.ax.tick_params(labelsize=cb_ticksize)
     if cb_n_ticks is not None:
         if cb_n_ticks == 0:
@@ -525,9 +536,8 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
         Add this text to the corner of the plot.
     show_cbar : bool, optional (default: True)
         Add visualization of the colorbar at the bottom
-    poly_masks : dict, optional (default: None)
-        shapes (keys) that are used and colors to fill them with or None as color
-        to mask everything BUT the masked data.
+    ax : matplotlib.Axes.ax
+        Ax to use, if None is passed a new one is created.
     -------------------------
     Optional keywords that are passed when making the colorbar
     -------------------------
