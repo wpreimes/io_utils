@@ -271,21 +271,9 @@ if __name__ == '__main__':
     import xarray as xr
     import cartopy.crs as ccrs
     from plot_maps import map_add_cbar
+    file = "/home/wpreimes/shares/radar/Projects/C3S_312b/07_data/v202012_ICDR/060_daily_images_fixed/combined/2021/C3S-SOILMOISTURE-L3S-SSMV-COMBINED-DAILY-20210505000000-ICDR-v202012.0.0.nc"
 
-    file = "/home/wpreimes/shares/home/code/smecv-grid/src/smecv_grid/definition_files/ESA-CCI-SOILMOISTURE-LAND_AND_RAINFOREST_MASK-fv06.2.nc"
-    out_dir = "/home/wpreimes/Temp/"
+    f = NcVarPlotter(file, out_dir='/home/wpreimes/Temp/c3s_issue/')
+    f.plot_variable('flag', cbrange=(0,1000))
 
-    ds = xr.open_dataset(file)
-    df = ds.to_dataframe()
-    df['points'] = df['gpi']
-    df['rainforest'] = df['rainforest'].replace({0:np.nan})
-    max_gpi = df['points'].max()
-    df.loc[df['land'] == 0, 'points'] = np.nan
-    df['land'] = df['land'].replace({0:np.nan})
-
-    f = plt.figure(num=None, figsize=(8, 4), facecolor='w', edgecolor='k')
-    ax = plt.axes(projection=ccrs.Robinson())
-    _, ax, im = cp_map(df, col='points', ax=ax, cmap='jet', cbrange=(0, max_gpi), show_cbar=False)
-    _, ax, _ = cp_map(df, col='rainforest', ax=ax, cmap='Greens', show_cbar=False)
-    map_add_cbar(f, ax, im, cb_label='Grid Point Index', cb_extend='neither', cb_loc='right')
 

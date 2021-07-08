@@ -194,7 +194,8 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
                    gridspace=(60,20), grid_label_loc='1001', style=None, markersize=None,
                    ocean=False, land='white', states=False, borders=False,
-                   scale_factor=1., watermark=None, show_cbar=True, ax=None, **cbar_kwargs):
+                   scale_factor=1., watermark=None, show_cbar=True, ax=None,
+                   cb_kwargs=None, plot_kwargs=None):
 
     '''
     Plot data as scatterplot on a map
@@ -276,6 +277,10 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
     im : plt.axes
         The plot ax
     '''
+    if plot_kwargs is None:
+        plot_kwargs = {}
+    if cb_kwargs is None:
+        cb_kwargs = {}
 
     set_style(style)
 
@@ -317,9 +322,11 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
 
     lon_interval = max([llc[0], urc[0]]) - min([llc[0], urc[0]])
     markersize = 1.5 * (360 / lon_interval) if markersize is None else markersize
-    im = plt.scatter(lons, lats, c=values, cmap=cmap, s=markersize,
-                     vmin=cbrange[0], vmax=cbrange[1], edgecolors='black', linewidths=0.05,
-                     zorder=3, transform=data_crs)
+    if 'linewidths' not in plot_kwargs:
+        plot_kwargs['linewidths'] = 0.05
+    im = imax.scatter(lons, lats, c=values, cmap=cmap, s=markersize,
+                      vmin=cbrange[0], vmax=cbrange[1], edgecolors='black',
+                      zorder=3, transform=data_crs, **plot_kwargs)
 
     if veg_mask:
         # Plot a dense vegetation mask as in the ESA CCI SM grid
@@ -349,7 +356,7 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
         # todo: add text to plot corner
         raise NotImplementedError
     if show_cbar:
-        map_add_cbar(f, imax, im, **cbar_kwargs)
+        map_add_cbar(f, imax, im, **cb_kwargs)
     else:
         plt.tight_layout(pad=3)
 
@@ -463,7 +470,7 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
            veg_mask=False, gridspace=(60,20), grid_label_loc='0011', style=None,
            ocean=False, land='grey', states=False, borders=False, scale_factor=1., watermark=None,
-           show_cbar=True, ax=None, **cbar_kwargs):
+           show_cbar=True, ax=None, cb_kwargs=None, plot_kwargs=None):
 
     '''
     Plot data as an area on a map.
@@ -569,6 +576,10 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
 
     if mask_cols_colors is None:
         mask_cols_colors = dict()
+    if plot_kwargs is None:
+        plot_kwargs = {}
+    if cb_kwargs is None:
+        cb_kwargs = {}
 
     set_style(style)
 
@@ -674,7 +685,7 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
             layer_cmap = cmap
 
         im = imax.pcolormesh(glob_lons, glob_lats, img_masked, cmap=layer_cmap, transform=data_crs,
-                             rasterized=True)
+                             rasterized=True, **plot_kwargs)
 
     im.set_clim(vmin=cbrange[0], vmax=cbrange[1])
 
@@ -711,7 +722,7 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
         # todo: add text to plot corner
         raise NotImplementedError
     if show_cbar and f is not None:
-        map_add_cbar(f, imax, im, **cbar_kwargs)
+        map_add_cbar(f, imax, im, **cb_kwargs)
     else:
         plt.tight_layout(pad=3)
 
