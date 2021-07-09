@@ -1,6 +1,4 @@
-import pandas as pd
 from pytesmo.validation_framework.adapters import *
-import numpy as np  # dont delete, so it can be used by apply
 
 class ColumnCombineAdapter(BasicAdapter):
     """

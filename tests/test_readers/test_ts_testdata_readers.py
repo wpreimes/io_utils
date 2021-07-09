@@ -152,7 +152,7 @@ def test_era5_reader():
 
 def test_era5land_reader():
     force_path_group = '__test'
-    reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1']},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'sm_precip_lai'): ['swvl1']},
                            ioclass_kws={'read_bulk': True},
                            scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
@@ -259,8 +259,8 @@ def test_merra2_ts_reader():
 
 def test_era5_land_ts_reader():
     force_path_group = '__test'
-    reader = GeoEra5LandTs(group_vars={'temperature': ['stl1'],
-                                       'sm_precip_lai': ['swvl1']},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'temperature'): ['stl1'],
+                                       ('ERA5-Land', 'sm_precip_lai'): ['swvl1']},
                            ioclass_kws={'read_bulk': True},
                            scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
