@@ -71,14 +71,18 @@ def test_pretty_plot():
                                      names=['lats', 'lons'])
     df = pd.DataFrame(index=index, data={'sm': dat}).dropna()
 
+    cb_kwargs = dict(cb_label='ESA CCI SM [$m^3/m^3$]', cb_labelsize=7,
+                     cb_extend='both', cb_ext_label_min='DRY',
+                     cb_ext_label_max='WET', cb_loc='right')
+
     f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.), veg_mask=True,
                          cmap=cm_sm, projection=ccrs.Sinusoidal(),
                          title='Overloaded Plot with too much Information',
                          ocean=True, land='grey', gridspace=(60,20), states=True,
                          borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
-                         cb_label='ESA CCI SM [$m^3/m^3$]', cb_labelsize=7, scale_factor=100,
-                         grid_label_loc='0111', coastline_size='110m', cb_extend='both',
-                         cb_ext_label_min='DRY', cb_ext_label_max='WET', cb_loc='right')
+                         scale_factor=100,
+                         grid_label_loc='0111', coastline_size='110m',
+                         cb_kwargs=cb_kwargs)
 
     out_dir = tempfile.mkdtemp()
     try:

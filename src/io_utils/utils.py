@@ -221,6 +221,9 @@ def ddek(index):
     return func(index.to_pydatetime())
 
 if __name__ == '__main__':
+
+
+
     import matplotlib.pyplot as plt
     ds = pd.DataFrame(index=pd.date_range(start='2000-01-01', end='2010-12-31', freq='D'),
                    data={'data': range(4018), 'flag': np.full(4018, 1)})

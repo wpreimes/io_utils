@@ -63,8 +63,8 @@ def test_cci_v061_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_era5land_merged_reader(verbose=False):
     if verbose: print('Test reading ERA5Land MERGED sm/temp data from storage.')
-    reader = GeoEra5LandTs(group_vars={'sm_precip_lai': ['swvl1'],
-                                       'temperature': ['stl1']},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'sm_precip_lai'): ['swvl1'],
+                                       ('ERA5-Land', 'temperature'): ['stl1']},
                            ioclass_kws={'read_bulk': True}, scale_factors={'swvl1': 1.})
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
@@ -74,7 +74,7 @@ def test_era5land_merged_reader(verbose=False):
 # no test data for this test in the repo
 def test_era5land_snow_reader(verbose=False):
     if verbose: print('Test reading ERA5Land, snow data from storage.')
-    reader = GeoEra5LandTs(group_vars={'snow':['snowc']}, ioclass_kws={'read_bulk': True},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'snow'): ['snowc']}, ioclass_kws={'read_bulk': True},
                            scale_factors={'snowc': 1.})
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty

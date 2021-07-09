@@ -7,6 +7,8 @@ import numpy as np
 from datetime import datetime
 import os
 import io_utils.root_path as root_path
+import pandas as pd
+
 test_loc = (15, 45)
 
 @pytest.mark.geo_test_data
@@ -16,8 +18,8 @@ def test_ascat_sat_data():
     sm anomalies based on 1991-2010 clim.
     """
     """
-    Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
-    sm anomalies based on 1991-2010 clim.
+    Read ASCAT data, mask based on good-flags soil and create
+    sm anomalies based on clim.
     """
     grid_path = os.path.join(root_path.r, 'Projects',
                              'H_SAF_CDOP3', '05_deliverables_products',
@@ -38,10 +40,10 @@ def test_ascat_sat_data():
                 ('AnomalyClimAdapter', {'columns': ['sm'],
                                         'wraparound': True,
                                         'timespan': ['1900-01-01', '2099-12-31']}),
-                ('ColumnCombAdapter', {'func': 'pd.DataFrame.mean',
-                                       'columns': ['sm', 'proc_flag'],
-                                       'func_kwargs': {'skipna': True},
-                                       'new_name': 'mean_sm_procflag'})
+                ('ColumnCombineAdapter', {'func': pd.DataFrame.mean,
+                                          'columns': ['sm', 'proc_flag'],
+                                          'func_kwargs': {'skipna': True},
+                                          'new_name': 'mean_sm_procflag'})
                 ]
 
     resample = ('1D', 'mean')
@@ -142,9 +144,9 @@ def test_gldas_model_data():
 
 @pytest.mark.geo_test_data
 def test_era5land_rean_data():
-    reader_kwargs = {'group_vars':{'sm_precip_lai': ['swvl1'],
-                                      'temperature': ['stl1']},
-                          'ioclass_kws': {'read_bulk': True}}
+    reader_kwargs = {'group_vars':{('ERA5-Land', 'sm_precip_lai'): ['swvl1'],
+                                   ('ERA5-Land', 'temperature'): ['stl1']},
+                     'ioclass_kws': {'read_bulk': True}}
 
     adapters = [('SelfMaskingAdapter', {'op' : '>=', 'threshold' : 277.15,
                                         'column_name' : 'stl1'}),

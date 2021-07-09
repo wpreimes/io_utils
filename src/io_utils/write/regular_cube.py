@@ -229,7 +229,6 @@ class NcRegGridStack(object):
 
         self.grid = to_reg_cell_grid(self._grid(gpis), 5.)
 
-
     @property
     def subset(self):
         return (self.llc, self.urc)

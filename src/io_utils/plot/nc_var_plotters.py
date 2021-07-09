@@ -268,16 +268,12 @@ class NcVarCombPlotter(object):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    file = r"\\project9\data-read\RADAR\Datapool_raw\LPRM\v6.1\SMAP_S3_VEGC\daily_images\D201910\SMAP_LPRM_VEGC_D20191008_v061.nc"
-    out_dir = r'C:\Temp'
+    import xarray as xr
+    import cartopy.crs as ccrs
+    from plot_maps import map_add_cbar
+    file = "/home/wpreimes/shares/radar/Projects/C3S_312b/07_data/v202012_ICDR/060_daily_images_fixed/combined/2021/C3S-SOILMOISTURE-L3S-SSMV-COMBINED-DAILY-20210505000000-ICDR-v202012.0.0.nc"
 
-    plotter = NcVarPlotter(filepath=file,
-                           lat_var='LAT', lon_var='LON', resxy=(0.25,0.25),
-                           cell_center_origin=True, out_dir=out_dir)
+    f = NcVarPlotter(file, out_dir='/home/wpreimes/Temp/c3s_issue/')
+    f.plot_variable('flag', cbrange=(0,1000))
 
-    plotter.plot_variable('FLAGS', veg_mask=False,
-                          cbrange=(0,134219268), scale_factor=1.,
-                          cmap=plt.get_cmap('jet'), title_size=5,grid_label_loc='0001',
-                          plotfile_name='flags', cb_labelsize=7,
-                          title='flags LPRM 6.1 SMAP D20191008',
-                          cb_extend='neither', cb_label='Flag value', file_format='png')
+

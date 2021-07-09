@@ -7,7 +7,6 @@ Combines dataset config readers, adapters and some more features for all readers
 # TODO: pass multiple selfmasking adapters that are applied sequentially?
 
 import pandas as pd
-from pytesmo.validation_framework.adapters import AnomalyClimAdapter, AnomalyAdapter, SelfMaskingAdapter
 import numpy as np
 from io_utils.utils import filter_months, ddek
 import warnings

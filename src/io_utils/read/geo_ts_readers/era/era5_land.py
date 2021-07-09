@@ -48,8 +48,8 @@ class GeoEra5LandTs(object):
         Parameters
         ----------
         group_var : dict
-            A dictionary with a variable group name as the index and a list
-            of variables from that group as the value.
+            A dictionary with a variable group name as the index or a path
+            and a list of variables from that group as the value.
         kwargs :
             Keyword arguements that are passed to the reader. Are the same for
             ALL variable groups!!
@@ -57,12 +57,11 @@ class GeoEra5LandTs(object):
         if 'parameters' in kwargs.keys():
             raise ValueError("Pass the params together with the var groups.")
         self.readers = []
-        for group, vars in group_vars.items():
+        for group_or_path, vars in group_vars.items():
             if isinstance(vars, str):
                 vars = [vars]
             kwargs['parameters'] = vars
-            ds = ('ERA5-Land', group)
-            self.readers.append(GeoPathEra5LandTs(ds, **kwargs))
+            self.readers.append(GeoPathEra5LandTs(group_or_path, **kwargs))
 
         self.grid = self.readers[0].grid
         assert all([self.grid == reader.grid for reader in self.readers])
@@ -73,8 +72,8 @@ class GeoEra5LandTs(object):
 
 if __name__ == '__main__':
     force_path_group = '__test'
-    reader = GeoEra5LandTs(group_vars={'temperature': ['stl1'],
-                                       'sm_precip_lai': ['swvl1']},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'temperature'): ['stl1'],
+                                       ('ERA5-Land', 'sm_precip_lai'): ['swvl1']},
                            ioclass_kws={'read_bulk': True},
                            scale_factors={'swvl1': 1.},
                            force_path_group=force_path_group)
