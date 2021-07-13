@@ -339,7 +339,7 @@ def test_ismn_good_sm_ts_reader_no_masking():
 def test_cci_intermed_v7_nc_reader():
     ## == active
     reader = GeoCCISMv7IntermedNcTs\
-        (dataset_or_path=os.path.join('..', '00_testdata', 'read', 'esa_cci_sm', 'v07x', 'intermedncts'),
+        (dataset_or_path=os.path.join(os.path.dirname(__file__), '..', '00_testdata', 'read', 'esa_cci_sm', 'v07x', 'intermedncts'),
         grid=SMECV_Grid_v052(),
         exact_index=False,  # todo: implement
         ioclass_kws={'read_bulk': True},
