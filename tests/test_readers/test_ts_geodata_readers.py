@@ -237,6 +237,8 @@ def test_ccigenio_ts_reader(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
+
+
 if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052
     path = "/home/wpreimes/Temp/delete_me/smos_window_90/"

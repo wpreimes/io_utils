@@ -4,6 +4,7 @@
 Time series reader for CCI SM v05 data
 """
 
+from smecv_grid.grid import SMECV_Grid_v052
 from io_utils.read.path_config import PathConfig
 import numpy as np
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GriddedNcContiguousRaggedTsCompatible
@@ -39,6 +40,9 @@ class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible):
         self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
+        if 'grid' not in kwargs:
+            kwargs['grid'] = SMECV_Grid_v052()
+
         super(GeoCCISMv7IntermedNcTs, self).__init__(ts_path, **kwargs)
 
         self.exact_index = exact_index
@@ -48,7 +52,9 @@ class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible):
         ts = super(GeoCCISMv7IntermedNcTs, self)._read_gp(gpi, **kwargs)
         if self.parameters is not None:
             ts = ts[self.parameters]
-        return ts.replace(self._fillval, np.nan)
+        if ts is not None:
+            ts = ts.replace(self._fillval, np.nan)
+        return ts
 
 if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052

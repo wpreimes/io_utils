@@ -50,7 +50,8 @@ from io_utils.read.geo_ts_readers.smap.smap_lprm import *
 # ISMN version readers
 from io_utils.read.geo_ts_readers._ismn.ismn_sm import *
 
-
+# CGLS HR time series readers
+from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_nc import *
 # Optional readers (using packages that are difficult to install)
 
 try:
