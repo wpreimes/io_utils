@@ -9,7 +9,7 @@ except ImportError:
     path_settings = {}
 
 
-class GeoCglsNcReader(S1CglsTs):
+class GeoCglsNcTs(S1CglsTs):
 
     _ds_implemented = [('CSAR', 'CGLS', 'SSM', '1km', 'V1.1'),
                        ('CSAR', 'CGLS', 'SWI', '1km', 'V1.0'),
@@ -25,11 +25,11 @@ class GeoCglsNcReader(S1CglsTs):
         self.path_config = PathConfig(self.dataset, path_config)
         path = self.path_config.load_path(force_path_group=force_path_group)
 
-        super(GeoCglsNcReader, self).__init__(path, **kwargs)
+        super(GeoCglsNcTs, self).__init__(path, **kwargs)
 
 # check if each dataset in reader has a match in paths
-assert all([p in path_settings.keys() for p in GeoCglsNcReader._ds_implemented])
+assert all([p in path_settings.keys() for p in GeoCglsNcTs._ds_implemented])
 
 if __name__ == '__main__':
-    ds = GeoCglsNcReader('/home/wpreimes/shares/home/code/io_utils/tests/00_testdata/read/cgls/CGLS_SWI_TS_synthetic_hawaii')
+    ds = GeoCglsNcTs('/home/wpreimes/shares/home/code/io_utils/tests/00_testdata/read/cgls/CGLS_SWI_TS_synthetic_hawaii')
     ts = ds.read(19.1222, 47.201232)
