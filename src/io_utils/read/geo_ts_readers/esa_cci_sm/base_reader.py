@@ -9,21 +9,93 @@ Reader for the ESA CCI SM time series data of different versions
 # NOTES:
 #   -
 
-from pynetcf.time_series import GriddedNcOrthoMultiTs
+from pynetcf.time_series import GriddedNcOrthoMultiTs, GriddedNcTs, ContiguousRaggedTs, OrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
 import netCDF4
 import pandas as pd
-from smecv_grid.grid import SMECV_Grid_v052
 from pygeogrids import CellGrid
 import numpy as np
 from datetime import timedelta
 import xarray as xr
 import warnings
 
+class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
+    """
+    Default writer for data to netcdf
+
+    Replacement for smecv.input.common_format.CCIDs
+
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs['ioclass'] = ContiguousRaggedTs
+        super(GriddedNcContiguousRaggedTsCompatible, self).__init__(*args, **kwargs)
+        self.write_gp = self._write_gp
+
+    def _write_gp(self, gp, data, **kwargs):
+        if data.empty:
+            return
+        super(GriddedNcContiguousRaggedTsCompatible, self)._write_gp(gp, data, **kwargs)
+
+
+    def _read_gp(self, gpi, only_valid=False, mask_sm_nan=False,
+                 mask_invalid_flags=False, sm_nan=-999999.,
+                 mask_jd=False, jd_min=2299160, jd_max=1827933925,
+                 valid_flag=0, **kwargs):
+
+        """
+            Read data into common format
+
+            Parameters
+            ----------
+            self: type
+                description
+            gpi: int
+                grid point index
+            only_valid: boolen, optional
+               if set only valid observations will be returned.
+               This means that the data will be masked for soil moisture
+               NaN values and also for flags other than 0
+            mask_sm_nan: boolean, optional
+               if set to True then the time series will be masked
+               for soil moisture NaN values
+            mask_invalid_flags: boolean, optional
+               if set then all flags that do not have the value of
+               valid_flag are removed
+            sm_nan: float, optional
+               value to use as soil moisture NaN
+            valid_flag: int, optional
+               value indicating a valid flag
+
+            Returns
+            -------
+            ts: pandas.DataFrame
+                DataFrame in common format
+            """
+
+        df = super(GriddedNcContiguousRaggedTsCompatible, self)._read_gp(gpi, **kwargs)
+
+        if df is None:
+            return None
+
+        if only_valid:
+            mask_sm_nan = True
+            mask_invalid_flags = True
+        if mask_sm_nan:
+            df = df[df['sm'] != sm_nan]
+        if mask_invalid_flags:
+            df = df[df['flag'] == valid_flag]
+        if mask_jd:
+            df = df[(df['jd'] >= jd_min) & (df['jd'] <= jd_max)]
+        if df.size == 0:
+            raise IOError("No data for gpi %i" % gpi)
+
+        return df
+
 
 class SmecvTs(GriddedNcOrthoMultiTs):
     # The basic CCI/C3S TS netcdf reader, with some features
+    # For the final product converted with the esa_cci_sm package.
 
     def __init__(self, ts_path, grid=None, exact_index=False, clip_dates=None,
                  ioclass_kws=None, **kwargs):
@@ -373,47 +445,50 @@ class SmecvTs(GriddedNcOrthoMultiTs):
 
 
 if __name__ == '__main__':
-    path = "/shares/wpreimes/radar/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v05.2/timeseries/combined/"
-    dt_index = pd.date_range('2000-06-01', '2000-06-30', freq='D')
-
-    ds = SmecvTs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
-
-    params = ['sm',
-              'flag',
-              'dnflag',
-              'freqbandID',
-              'mode',
-              'sensor',
-              't0']
-
-    param_fill_val = {'sm': -9999.,
-                      'flag': 0,
-                      'dnflag': 0,
-                      'freqbandID': 0,
-                      'mode': 0,
-                      'sensor': 0,
-                      't0': -9999.,
-                      }
-
-    param_dtype = {'adjusted': 'float32',
-                   'flag': 'int8',
-                   'dnflag': 'int8',
-                   'freqbandID': 'int16',
-                   'mode': 'int8',
-                   'sensor': 'int16',
-                   't0': 'float64',
-                   }
-
-    to_replace = {param: {np.nan: param_fill_val[param]} for param in params}
+    pass
 
 
-    celldata = ds.read_agg_cell_cube(2244,
-                                     dt_index=dt_index,
-                                     params=params,
-                                     param_fill_val = param_fill_val,
-                                     param_dtype=param_dtype,
-                                     param_scalf=None,
-                                     to_replace=to_replace,
-                                     as_xr=True)
+    # path = "/shares/wpreimes/radar/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v05.2/timeseries/combined/"
+    # dt_index = pd.date_range('2000-06-01', '2000-06-30', freq='D')
+    #
+    # ds = SmecvTs(path, grid=SMECV_Grid_v052(None), clip_dates=(dt_index[0], dt_index[-1]))
 
-    celldata.to_netcdf(r"C:\Temp\delete_me\adjusted_ts2img\img\test.nc")
+    # params = ['sm',
+    #           'flag',
+    #           'dnflag',
+    #           'freqbandID',
+    #           'mode',
+    #           'sensor',
+    #           't0']
+    #
+    # param_fill_val = {'sm': -9999.,
+    #                   'flag': 0,
+    #                   'dnflag': 0,
+    #                   'freqbandID': 0,
+    #                   'mode': 0,
+    #                   'sensor': 0,
+    #                   't0': -9999.,
+    #                   }
+    #
+    # param_dtype = {'adjusted': 'float32',
+    #                'flag': 'int8',
+    #                'dnflag': 'int8',
+    #                'freqbandID': 'int16',
+    #                'mode': 'int8',
+    #                'sensor': 'int16',
+    #                't0': 'float64',
+    #                }
+    #
+    # to_replace = {param: {np.nan: param_fill_val[param]} for param in params}
+    #
+    #
+    # celldata = ds.read_agg_cell_cube(2244,
+    #                                  dt_index=dt_index,
+    #                                  params=params,
+    #                                  param_fill_val = param_fill_val,
+    #                                  param_dtype=param_dtype,
+    #                                  param_scalf=None,
+    #                                  to_replace=to_replace,
+    #                                  as_xr=True)
+    #
+    # celldata.to_netcdf(r"C:\Temp\delete_me\adjusted_ts2img\img\test.nc")

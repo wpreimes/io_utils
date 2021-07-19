@@ -19,7 +19,7 @@ dependencies:
   - pip:
       - pytesmo
       - geopandas
-      - pygeogrids
+      - git+https://github.com/TUW-GEO/pygeogrids
       - datetime
       - pyyaml
       - xarray

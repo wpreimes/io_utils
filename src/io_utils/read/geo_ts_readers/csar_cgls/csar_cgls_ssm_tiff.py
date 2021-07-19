@@ -8,6 +8,7 @@ except ImportError:
     warnings.warn(f"Not paths imported for {os.path.basename(__file__)}")
     path_settings = {}
 
+
 class GeoCSarSsmTiffReader(CSarTiffReader):
 
     _ds_implemented = [('CSAR', 'CGLS', 'SSM', '1km', 'V1.1', 'tiff')]
@@ -30,6 +31,6 @@ class GeoCSarSsmTiffReader(CSarTiffReader):
 assert sorted(list(path_settings.keys())) == sorted(GeoCSarSsmTiffReader._ds_implemented)
 
 if __name__ == '__main__':
-    ds = GeoCSarSsmTiffReader(('CSAR', 'CGLS', 'SSM', '1km', 'V1.1', 'tiff'))
+    ds = GeoCSarSsmNcReader(('CSAR', 'CGLS', 'SSM', '1km', 'V1.1'))
     ts = ds.read(19.1222, 47.201232)
-    print(ts.loc['2020-08-17':'2020-08-30'])
+

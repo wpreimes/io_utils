@@ -16,6 +16,7 @@ from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
 from io_utils.read.geo_ts_readers.smecv_swi_rzsm.smecv_swi_rzsm_v0 import *
 
 ## CCI version readers
+from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v07 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v04 import *
@@ -49,7 +50,8 @@ from io_utils.read.geo_ts_readers.smap.smap_lprm import *
 # ISMN version readers
 from io_utils.read.geo_ts_readers._ismn.ismn_sm import *
 
-
+# CGLS HR time series readers
+from io_utils.read.geo_ts_readers.csar_cgls.csar_cgls_nc import *
 # Optional readers (using packages that are difficult to install)
 
 try:

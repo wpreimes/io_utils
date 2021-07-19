@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Time series reader for CCI SM v05 data
+Time series reader for CCI SM v06 data
 """
 
 from io_utils.read.path_config import PathConfig

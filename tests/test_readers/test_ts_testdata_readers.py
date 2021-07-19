@@ -5,6 +5,8 @@ Test the readers for which there is test data in this package
 """
 from io_utils.read.geo_ts_readers import *
 import pytest
+from smecv_grid.grid import SMECV_Grid_v052
+
 
 test_loc = (-155.875, 19.625)
 
@@ -334,7 +336,49 @@ def test_ismn_good_sm_ts_reader_no_masking():
 
     assert not dat.dropna().empty
 
+def test_cci_intermed_v7_nc_reader():
+    ## == active
+    reader = GeoCCISMv7IntermedNcTs\
+        (dataset_or_path=os.path.join(os.path.dirname(__file__), '..', '00_testdata', 'read', 'esa_cci_sm', 'v07x', 'intermedncts'),
+        grid=SMECV_Grid_v052(),
+        exact_index=False,  # todo: implement
+        ioclass_kws={'read_bulk': True},
+        parameters=['sm', 'sm_uncertainty', 't0'],
+        scale_factors={'sm': 1.},
+        force_path_group=None)
+
+    # todo: test cell_reader
+    ts = reader.read(*test_loc)
+    assert ts.dropna().empty
+    reader.close()
+
+def test_cgls_ssm_reader():
+    dataset = ('CSAR', 'CGLS', 'SSM', '1km', 'V1.1')
+    reader = GeoCglsNcTs(dataset,
+                         ioclass_kws={'read_bulk': True},
+                         parameter=None,
+                         force_path_group='__test')
+    ts = reader.read(*test_loc)
+    assert not ts.dropna().empty
+    reader.close()
+
+def test_cgls_swi_ts_reader():
+    dataset = ('CSAR', 'CGLS', 'SWI', '1km', 'V1.0')
+    params = ['SWI_005', 'QFLAG_005']
+    reader = GeoCglsNcTs(dataset,
+                         ioclass_kws={'read_bulk': True},
+                         parameter=params,
+                         force_path_group='__test')
+    ts = reader.read(*test_loc)
+    assert all([p in ts.columns for p in params])
+    assert not ts.dropna().empty
+    reader.close()
+
 if __name__ == '__main__':
+    test_cgls_ssm_reader()
+    test_cgls_swi_ts_reader()
+
+    test_cci_intermed_v7_nc_reader()
     test_read_applied()
 
     test_C3S_single_readers('v201706', GeoC3Sv201706Ts)
