@@ -25,7 +25,8 @@ class GeoCglsNcTs(S1CglsTs):
         self.path_config = PathConfig(self.dataset, path_config)
         path = self.path_config.load_path(force_path_group=force_path_group)
 
-        super(GeoCglsNcTs, self).__init__(path, **kwargs)
+        super().__init__(path, **kwargs)
+
 
 # check if each dataset in reader has a match in paths
 assert all([p in path_settings.keys() for p in GeoCglsNcTs._ds_implemented])

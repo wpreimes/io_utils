@@ -19,7 +19,6 @@ dependencies:
   - pip:
       - pytesmo
       - geopandas
-      - git+https://github.com/TUW-GEO/pygeogrids
       - datetime
       - pyyaml
       - xarray
@@ -33,5 +32,7 @@ dependencies:
       - ascat
       - lxml
       - smecv_grid
+      - git+https://github.com/TUW-GEO/pygeogrids
+      - git+https://github.com/awst-austria/qa4sm-preprocessing
       - pytest
       - pytest-cov
