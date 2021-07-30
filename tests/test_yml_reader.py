@@ -16,6 +16,11 @@ def test_read_yml():
     OTHER = SPACES[2]
 
     assert A_LEVEL2.NOTHING is None
+    assert A_LEVEL2.sublev['sublev_b'] == 'b'
+    assert A_LEVEL2.sublev['sublev_c'] == LEVEL1.A_FUNCTION
+    assert A_LEVEL2.sublev['sublev_d'] == {'d': 1}
+    assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom'] is None
+    assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom_list'] == [1,2,3]
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)
     assert(LEVEL1.A_FUNCTION == np.ma.unique)
@@ -31,12 +36,6 @@ def test_read_yml():
     assert(OTHER.TEST_DICT == {'one':1})
     assert(OTHER.TEST_LIST == [1,2,3])
 
-def test_override_yml_settings():
-    settings = read_settings(yml_path, groups=['LEVEL1', 'A_LEVEL2'],
-                             override={'A_LEVEL2':{'NOTHING': 1}})
-    assert settings['A_LEVEL2']['NOTHING'] == 1
-
 
 if __name__ == '__main__':
-    test_override_yml_settings()
     test_read_yml()

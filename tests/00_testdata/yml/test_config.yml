@@ -1,11 +1,28 @@
 LEVEL1:
-  A_CLASS<CLASS> : [numpy.ma, masked_array]
-  A_FUNCTION<FUNCTION> : [numpy.ma, unique]
+  A_CLASS<IMPORT>:
+    - numpy.ma
+    - masked_array
+  A_FUNCTION<IMPORT> : [numpy.ma, unique]
+  A_MODULE<IMPORT>: numpy.ma
   PATH<PATH><WIN> : ['C:\', 'Users']
   PATH<PATH><LINUX> : ['/', 'home']
-  A_MODULE<MODULE> : numpy.ma
 A_LEVEL2:
   NOTHING: None
+  sublev:
+    sublev_a: None
+    sublev_b: b
+    sublev_c<IMPORT>: [numpy.ma, unique]
+    sublev_d: {'d': 1}
+    deeper:
+      deeper:
+        deeper:
+          bottom: None
+          bottom_list:
+            - 1
+            - 2
+            - 3
+
+
 OTHER:
   TEST_1: TEST1
   TEST_2: 2
