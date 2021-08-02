@@ -3,11 +3,6 @@
 """
 Module description
 """
-# TODO:
-#   (+) 
-#---------
-# NOTES:
-#   -
 
 from ismn.interface import ISMN_Interface
 from io_utils.read.path_config import PathConfig

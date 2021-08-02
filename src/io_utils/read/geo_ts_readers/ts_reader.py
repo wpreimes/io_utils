@@ -24,6 +24,7 @@ class GeoTsReader(object):
     def __init__(self,
                  cls,
                  reader_kwargs=None,
+                 read_func_name='read',
                  adapters=None,
                  resample=None,
                  filter_months=None,
@@ -39,9 +40,12 @@ class GeoTsReader(object):
         cls : Object
             A dataset reader with a path implementation
             e.g. readers.GeoCCISMv4Ts
-        parameters : list
-            A list of parameters that are read for the dataset
-            e.g. ['sm', 'swvl1', 'flag']
+        reader_kwargs: dict, optional (default: None)
+            Kwargs that are used to initialise the base reader.
+        read_func_name: str, optional (default: 'read')
+            Name of the read function to use. At the moment it is not possible
+            give additional parameters to the read function.
+            e.g. parameters, io_kwargs etc.
         adapters : list[tuple[str, dict]], optional (default: None)
             The names of adapters that are implemented. Either in
             adapters.py or in pytesmo.validation_framework.adapters as keys.
@@ -80,6 +84,7 @@ class GeoTsReader(object):
                 reader_kwargs['network'] = None
 
         self.reader_kwargs = reader_kwargs
+        self.read_func_name = read_func_name
         self.params_rename = params_rename
         self.filter_months = filter_months
         self.resample = resample
@@ -98,6 +103,7 @@ class GeoTsReader(object):
 
         self.base_reader = cls # the unadaptered input reader
         self._adapt(self.base_reader) # the adapted reader to use
+        setattr(self, read_func_name, self._read)
 
 
     def __str__(self):
@@ -113,18 +119,20 @@ class GeoTsReader(object):
 
     def _adapt(self, reader):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
-        if self.adapters is None:
-            reader = adapters.BasicAdapter(reader)
-        else:
+        reader = adapters.BasicAdapter(reader, read_name=self.read_func_name)
+        if self.adapters is not None:
             for adapter_name, adapter_kwargs in self.adapters:
                 Adapter = getattr(adapters, adapter_name)
-                reader = Adapter(reader, **adapter_kwargs)
+                reader = Adapter(reader, read_name=self.read_func_name,
+                                 **adapter_kwargs)
 
         self.reader = reader
 
-    def read(self, *args, **kwargs):
+    def _read(self, *args, **kwargs):
         """ Read data for a location, by gpi or by lonlat """
-        df = self.reader.read(*args, **kwargs) # type: pd.DataFrame
+
+        df: pd.DataFrame = getattr(self.reader,
+                                   self.read_func_name)(*args, **kwargs)
 
         if self.remove_nans:
             if isinstance(self.remove_nans, (int, float)):
@@ -214,7 +222,7 @@ class GeoTsReader(object):
             for gpi in cell_gpis:
                 print(f'Reading loc {i} of {len(locs)}')
                 try:
-                    df = self.read(gpi)[[var]].rename(columns={var: gpi})
+                    df = self._read(gpi)[[var]].rename(columns={var: gpi})
                 except:
                     warnings.warn(f'Reading TS for GPI {gpi} failed. Continue.')
                     continue
@@ -224,12 +232,14 @@ class GeoTsReader(object):
         data = pd.concat(data, axis=1, sort=True)
         return data
 
-if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers import GeoC3Sv202012Ts
 
-    reader = GeoTsReader(GeoC3Sv202012Ts,
+if __name__ == '__main__':
+    from io_utils.read.geo_ts_readers import GeoCglsNcTs
+
+    reader = GeoTsReader(GeoCglsNcTs,
                          reader_kwargs={'dataset_or_path':
-                                            ['C3S', 'v202012', 'PASSIVE', 'DAILY', 'TCDR'],
+                                         ['CSAR', 'CGLS', 'SSM', '1km', 'V1.1'],
+                                        'parameter': 'ssm',
                                         },
                          resample=('ddekad', np.max))
     ds = reader.read(15,45)

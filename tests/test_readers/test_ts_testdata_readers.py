@@ -355,8 +355,7 @@ def test_cci_intermed_v7_nc_reader():
 def test_cgls_ssm_reader():
     dataset = ('CSAR', 'CGLS', 'SSM', '1km', 'V1.1')
     reader = GeoCglsNcTs(dataset,
-                         ioclass_kws={'read_bulk': True},
-                         parameter=None,
+                         parameter='ssm',
                          force_path_group='__test')
     ts = reader.read(*test_loc)
     assert not ts.dropna().empty
@@ -364,13 +363,11 @@ def test_cgls_ssm_reader():
 
 def test_cgls_swi_ts_reader():
     dataset = ('CSAR', 'CGLS', 'SWI', '1km', 'V1.0')
-    params = ['SWI_005', 'QFLAG_005']
     reader = GeoCglsNcTs(dataset,
-                         ioclass_kws={'read_bulk': True},
-                         parameter=params,
+                         parameter='SWI_005',
                          force_path_group='__test')
     ts = reader.read(*test_loc)
-    assert all([p in ts.columns for p in params])
+    assert ts.columns == ['SWI_005']
     assert not ts.dropna().empty
     reader.close()
 
