@@ -28,9 +28,12 @@ def test_read_yml():
 
     if 'win' in sys.platform:
         assert(LEVEL1.PATH == r'C:\Users')
+        assert LEVEL1.OS_VAR == 'windows'
     else:
+        assert LEVEL1.OS_VAR == 'linux'
         assert(LEVEL1.PATH == '/home')
 
+    assert LEVEL1.relPATH == os.path.join('this', 'relpath')
     assert(OTHER.TEST_1 == 'TEST1')
     assert(OTHER.TEST_2 == 2)
     assert(OTHER.TEST_DICT == {'one':1})

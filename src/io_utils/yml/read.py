@@ -78,9 +78,10 @@ def read_level(data: dict):
                 else:
                     raise IOError(
                         "The <IMPORT> tag expects either a string to import"
-                        "a module (e.g `np.ma`) or list with 2 elements"
-                        "[module.string, function_name] to import a "
-                        "class/function for a module (e.g. [np.ma, masked_array] )")
+                        "a module (e.g 'np.ma') or a list with 2 elements"
+                        "['module.string', 'function_name'] to import a "
+                        "class/function from a module "
+                        "(e.g. ['np.ma', 'masked_array'] )")
 
             # replace elements
             if isinstance(v, str) and (v in _replace_str_lut.keys()):

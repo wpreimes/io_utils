@@ -6,6 +6,11 @@ LEVEL1:
   A_MODULE<IMPORT>: numpy.ma
   PATH<PATH><WIN> : ['C:\', 'Users']
   PATH<PATH><LINUX> : ['/', 'home']
+  relPATH<PATH>:
+    - 'this'
+    - 'relpath'
+  OS_VAR<WIN>: 'windows'
+  OS_VAR<LINUX>: 'linux'
 A_LEVEL2:
   NOTHING: None
   sublev:
