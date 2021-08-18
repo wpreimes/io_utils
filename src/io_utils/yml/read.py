@@ -15,6 +15,7 @@ import sys
 import importlib
 import os
 from argparse import Namespace
+import warnings
 
 
 def kwargs_to_csv(path, kwargs):
@@ -27,6 +28,16 @@ _replace_str_lut = \
     {
     'None': None,
 }
+
+supported_platforms = ['WIN', 'LINUX']
+
+if 'WIN' in sys.platform.upper():
+    current_platform = 'WIN'
+elif sys.platform.upper() == 'LINUX':
+    current_platform = 'LINUX'
+else:
+    warnings.warn(f"Unexpected platform name {sys.platform.upper()}. Using LINUX now.")
+    current_platform = 'LINUX'
 
 def read_level(data: dict):
     """
@@ -44,9 +55,8 @@ def read_level(data: dict):
         The transformed/parsed data for this level.
     """
 
-    supported_platforms = ['WIN', 'LINUX']
     not_current_platform = [p for p in supported_platforms
-                            if p.upper() != sys.platform.upper()]
+                            if p.upper() != current_platform]
 
     new_data = {}
 
