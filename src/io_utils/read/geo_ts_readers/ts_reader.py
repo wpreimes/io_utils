@@ -46,16 +46,17 @@ class GeoTsReader(object):
             Name of the read function to use. At the moment it is not possible
             give additional parameters to the read function.
             e.g. parameters, io_kwargs etc.
-        adapters : list[tuple[str, dict]], optional (default: None)
+        adapters : dict(str, dict), optional (default: None)
             The names of adapters that are implemented. Either in
             adapters.py or in pytesmo.validation_framework.adapters as keys.
             Will be applied in the passed order.
             e.g.
-                [('SelfMaskingAdapter', {'op' : '<=', 'threshold' : 50,
-                                        'column_name' : 'sm'}),
-                ('AnomalyClimAdapter', {'columns': ['sm'],
-                                        'wraparound': True,
-                                        'timespan': ['1900-01-01', '2099-12-31']})]
+                {'01-SelfMaskingAdapter': {'op' : '<=', 'threshold' : 50,
+                                           'column_name' : 'sm'},
+                 '02-AnomalyClimAdapter': {'columns': ['sm'],
+                                           'wraparound': True,
+                                           'timespan': ['1900-01-01', '2099-12-31']}
+                }
         resample : tuple, optional (default: None)
             A frequency and method to resample the read, masked, transformed, data
             e.g. ('M', 'mean'), calls resample('M').mean(), other predefined methods
@@ -109,7 +110,7 @@ class GeoTsReader(object):
     def __str__(self):
         reader_class_str = self.reader.__class__.__name__
 
-        adapters = [name for name, sets in self.adapters] \
+        adapters = list(self.adapters.keys()) \
             if self.adapters is not None else ['no Adapters']
 
         adapters_str = ', '.join(adapters)
@@ -121,7 +122,13 @@ class GeoTsReader(object):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
         reader = adapters.BasicAdapter(reader, read_name=self.read_func_name)
         if self.adapters is not None:
-            for adapter_name, adapter_kwargs in self.adapters:
+            id = -1
+            for adapter_name, adapter_kwargs in self.adapters.items():
+                assert '-' in adapter_name, "Adapter must be of form 'id-AdapterName'"
+                i, adapter_name = adapter_name.split('-')
+                i = int(i)
+                assert i > id, "Wrong order of passed adapters"
+                id = i
                 Adapter = getattr(adapters, adapter_name)
                 reader = Adapter(reader, read_name=self.read_func_name,
                                  **adapter_kwargs)
@@ -232,63 +239,3 @@ class GeoTsReader(object):
         data = pd.concat(data, axis=1, sort=True)
         return data
 
-
-if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers import GeoCglsNcTs
-
-    reader = GeoTsReader(GeoCglsNcTs,
-                         reader_kwargs={'dataset_or_path':
-                                         ['CSAR', 'CGLS', 'SSM', '1km', 'V1.1'],
-                                        'parameter': 'ssm',
-                                        },
-                         resample=('ddekad', np.max))
-    ds = reader.read(15,45)
-
-
-    # reader = GeoTsReader(GeoHsafAscatSsmTs,
-    #             reader_kwargs={'dataset_or_path': ('HSAF_ASCAT', 'SSM', 'H115+H116'),
-    #                            'parameters': ['sm', 'proc_flag'],
-    #                            'exact_index': True,
-    #                            'ioclass_kws': {'read_bulk': True}},
-    #             selfmaskingadapter_kwargs={'op': '==', 'threshold': 0,
-    #                              'column_name': 'flag'},
-    #             climadapter_kwargs={'columns': ['sm'],
-    #                                 'wraparound': True,
-    #                                 'timespan': [datetime(1991, 1, 1), datetime(2018, 12, 31)],
-    #                                 'moving_avg_clim': 30},
-    #             resample=None, params_rename={'sm': 'ascatsm'})
-    # from io_utils.grid.grid_shp_adapter import GridShpAdapter
-    # from smecv_grid.grid import SMECV_Grid_v052
-    # adapter = GridShpAdapter(SMECV_Grid_v052('land'))
-    # subgrid = adapter.create_subgrid(['Senegal']) # type: CellGrid
-    # df = reader.read_multiple(var='ascatsm', locs=list(zip(subgrid.activearrlon,
-    #                                                          subgrid.activearrlat)))
-    # print(df)
-
-
-    # ccireader.read_multiple(var='sm', *zip(subgrid.activearrlon, subgrid.activearrlat))
-    # merrareader = GeoTsReader(GeoMerra2Ts,
-    #             reader_kwargs={'dataset': ('MERRA2', 'core'),
-    #                            'parameters': ['SFMC'],
-    #                            'ioclass_kws': {'read_bulk': True}},
-    #             resample=('1D', pd.DataFrame.mean),
-    #             params_rename={'SFMC': 'MERRA2 SFMC'})
-    #
-    # ts_merra = merrareader.read(46.375, 18.625)
-    # ts_cci = ccireader.read(46.375, 18.625)
-    #
-    # df = pd.concat([ts_merra, ts_cci], axis=1)
-    # df_mean = df.rolling(30, min_periods=10).mean().dropna()
-    #
-    # from pytesmo.scaling import scale
-    # df_mean= scale(df_mean, 'mean_std', reference_index=1)
-    #
-    # df_mean['$\Delta$(CAN,REF)'] = df_mean['ESA CCI SM'] - df_mean['MERRA2 SFMC']
-    #
-    # df_mean = df_mean.loc['2007-01-01': '2018-12-31']
-    # ax = df_mean.plot()
-    # ax.hlines(0, df_mean.index[0], df_mean.index[-1])
-    # ax.vlines('2012-07-01', -0.05, 0.17, color='red', linewidth=5)
-    # from matplotlib.legend import _get_legend_handles
-    # plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left',
-    #            ncol=3, mode="expand", borderaxespad=0.)

@@ -19,7 +19,10 @@ def test_read_yml():
     assert A_LEVEL2.sublev['sublev_b'] == 'b'
     assert A_LEVEL2.sublev['sublev_a'] is None
     assert A_LEVEL2.sublev['sublev_c'] == LEVEL1.A_FUNCTION
-    assert A_LEVEL2.sublev['sublev_d'] == {'d': 1}
+    assert A_LEVEL2.sublev['sublev_d']['d'] == 1
+    assert callable(A_LEVEL2.sublev['sublev_d']['func'])
+    assert list(A_LEVEL2.sublev['adapt'].keys()) == ['one', 'two', 'three'], "Dict order!!"
+    assert callable(A_LEVEL2.sublev['adapt']['one']['test']['func'])
     assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom'] is None
     assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom_list'] == [1,2,3]
 

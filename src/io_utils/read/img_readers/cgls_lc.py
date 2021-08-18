@@ -5,6 +5,7 @@ import pandas as pd
 from collections import OrderedDict
 from typing import List, Union, Literal
 from scipy.stats import mode
+import pygeogrids
 
 try:
     import matplotlib.pyplot as plt
@@ -195,7 +196,7 @@ class CglsLcImg(xr.Dataset):
         super(CglsLcImg, self).__init__(dataset)
 
     @classmethod
-    def from_netcdf(cls, path, extent=None):
+    def from_netcdf(cls, path, extent=None) -> 'CglsLcImg':
         """
         Load dataset from file generated with :func:`cgls_lc.CglsLcImg.to_netcdf`
 
@@ -210,7 +211,7 @@ class CglsLcImg(xr.Dataset):
 
         Returns
         -------
-        ds : xr.Dataset
+        ds : CglsLcImg
         """
         ds = xr.open_dataset(path)
         if extent is not None:
@@ -219,7 +220,7 @@ class CglsLcImg(xr.Dataset):
         return cls(ds)
 
     @classmethod
-    def from_tiff(cls, path, extent=None):
+    def from_tiff(cls, path, extent=None) -> 'CglsLcImg':
         """
         Load dataset from original downloaded tiff files. Needs rasterio installed.
 
@@ -229,16 +230,16 @@ class CglsLcImg(xr.Dataset):
             Path to the downloaded tiff file.
         extent : List[float], optional (default: None)
             Spatial subset to load from the original image
-            [min_lon, max_lon, min_lat, max_lat]
+            [min_lat, max_lat, min_lon, max_lon]
 
         Returns
         -------
-        ds : xr.Dataset
+        ds : CglsLcImg
         """
         da = xr.open_rasterio(path)
         if extent is not None:
-            da = da.sel(x=slice(extent[0], extent[1], None),
-                        y=slice(extent[3], extent[2], None))
+            da = da.sel(x=slice(extent[2], extent[3], None),
+                        y=slice(extent[1], extent[0], None))
 
         da = da.rename({'x': 'lon', 'y': 'lat'})
 
@@ -256,6 +257,42 @@ class CglsLcImg(xr.Dataset):
                 np.max(self['lon'].values),
                 np.min(self['lat'].values),
                 np.max(self['lat'].values)]
+
+    def _gen_cmap(self) -> (LinearSegmentedColormap, BoundaryNorm):
+        # Generate CGLS LC colormap from color information.
+        df = pd.DataFrame.from_dict(self._colors_values) \
+            .T \
+            .reindex(range(256)) \
+            .fillna(colors_missing)
+        colors = df.values
+        lc_cmap = LinearSegmentedColormap.from_list(
+            'LC cmap', colors, colors.shape[0])
+        boundaries = np.array(list(range(colors.shape[0])))
+        norm = BoundaryNorm(boundaries,colors.shape[0], clip=True)
+
+        return lc_cmap, norm
+
+    def generate_grid(self, cellsize=5.) -> pygeogrids.CellGrid:
+        """
+        Generate pygeogrids grid object (CellGrid) from latitude and longitude
+        values of the dataset.
+        Note: for large subsets (global images) this might not work.
+
+        Parameters
+        ----------
+        cellsize: float, optional (default: 5.)
+
+
+        Returns
+        -------
+
+        """
+        grid = pygeogrids.grids.gridfromdims(
+            self['lon'].values, self['lat'].values,origin='bottom')\
+            .to_cell_grid(cellsize)
+
+        return grid
+
 
     def spatial_resample(self, var='lc_2019', n=100):
         """ 
@@ -308,20 +345,6 @@ class CglsLcImg(xr.Dataset):
 
         super(CglsLcImg, self).to_netcdf(*args, encoding=encoding, **kwargs)
 
-    def _gen_cmap(self) -> (LinearSegmentedColormap, BoundaryNorm):
-        # Generate CGLS LC colormap from color information.
-        df = pd.DataFrame.from_dict(self._colors_values) \
-            .T \
-            .reindex(range(256)) \
-            .fillna(colors_missing)
-        colors = df.values
-        lc_cmap = LinearSegmentedColormap.from_list(
-            'LC cmap', colors, colors.shape[0])
-        boundaries = np.array(list(range(colors.shape[0])))
-        norm = BoundaryNorm(boundaries,colors.shape[0], clip=True)
-
-        return lc_cmap, norm
-
     def plot(self, var='lc_2019', ax=None, **kwargs):
         """
         Plot raster values using the CGLS LC color map using plt.imshow.
@@ -340,16 +363,3 @@ class CglsLcImg(xr.Dataset):
                        cmap=lc_cmap, norm=norm, **kwargs)
 
         return im
-
-
-if __name__ == '__main__':
-    fname = "/home/wpreimes/shares/users/backgrounds/CGLS_LandCover/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
-    extent = [-18, -11., 12, 17]
-    img = CglsLcImg.from_tiff(fname, extent=extent)
-    img.to_netcdf("/home/wpreimes/Temp/senegal_100m.nc")
-
-    img_resampled1 = img.spatial_resample('lc_2019', n=10)
-    img_resampled1.to_netcdf("/home/wpreimes/Temp/senegal_1000m.nc")
-
-    img_resampled2 = img.spatial_resample('lc_2019', n=100)
-    img_resampled2.to_netcdf("/home/wpreimes/Temp/senegal_10000m.nc")

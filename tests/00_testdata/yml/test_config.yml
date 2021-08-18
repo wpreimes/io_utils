@@ -17,7 +17,9 @@ A_LEVEL2:
     sublev_a: None
     sublev_b: b
     sublev_c<IMPORT>: [numpy.ma, unique]
-    sublev_d: {'d': 1}
+    sublev_d: {'d': 1, 'func<IMPORT>': [numpy.ma, unique]}
+    adapt: {'one': {'test': {'func<IMPORT>': [numpy.ma, unique]}},
+            'two': 2, 'three': 3}
     deeper:
       deeper:
         deeper:

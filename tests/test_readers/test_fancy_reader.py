@@ -47,37 +47,27 @@ def test_ascat_sat_data():
         "ioclass_kws": {"read_bulk": True},
     }
 
-    adapters = [
-        (
-            "SelfMaskingAdapter",
+    adapters = {
+            "01-SelfMaskingAdapter":
             {"op": "==", "threshold": 0, "column_name": "proc_flag"},
-        ),
-        (
-            "SelfMaskingAdapter",
+            "02-SelfMaskingAdapter":
             {"op": "==", "threshold": 0, "column_name": "conf_flag"},
-        ),
-        (
-            "SelfMaskingAdapter",
+            "03-SelfMaskingAdapter":
             {"op": "<=", "threshold": 50, "column_name": "sm"},
-        ),
-        (
-            "AnomalyClimAdapter",
+            "04-AnomalyClimAdapter":
             {
                 "columns": ["sm"],
                 "wraparound": True,
                 "timespan": ["1900-01-01", "2099-12-31"],
             },
-        ),
-        (
-            "ColumnCombineAdapter",
+            "05-ColumnCombineAdapter":
             {
                 "func": pd.DataFrame.mean,
                 "columns": ["sm", "proc_flag"],
                 "func_kwargs": {"skipna": True},
                 "new_name": "mean_sm_procflag",
-            },
-        ),
-    ]
+            }
+    }
 
     resample = ("1D", "mean")
     params_rename = {"sm": "ascat_sm"}
@@ -90,6 +80,10 @@ def test_ascat_sat_data():
         filter_months=None,
         params_rename=params_rename,
     )
+
+    assert list(fancyreader.adapters.keys()) == \
+           ['01-SelfMaskingAdapter', '02-SelfMaskingAdapter', '03-SelfMaskingAdapter',
+            '04-AnomalyClimAdapter', '05-ColumnCombineAdapter']
 
     ts = fancyreader.read(*test_loc)
 
@@ -119,21 +113,17 @@ def test_cci_sat_data():
         "ioclass_kws": {"read_bulk": True},
     }
 
-    adapters = [
-        (
-            "SelfMaskingAdapter",
+    adapters = {
+            "01-SelfMaskingAdapter":
             {"op": "==", "threshold": 0, "column_name": "flag"},
-        ),
-        (
-            "AnomalyClimAdapter",
+            "02-AnomalyClimAdapter":
             {
                 "columns": ["sm"],
                 "wraparound": True,
                 "moving_avg_clim": 30,
                 "timespan": [datetime(1991, 1, 1), datetime(2010, 12, 31)],
-            },
-        ),
-    ]
+            }
+    }
 
     resample = ("10D", "mean")
     params_rename = {"sm": "esa_cci_sm"}
@@ -146,6 +136,8 @@ def test_cci_sat_data():
         filter_months=None,
         params_rename=params_rename,
     )
+    assert list(fancyreader.adapters.keys()) == \
+           ['01-SelfMaskingAdapter', '02-AnomalyClimAdapter']
 
     ts = fancyreader.read(*test_loc)
 
@@ -172,25 +164,21 @@ def test_gldas_model_data():
         "ioclass_kws": {"read_bulk": True},
     }
 
-    adapters = [
-        (
-            "SelfMaskingAdapter",
+    adapters = {
+            "01-SelfMaskingAdapter":
             {
                 "op": ">=",
                 "threshold": 277.15,
                 "column_name": "SoilTMP0_10cm_inst",
             },
-        ),
-        (
-            "AnomalyClimAdapter",
+            "02-AnomalyClimAdapter":
             {
                 "columns": ["SoilMoi0_10cm_inst"],
                 "wraparound": True,
                 "moving_avg_clim": 30,
                 "timespan": [datetime(2000, 1, 1), datetime(2010, 12, 31)],
             },
-        ),
-    ]
+    }
 
     resample = ("1D", "mean")
     params_rename = {"SoilMoi0_10cm_inst": "sm", "SoilTMP0_10cm_inst": "tmp"}
@@ -203,6 +191,9 @@ def test_gldas_model_data():
         filter_months=None,
         params_rename=params_rename,
     )
+
+    assert list(fancyreader.adapters.keys()) == \
+        ['01-SelfMaskingAdapter', '02-AnomalyClimAdapter']
 
     ts = fancyreader.read(*test_loc)
 
@@ -223,21 +214,17 @@ def test_era5land_rean_data():
         "ioclass_kws": {"read_bulk": True},
     }
 
-    adapters = [
-        (
-            "SelfMaskingAdapter",
+    adapters = {
+            "01-SelfMaskingAdapter":
             {"op": ">=", "threshold": 277.15, "column_name": "stl1"},
-        ),
-        (
-            "AnomalyClimAdapter",
+            "02-AnomalyClimAdapter":
             {
                 "columns": ["swvl1"],
                 "wraparound": True,
                 "moving_avg_clim": 30,
                 "timespan": [datetime(2000, 1, 1), datetime(2010, 12, 31)],
-            },
-        ),
-    ]
+            }
+    }
 
     resample = None
     params_rename = {"swvl1": "swvl1", "stl1": "stl1"}
@@ -250,6 +237,8 @@ def test_era5land_rean_data():
         filter_months=None,
         params_rename=params_rename,
     )
+    assert list(fancyreader.adapters.keys()) == \
+        ['01-SelfMaskingAdapter', '02-AnomalyClimAdapter']
 
     ts = fancyreader.read(*test_loc)
 
@@ -271,25 +260,21 @@ def test_insitu_data():
         "force_path_group": "__test",
     }
 
-    adapters = [
-        (
-            "SelfMaskingAdapter",
+    adapters = {
+            "01-SelfMaskingAdapter":
             {
                 "op": "==",
                 "threshold": "G",
                 "column_name": "soil_moisture_flag",
             },
-        ),
-        (
-            "AnomalyClimAdapter",
+            "02-AnomalyClimAdapter":
             {
                 "columns": ["soil_moisture"],
                 "wraparound": True,
                 "moving_avg_clim": 30,
                 "timespan": [datetime(2010, 1, 1), datetime(2019, 12, 31)],
             },
-        ),
-    ]
+    }
     resample = None
     params_rename = {"soil_moisture": "initu_sm"}
 
@@ -302,6 +287,10 @@ def test_insitu_data():
         filter_months=None,
         params_rename=params_rename,
     )
+
+    assert list(fancyreader.adapters.keys()) == \
+        ['01-SelfMaskingAdapter', '02-AnomalyClimAdapter']
+
     fancyreader.base_reader.rebuild_metadata()
 
     nearest, dist = fancyreader.base_reader.find_nearest_station(
@@ -330,18 +319,15 @@ def test_other_function_than_read():
         "force_path_group": "__test",
     }
 
-    adapters = [
-        (
-            "AnomalyClimAdapter",
+    adapters = {
+            "01-AnomalyClimAdapter":
             {
                 "columns": ["SWI_005"],
                 "wraparound": True,
                 "moving_avg_clim": 30,
                 "timespan": [datetime(2010, 1, 1), datetime(2019, 12, 31)],
             },
-        ),
-    ]
-
+    }
     # with a different read function
     fancyreader = GeoTsReader(
         ReaderWithTestFunct,
@@ -352,6 +338,8 @@ def test_other_function_than_read():
         filter_months=None,
         params_rename={"SWI_005": "swi5"},
     )
+
+    assert list(fancyreader.adapters.keys()) == ['01-AnomalyClimAdapter']
 
     data = fancyreader.test_read_ts(-155.4776781090898, 19.80803588124469)
     assert not data.dropna().empty
