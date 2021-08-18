@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+
+import pandas
+
 from io_utils.yml.read import spaceify, read_settings
 import numpy as np
 import sys
@@ -20,6 +23,7 @@ def test_read_yml():
     assert A_LEVEL2.sublev['sublev_a'] is None
     assert A_LEVEL2.sublev['sublev_c'] == LEVEL1.A_FUNCTION
     assert A_LEVEL2.sublev['sublev_d']['d'] == 1
+    assert A_LEVEL2.sublev['sublev_pandas'] == pandas.DataFrame.mean
     assert callable(A_LEVEL2.sublev['sublev_d']['func'])
     assert list(A_LEVEL2.sublev['adapt'].keys()) == ['one', 'two', 'three'], "Dict order!!"
     assert callable(A_LEVEL2.sublev['adapt']['one']['test']['func'])

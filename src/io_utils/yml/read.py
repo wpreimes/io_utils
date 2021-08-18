@@ -82,10 +82,13 @@ def read_level(data: dict):
                 if isinstance(v, str):
                     v = importlib.import_module(v)
                 elif isinstance(v, list):
-                    assert len(v) == 2, \
-                        "To import a function/class pass 2 elements as a list:" \
-                        "a module and a name (e.g. [numpy.ma, masked_array] )"
-                    v = getattr(importlib.import_module(v[0]), v[1])
+                    # the first element is the module, then attributes
+                    # of the module and attributes of the attributes (classes,
+                    # and functions.
+                    m = importlib.import_module(v[0])
+                    for el in v[1:]:
+                        m = getattr(m, el)
+                    v = m
                 else:
                     raise IOError(
                         "The <IMPORT> tag expects either a string to import"
