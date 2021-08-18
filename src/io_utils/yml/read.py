@@ -31,9 +31,9 @@ _replace_str_lut = \
 
 supported_platforms = ['WIN', 'LINUX']
 
-if 'WIN' in sys.platform.upper():
+if 'win' in sys.platform:
     current_platform = 'WIN'
-elif sys.platform.upper() == 'LINUX':
+elif sys.platform == 'linux':
     current_platform = 'LINUX'
 else:
     warnings.warn(f"Unexpected platform name {sys.platform.upper()}. Using LINUX now.")
@@ -67,8 +67,8 @@ def read_level(data: dict):
             new_data[k] = read_level(v)
         else:
             # select values for current OS, drop others
-            if f"<{sys.platform.upper()}>" in k:
-                k = k.replace(f"<{sys.platform.upper()}>", "")
+            if f"<{current_platform}>" in k:
+                k = k.replace(f"<{current_platform}>", "")
             elif any([f"<{p.upper()}>" in k for p in not_current_platform]):
                 continue
 
