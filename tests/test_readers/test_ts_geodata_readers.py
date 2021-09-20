@@ -203,8 +203,7 @@ def test_amsr2ccids_ts_reader(verbose=False):
     dataset = ('CCIDs', 'v052', 'AMSR2', 'DES')
     reader = GeoCCIDsAmsr2Ts(dataset,
                          parameters=['sm', 'flag', 'freqband'],
-                         exact_index=True,
-                         ioclass_kws={'read_bulk': True})
+                         exact_index=True)
     ts = reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
