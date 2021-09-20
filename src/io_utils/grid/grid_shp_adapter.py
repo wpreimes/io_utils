@@ -3,8 +3,9 @@
 from collections import OrderedDict
 try:
     import ogr
+    import osr
 except ImportError:
-    from osgeo import ogr
+    from osgeo import ogr, osr
 import os
 import numpy as np
 import pandas as pd
@@ -143,6 +144,9 @@ class CountryShpReader(object):
         layer = shp.GetLayer()
         feature = layer.GetFeature(id)
         geom = feature.geometry().Clone()
+        # sref = osr.SpatialReference()
+        # sref = sref.ImportFromEPSG(4326)
+        #geom = geom.AssignSpatialReference(sref)
         return geom
 
     def country_ids(self, *names):

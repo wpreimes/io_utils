@@ -8,6 +8,7 @@ same way.
 # ASCAT readers
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_ssm import *
 from io_utils.read.geo_ts_readers.hsaf_ascat.hsaf_ascat_smdas import *
+from io_utils.read.geo_ts_readers.ascat_direx.base_reader import *
 
 # AMSR2 readers
 from io_utils.read.geo_ts_readers.amsr2.lprm_amsr2 import *
