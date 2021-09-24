@@ -18,11 +18,14 @@ class GridShpAdapter(object):
         self.country_names = sorted(np.unique(self.shp_reader.df['country'].values))
         self.continent_names = sorted(np.unique(self.shp_reader.df['continent'].values))
 
-    def __str__(self):
-        county_names = ', '.join(self.country_names)
-        continent_names = ', '.join(self.continent_names)
-        return "Continent Names: {} \n \n Country Names: {}".format(
-            continent_names, county_names)
+    def __repr__(self):
+        s =  (
+            f"Continent Names: \n"
+            f"{self.continent_names} \n"
+            f"Country Names: \n"
+            f"{self.country_names}"
+        )
+        return s
 
     def create_subgrid(self, names, verbose=False):
         """
@@ -179,7 +182,6 @@ if __name__ == '__main__':
     grid = EASE25CellGrid()
     from pygeogrids.netcdf import save_grid
     adapter = GridShpAdapter(grid)
-    print(adapter)
     grid = adapter.create_subgrid([country])
     save_grid(r"R:\Projects\SMART-DRI\07_data\sm_country_data\SMOS-IC\ease25grid_{country}.nc".format(country=country),
               grid=grid)
