@@ -11,7 +11,7 @@ Generally useful lookup tables.
 #   -
 
 import itertools
-from collections import Iterable
+from collections.abc import Iterable
 
 def ccilc_lut(names):
     """
