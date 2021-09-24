@@ -315,7 +315,7 @@ def test_other_function_than_read():
 
     reader_kwargs = {
         "dataset_or_path": dataset,
-        "parameter": "SWI_005",
+        "parameters": "SWI_005",
         "force_path_group": "__test",
     }
 
