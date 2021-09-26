@@ -25,6 +25,7 @@ A_LEVEL2:
       deeper:
         deeper:
           bottom: None
+          !!python/tuple ['a', 'list', 'as', 'key']: {'num': 1}
           bottom_list:
             - 1
             - 2

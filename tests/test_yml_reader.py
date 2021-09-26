@@ -29,6 +29,7 @@ def test_read_yml():
     assert callable(A_LEVEL2.sublev['adapt']['one']['test']['func'])
     assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom'] is None
     assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['bottom_list'] == [1,2,3]
+    assert A_LEVEL2.sublev['deeper']['deeper']['deeper']['a', 'list', 'as', 'key']['num'] == 1
 
     assert(LEVEL1.A_CLASS == np.ma.masked_array)
     assert(LEVEL1.A_FUNCTION == np.ma.unique)
