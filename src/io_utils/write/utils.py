@@ -41,4 +41,7 @@ def join_files(tmp_dir, out_file, mfdataset=False, global_attrs=None):
 def minmax(values):
     return np.nanmin(values), np.nanmax(values)
 
+if __name__ == '__main__':
+    path = "/data-read/USERS/wpreimes/temp/pietro/month_window/"
+    join_files(path, "/data-read/USERS/wpreimes/temp/pietro/month_window_merged.nc")
 

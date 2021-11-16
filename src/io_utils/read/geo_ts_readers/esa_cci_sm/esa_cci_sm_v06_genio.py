@@ -6,7 +6,7 @@ Time series reader for CCI SM v06 data
 
 from io_utils.read.path_config import PathConfig
 import numpy as np
-from io_utils.read.geo_ts_readers.other_base_readers.cci_genio_base_reader import CCIDs
+from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import CCIDs
 try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v06 import path_settings
 except ImportError:
@@ -38,7 +38,7 @@ class GeoCCISMv6GenioTs(CCIDs):
         self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
-        super(GeoCCISMv6GenioTs, self).__init__(ts_path, **kwargs)
+        super().__init__(ts_path, **kwargs)
 
         self.exact_index = exact_index
 
@@ -48,8 +48,3 @@ class GeoCCISMv6GenioTs(CCIDs):
         if self.parameters is not None:
             ts = ts[self.parameters]
         return ts.replace(self._fillval, np.nan)
-
-if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import GeoCCISMv6Ts
-    ds = GeoCCISMv6Ts(('ESA_CCI_SM', 'v0603_tmi', 'COMBINED'), exact_index=False)
-    ts6 = ds.read(45, 15)

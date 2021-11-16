@@ -13,8 +13,9 @@ esa_cci_sm package.
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
 
-class ERATs(GriddedNcOrthoMultiTs):
+class ERATs(GriddedNcOrthoMultiTs, CellReaderMixin):
     # The basic ERA TS reader, with some features
     def __init__(self, ts_path, grid_path=None, **kwargs):
         if grid_path is None:

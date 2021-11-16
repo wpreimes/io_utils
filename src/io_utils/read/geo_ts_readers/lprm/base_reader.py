@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-AMSR2 time series reader
+LPRM time series reader
 """
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 import pygeogrids.netcdf as nc
 from cadati.jd_date import jd2dt
 from io_utils.utils import mjd2jd
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
 
-class LPRMTs(GriddedNcOrthoMultiTs):
+class LPRMTs(GriddedNcOrthoMultiTs, CellReaderMixin):
 
     _t0 = 'SCANTIME_MJD'
 
@@ -32,8 +33,3 @@ class LPRMTs(GriddedNcOrthoMultiTs):
             df = df.loc[df.index.dropna()]
 
         return df
-
-if __name__ == '__main__':
-    path = r"\\project9\data-read\RADAR\Datapool_processed\LPRM\v6\SMAP_S3_VEGC\timeseries\d"
-    ds = LPRMTs(path, exact_index=True)
-    ts = ds.read(45,15)

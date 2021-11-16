@@ -9,8 +9,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 from netCDF4 import num2date
 import pandas as pd
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
 
-class SMAPTs(GriddedNcOrthoMultiTs):
+class SMAPTs(GriddedNcOrthoMultiTs, CellReaderMixin):
 
     _t0_var = 'tb_time_seconds'
     _t0_unit = 'seconds since 2000-01-01T12:00' # from tb_time_seconds long_name
@@ -36,7 +37,7 @@ class SMAPTs(GriddedNcOrthoMultiTs):
         else:
             df.loc[num.index, '_datetime'] = \
                 pd.DatetimeIndex(num2date(num.values, units=self._t0_unit,
-                                calendar='standard', only_use_cftime_datetimes=False))
+                                 calendar='standard', only_use_cftime_datetimes=False))
         df = df.set_index('_datetime')
         df = df[df.index.notnull()]
         return  df

@@ -8,17 +8,53 @@ Reader for the ESA CCI SM time series data of different versions
 #---------
 # NOTES:
 #   -
+from pygenio.time_series import IndexedRaggedTs
+from pygeobase.io_base import GriddedTsBase
 
-from pynetcf.time_series import GriddedNcOrthoMultiTs, GriddedNcTs, ContiguousRaggedTs, OrthoMultiTs
+from pynetcf.time_series import (
+    GriddedNcOrthoMultiTs,
+    GriddedNcTs,
+    ContiguousRaggedTs,
+)
 import os
 import pygeogrids.netcdf as nc
 import netCDF4
 import pandas as pd
-from pygeogrids import CellGrid
-import numpy as np
-from datetime import timedelta
-import xarray as xr
 import warnings
+import numpy as np
+import xarray as xr
+from pygeogrids import CellGrid
+from smecv_grid import SMECV_Grid_v052
+
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from datetime import timedelta
+
+from cadati.jd_date import julian2date
+import pytz
+from datetime import datetime
+
+
+def julian2datetimeindex(j, tz=pytz.UTC):
+    """
+    Converting Julian days to datetimeindex.
+    Parameters
+    ----------
+    j : numpy.ndarray or int32
+        Julian days.
+    tz : instance of pytz, optional
+        Time zone. Default: UTC
+    Returns
+    -------
+    datetime : pandas.DatetimeIndex
+        Datetime index.
+    """
+    year, month, day, hour, minute, second, microsecond = julian2date(j)
+
+    return pd.DatetimeIndex([datetime(y, m, d, h, mi, s, ms, tz)
+                             for y, m, d, h, mi, s, ms in
+                             zip(year, month, day, hour, minute,
+                                 second, microsecond)])
+
 
 class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
     """
@@ -37,41 +73,40 @@ class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
             return
         super(GriddedNcContiguousRaggedTsCompatible, self)._write_gp(gp, data, **kwargs)
 
-
     def _read_gp(self, gpi, only_valid=False, mask_sm_nan=False,
                  mask_invalid_flags=False, sm_nan=-999999.,
                  mask_jd=False, jd_min=2299160, jd_max=1827933925,
                  valid_flag=0, **kwargs):
 
         """
-            Read data into common format
+        Read data into common format
 
-            Parameters
-            ----------
-            self: type
-                description
-            gpi: int
-                grid point index
-            only_valid: boolen, optional
-               if set only valid observations will be returned.
-               This means that the data will be masked for soil moisture
-               NaN values and also for flags other than 0
-            mask_sm_nan: boolean, optional
-               if set to True then the time series will be masked
-               for soil moisture NaN values
-            mask_invalid_flags: boolean, optional
-               if set then all flags that do not have the value of
-               valid_flag are removed
-            sm_nan: float, optional
-               value to use as soil moisture NaN
-            valid_flag: int, optional
-               value indicating a valid flag
+        Parameters
+        ----------
+        self: type
+            description
+        gpi: int
+            grid point index
+        only_valid: boolen, optional
+           if set only valid observations will be returned.
+           This means that the data will be masked for soil moisture
+           NaN values and also for flags other than 0
+        mask_sm_nan: boolean, optional
+           if set to True then the time series will be masked
+           for soil moisture NaN values
+        mask_invalid_flags: boolean, optional
+           if set then all flags that do not have the value of
+           valid_flag are removed
+        sm_nan: float, optional
+           value to use as soil moisture NaN
+        valid_flag: int, optional
+           value indicating a valid flag
 
-            Returns
-            -------
-            ts: pandas.DataFrame
-                DataFrame in common format
-            """
+        Returns
+        -------
+        ts: pandas.DataFrame
+            DataFrame in common format
+        """
 
         df = super(GriddedNcContiguousRaggedTsCompatible, self)._read_gp(gpi, **kwargs)
 
@@ -92,13 +127,70 @@ class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
 
         return df
 
+    def read_cell(self, cell, var):
+        """
+        Read all the data in one cell file.
+        Keep in mind: the intermediate netcdf format uses indexed ragged
+        time series!
 
-class SmecvTs(GriddedNcOrthoMultiTs):
+        Parameters
+        ----------
+        cell: int
+            The number of the cell
+        var: str
+            the variable to be read
+
+        Returns
+        -------
+        df: pd.DataFrame
+            A data frame that hold all data for the cell / variable
+        """
+        file_path = os.path.join(self.path, f"{cell:04}.nc")
+
+        with nc.Dataset(file_path) as ncfile:
+            loc_id = ncfile.variables['location_id'][:]
+            loc_id = loc_id[~loc_id.mask].data.flatten()
+            row_size = ncfile.variables['row_size'][:]
+            row_size = row_size[~row_size.mask].data
+
+            time = ncfile.variables['time'][:].data
+            unit_time = ncfile.variables['time'].units
+            variable = ncfile.variables[var][:].filled(np.nan)
+
+        cutoff_points = np.cumsum(row_size)
+        index = np.sort(np.unique(time))
+        times = np.split(time, cutoff_points)[:-1]
+        datas = np.split(variable, cutoff_points)[:-1]
+
+        assert len(times) == len(datas)
+
+        filled = np.full((len(datas), len(index)), fill_value=np.nan)
+        idx = np.array([np.isin(index, t) for t in times])
+        filled[idx] = variable
+
+        delta = lambda t: timedelta(t)
+        vfunc = np.vectorize(delta)
+        since = pd.Timestamp(unit_time.split('since ')[1])
+        index = since + vfunc(index)
+
+        filled = np.transpose(np.array(filled))
+
+        df = pd.DataFrame(index=index, data=filled, columns=loc_id)
+
+        return df
+
+
+class SmecvTs(GriddedNcOrthoMultiTs, CellReaderMixin):
     # The basic CCI/C3S TS netcdf reader, with some features
     # For the final product converted with the esa_cci_sm package.
 
-    def __init__(self, ts_path, grid=None, exact_index=False, clip_dates=None,
-                 ioclass_kws=None, **kwargs):
+    def __init__(self,
+                 ts_path,
+                 grid=None,
+                 exact_index=False,
+                 clip_dates=None,
+                 ioclass_kws=None,
+                 **kwargs):
         """
         Read ESA CCI SM in time series format from netcdf files
 
@@ -133,13 +225,12 @@ class SmecvTs(GriddedNcOrthoMultiTs):
         else:
             grid = nc.load_grid(grid)
 
-        super(SmecvTs, self).__init__(ts_path, grid, automask=True,
-                                    ioclass_kws=ioclass_kws,
-                                    **kwargs)
-
         self.clip_dates = clip_dates
-
         self.exact_index = exact_index
+
+        super(SmecvTs, self).__init__(ts_path, grid, automask=True,
+                                      ioclass_kws=ioclass_kws,
+                                      **kwargs)
 
         if (self.parameters is not None) and self.exact_index and \
                 (self.t0 not in self.parameters):
@@ -180,128 +271,6 @@ class SmecvTs(GriddedNcOrthoMultiTs):
             df = self._clip_dates(df)
 
         return df
-
-    def read_cell_file(self, cell, param='sm'):
-        """ Read a full cell file """
-        if self.exact_index:
-            warnings.warn("Reading cell with exact index not yet supported. Use read_cells()")
-
-        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
-        with nc.Dataset(file_path) as ncfile:
-            loc_id = ncfile.variables['location_id'][:]
-            time = ncfile.variables['time'][:]
-            unit_time = ncfile.variables['time'].units
-            delta = lambda t: timedelta(t)
-            vfunc = np.vectorize(delta)
-            since = pd.Timestamp(unit_time.split('since ')[1])
-            time = since + vfunc(time)
-
-            variable = ncfile.variables[param][:]
-            variable = np.transpose(variable)
-            data = pd.DataFrame(variable, columns=loc_id, index=time)
-
-        if self.clip_dates:
-            data = self._clip_dates(data)
-
-        return data
-
-    def read_cells(self, cells):
-        """ Read all data for one or multiple cells as a data frame """
-        cell_data = []
-        gpis, lons, lats = self.grid.grid_points_for_cell(list(cells))
-        for gpi, lon, lat in zip(gpis, lons, lats):
-            df = self.read(lon, lat)
-            df.columns = pd.MultiIndex.from_tuples((gpi, c) for c in df.columns)
-            if not df.empty:
-                cell_data.append(df)
-
-        if len(cell_data) == 0:
-            return pd.DataFrame()
-        else:
-            return pd.concat(cell_data, axis=0 if self.exact_index else 1)
-
-    def read_agg_cell_data(self, cell, params, format='pd_multidx_df',
-                           drop_coord_vars=True, to_replace=None,
-                           **kwargs) -> dict or pd.DataFrame:
-        """
-        Read all time series for a single variable in the selected cell.
-
-        Parameters
-        ----------
-        cell: int
-            Cell number as in the c3s grid
-        params: list or str
-            Name of the variable(s) to read.
-        format : str, optional (default: 'multiindex')
-            * pd_multidx_df (default):
-                Returns one data frame with gpi as first, and time as
-                second index level.
-            * gpidict : Returns a dictionary of dataframes, with gpis as keys
-                        and time series data as values.
-            * var_np_arrays : Returns 2d arrays for each variable and a variable
-                              'index' with time stamps.
-        to_replace : dict of dicts, optional (default: None)
-            Dict for parameters of values to replace.
-            e.g. {'sm': {-999999.0: -9999}}
-            see pandas.to_replace()
-
-        Additional kwargs are given to xarray to open the dataset.W
-
-        Returns
-        -------
-        data : dict or pd.DataFrame
-            A DataFrame if a single variable was passed, otherwise
-            a dict of DataFrames with parameter name as key.
-        """
-        if self.exact_index:
-            warnings.warn("Reading cell with exact index not yet supported. Use read_cells()")
-
-        file_path = os.path.join(self.path, f'{cell:04}.nc')
-
-        params = np.atleast_1d(params)
-
-        if 'location_id' not in params:
-            params = np.append(params, 'location_id')
-
-        with xr.open_dataset(file_path, **kwargs) as ds:
-            gpis = ds['location_id'].values
-            mask = (gpis >= 0)
-            gpis = gpis[mask]
-
-            df = ds[params].to_dataframe(dim_order=['locations', 'time'])
-            df = df.loc[ds['locations'].values[mask], :]
-            df.rename(columns={'location_id': 'gpi'}, inplace=True)
-
-            if drop_coord_vars:
-                df.drop(columns=['alt', 'lon', 'lat'], inplace=True)
-
-        if self.clip_dates:
-            df = self._clip_dates(df)
-
-        if to_replace is not None:
-            df = df.replace(to_replace=to_replace)
-
-        if format.lower() == 'pd_multidx_df':
-            index = df.index.set_levels(gpis, level=0) \
-                            .set_names('gpi', level=0)
-            data = df.set_index(index)
-
-        elif format.lower() == 'gpidict':
-            df = df.set_index(df.index.droplevel(0))
-            data = dict(tuple(df.groupby(df.pop('gpi'))))
-
-        elif format.lower() == 'var_np_arrays':
-            df = df.set_index(df.index.droplevel(0))
-            index = df.index.unique()
-            data = {'index': index}
-            for col in df.columns:
-                if col == 'gpi': continue
-                data[col] = df.groupby('gpi')[col].apply(np.array)
-
-        else:
-            raise NotImplementedError
-
-        return data
 
     def read_agg_cell_cube(
         self,
@@ -444,8 +413,137 @@ class SmecvTs(GriddedNcOrthoMultiTs):
             return data_arr, {'lon': cell_lons, 'lat': cell_lats, 'gpi': cell_gpi}
 
 
+class CCIDs(GriddedTsBase):
+
+    """
+    CCI Dataset class reading genericIO data in the CCI common format
+
+    Data in common input format is
+    returned as a pandas.DataFrame for temporal resampling.
+
+    Parameters
+    ----------
+    path: string
+        Path to dataset.
+    mode: str, optional
+        File mode and can be read 'r', write 'w' or append 'a'. Default: 'r'
+    grid: grid object
+        Grid on which to work
+    fn_format: str, optional
+        The filename format of the cell files. Default: '{:04d}'
+    Parameters : str or list, optional (default: None)
+        limit reading to these columns
+    """
+    def __init__(self, path, mode='r', grid=None, fn_format='{:04d}',
+                 custom_dtype=None):
+        if grid is None:
+            grid = SMECV_Grid_v052()
+
+        super().__init__(
+            path, grid, IndexedRaggedTs,
+            mode=mode, fn_format=fn_format,
+            ioclass_kws={'custom_dtype': custom_dtype})
+
+    def _read_gp(self, gpi, only_valid=False, mask_sm_nan=False,
+                 mask_invalid_flags=False, sm_nan=-999999.,
+                 mask_jd=False, jd_min=2299160, jd_max=1827933925,
+                 valid_flag=0, **kwargs):
+        """
+        Read data into common format
+
+        Parameters
+        ----------
+        self: type
+            description
+        gpi: int
+            grid point index
+        parameters: list or str, optional (default: None)
+            Name of one or multiple columns to read.
+        only_valid: boolen, optional
+           if set only valid observations will be returned.
+           This means that the data will be masked for soil moisture
+           NaN values and also for flags other than 0
+        mask_sm_nan: boolean, optional
+           if set to True then the time series will be masked
+           for soil moisture NaN values
+        mask_invalid_flags: boolean, optional
+           if set then all flags that do not have the value of
+           valid_flag are removed
+        sm_nan: float, optional
+           value to use as soil moisture NaN
+        valid_flag: int, optional
+           value indicating a valid flag
+
+        Returns
+        -------
+        ts: pandas.DataFrame
+            DataFrame in common format
+        """
+
+        ts = super(CCIDs, self)._read_gp(gpi, **kwargs)
+
+        if ts is None:
+            return None
+
+        if only_valid:
+            mask_sm_nan = True
+            mask_invalid_flags = True
+        if mask_sm_nan:
+            ts = ts[ts['sm'] != sm_nan]
+        if mask_invalid_flags:
+            ts = ts[ts['flag'] == valid_flag]
+        if mask_jd:
+            ts = ts[(ts['jd'] >= jd_min) & (ts['jd'] <= jd_max)]
+        if ts.size == 0:
+            raise IOError("No data for gpi %i" % gpi)
+
+        index_tz = julian2datetimeindex(ts['jd'])
+        index_no_tz = pd.DatetimeIndex([i.tz_localize(None) for i in index_tz])
+
+        ts = pd.DataFrame(ts, index=index_no_tz)
+
+        return ts
+
+    def read_cell(self, cell):
+        """
+        Read complete data set from cell file.
+
+        Parameters
+        ----------
+        cell: int
+            Cell number.
+
+        Returns
+        -------
+        location_id: numpy.ndarray
+            Location ids.
+        cell_data: numpy.recarray
+            Cell data set.
+        """
+        if isinstance(self.grid, CellGrid) is False:
+            raise TypeError("Associated grid is not of type "
+                            "pygeogrids.CellGrid.")
+
+        if self.mode != 'r':
+            raise ValueError("File not opened in read mode.")
+
+        filename = os.path.join(self.path, self.fn_format.format(cell))
+        self.fid = self.ioclass(filename, mode=self.mode, **self.ioclass_kws)
+
+        cell_data = self.fid.dat_fid.read()
+        self.fid.dat_fid.close()
+
+        return self.fid.idx, cell_data
+
+
 if __name__ == '__main__':
-    pass
+    from smecv_grid.grid import SMECV_Grid_v052
+    path = "/home/wpreimes/shares/radar/Projects/CCIplus_Soil_Moisture/07_data/LPRM/v7.0/011_resampledTemporal/amsr2_d/"
+
+    ds = GriddedNcContiguousRaggedTsCompatible(path, grid=SMECV_Grid_v052())
+    ts = ds.read(45,15)
+    cs = ds.read_cell(2244, 'sm')
+
 
 
     # path = "/shares/wpreimes/radar/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v05.2/timeseries/combined/"

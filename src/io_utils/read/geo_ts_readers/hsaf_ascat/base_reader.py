@@ -4,9 +4,10 @@ from ascat.h_saf import AscatGriddedNcTs
 import os
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
-from collections import OrderedDict
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
 
-class HSAFAscatSSMTs(AscatGriddedNcTs):
+class HSAFAscatSSMTs(AscatGriddedNcTs, CellReaderMixin):
+
     def __init__(self, ts_path, grid_path=None,
                  fn_format="H115_H116_{:04d}", **kwargs):
 
@@ -24,7 +25,9 @@ class HSAFAscatSSMTs(AscatGriddedNcTs):
                                              grid_filename=grid_path,
                                              **kwargs)
 
-class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs):
+
+class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+
     def __init__(self, ts_path, grid_path=None, **kwargs):
         """
         Class for reading GLDAS time series after reshuffling.
@@ -61,13 +64,3 @@ class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs):
 
         grid = load_grid(grid_path)
         super(HSAFAscatSMDASTs, self).__init__(ts_path, grid, **kwargs)
-
-    def read_cells(self, cells):
-        cell_data = OrderedDict()
-        gpis, lons, lats = self.grid.grid_points_for_cell(list(cells))
-
-        for gpi, lon, lat in zip(gpis, lons, lats):
-            df = self.read(lon, lat)
-            cell_data[gpi] = df
-
-        return cell_data

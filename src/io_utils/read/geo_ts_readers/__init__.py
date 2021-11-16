@@ -19,6 +19,7 @@ from io_utils.read.geo_ts_readers.smecv_swi_rzsm.smecv_swi_rzsm_v0 import *
 ## CCI version readers
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v07 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06 import *
+from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v06_genio import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v05 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v04 import *
 from io_utils.read.geo_ts_readers.esa_cci_sm.esa_cci_sm_v03 import *

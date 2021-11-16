@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from io_utils.read.geo_ts_readers.other_base_readers.lprm_base_reader import LPRMTs
+from io_utils.read.geo_ts_readers.lprm.base_reader import LPRMTs
 from io_utils.read.path_config import PathConfig
 try:
     from io_utils.path_configs.amsr2.paths_amsr2_lprm_v6 import path_settings

@@ -13,7 +13,46 @@ Generally useful lookup tables.
 import itertools
 from collections.abc import Iterable
 
-def ccilc_lut(names):
+cci_lc_lut_orig_to_short =     \
+     {0: 'Other',
+      10: 'Cropland',
+      11: 'Cropland',
+      12: 'Cropland',
+      20: 'Cropland',
+      30: 'Cropland',
+      40: 'TreeCover',
+      50: 'TreeCover',
+      60: 'TreeCover',
+      61: 'TreeCover',
+      62: 'TreeCover',
+      70: 'TreeCover',
+      71: 'TreeCover',
+      72: 'TreeCover',
+      80: 'TreeCover',
+      81: 'TreeCover',
+      82: 'TreeCover',
+      90: 'TreeCover',
+      100: 'TreeCover',
+      110: 'TreeCover',
+      120: 'Grassland',
+      121: 'Grassland',
+      122: 'Grassland',
+      130: 'Grassland',
+      140: 'Other',
+      150: 'Other',
+      152: 'Other',
+      153: 'Other',
+      160: 'TreeCover',
+      170: 'TreeCover',
+      180: 'Grassland',
+      190: 'UrbanAreas',
+      200: 'Other',
+      201: 'Other',
+      202: 'Other',
+      210: 'Other',
+      220: 'Other'}
+
+def ccilc_lut(names, orig_to_short=cci_lc_lut_orig_to_short):
     """
     LUT between ESA CCI LC and combined LC classes and vice verse.
 
@@ -29,44 +68,6 @@ def ccilc_lut(names):
     """
     if isinstance(names, str) or not isinstance(names, Iterable):
         names = [names]
-
-    orig_to_short = {0: 'Other',
-                    10: 'Cropland',
-                    11: 'Cropland',
-                    12: 'Cropland',
-                    20: 'Cropland',
-                    30: 'Cropland',
-                    40: 'TreeCover',
-                    50: 'TreeCover',
-                    60: 'TreeCover',
-                    61: 'TreeCover',
-                    62: 'TreeCover',
-                    70: 'TreeCover',
-                    71: 'TreeCover',
-                    72: 'TreeCover',
-                    80: 'TreeCover',
-                    81: 'TreeCover',
-                    82: 'TreeCover',
-                    90: 'TreeCover',
-                    100: 'TreeCover',
-                    110: 'TreeCover',
-                    120: 'Grassland',
-                    121: 'Grassland',
-                    122: 'Grassland',
-                    130: 'Grassland',
-                    140: 'Other',
-                    150: 'Other',
-                    152: 'Other',
-                    153: 'Other',
-                    160: 'TreeCover',
-                    170: 'TreeCover',
-                    180: 'Grassland',
-                    190: 'UrbanAreas',
-                    200: 'Other',
-                    201: 'Other',
-                    202: 'Other',
-                    210: 'Other',
-                    220: 'Other'}
 
     short_to_orig = {}
     for orig, short in orig_to_short.items():

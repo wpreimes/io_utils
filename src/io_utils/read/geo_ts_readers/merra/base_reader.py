@@ -12,8 +12,9 @@ Module description
 from pygeogrids.netcdf import load_grid
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
+from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
 
-class MERRATs(GriddedNcOrthoMultiTs):
+class MERRATs(GriddedNcOrthoMultiTs, CellReaderMixin):
     def __init__(self, ts_path=None, grid_path=None, **kwargs):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
