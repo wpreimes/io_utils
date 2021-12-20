@@ -8,7 +8,13 @@ Reader for the ESA CCI SM time series data of different versions
 #---------
 # NOTES:
 #   -
-from pygenio.time_series import IndexedRaggedTs
+try:
+    from pygenio.time_series import IndexedRaggedTs
+    genio_installed = True
+except ImportError:
+    genio_installed = False
+    pass
+
 from pygeobase.io_base import GriddedTsBase
 
 from pynetcf.time_series import (
@@ -24,7 +30,6 @@ import warnings
 import numpy as np
 import xarray as xr
 from pygeogrids import CellGrid
-from smecv_grid import SMECV_Grid_v052
 
 from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 from datetime import timedelta
@@ -33,6 +38,11 @@ from cadati.jd_date import julian2date
 import pytz
 from datetime import datetime
 
+class PygenioNotFoundError(ModuleNotFoundError):
+    def __init__(self, msg=None):
+        _default_msg = "pygenio not installed. " \
+                       "Use pip to install it from pypi.geo.tuwien.ac.at"
+        self.msg = _default_msg if msg is None else msg
 
 def julian2datetimeindex(j, tz=pytz.UTC):
     """
@@ -439,10 +449,13 @@ class CCIDs(GriddedTsBase):
         if grid is None:
             grid = SMECV_Grid_v052()
 
-        super().__init__(
-            path, grid, IndexedRaggedTs,
-            mode=mode, fn_format=fn_format,
-            ioclass_kws={'custom_dtype': custom_dtype})
+        if not genio_installed:
+            raise ImportError("Pygenio is not installed")
+        else:
+            super().__init__(
+                path, grid, IndexedRaggedTs,
+                mode=mode, fn_format=fn_format,
+                ioclass_kws={'custom_dtype': custom_dtype})
 
     def _read_gp(self, gpi, only_valid=False, mask_sm_nan=False,
                  mask_invalid_flags=False, sm_nan=-999999.,
