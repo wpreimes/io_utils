@@ -20,6 +20,45 @@ from matplotlib.dates import date2num
 from pygeogrids.grids import CellGrid
 from io_utils.grid.grid_shp_adapter import GridShpAdapter
 from cadati.dekad import dekad_startdate_from_date
+from typing import List
+
+
+def check_normalized_bits_array(
+        numbers: np.ndarray,
+        bit_indices: List[list]) -> bool:
+    """
+    Takes a list of bit_indices ([0] is the first bit only, [0,1] are the first
+    tow bits) and a number and checks if the bit(s) is/are active for this
+    number. If multiple combinations are passed in bit_indices, ANY of them
+    must be fulfilled.
+
+    Parameters
+    ----------
+    number: np.ndarray
+        Numbers (integer) for which we compare the bits to the passed ones.
+    bit_indices: list of lists
+        A list of bit indices that are checked. Each sub list is a bit
+        combination that is compared to the number
+        e.g [[0]] means the 1st bit only must be active, e.g 0b1 or 0b101
+            (for the passed number in bin format).
+        e.g [[0],[1]] means that 1st OR 2nd bit must be active e.g 0b01 or 0b10
+        e.g [[0, 1]] means that the first AND second bit must be active: 0b11
+        e.g [[2],[0,1]] mean that the (3rd OR (1st AND 2nd)) must be active
+            e.g. True for 0b100, 0b1011 etc
+
+    Returns
+    -------
+    flags: np.array
+        Whether the passed bits fulfilled were active in the passed numbers.
+        boolean array of the same shape as the input numbers array.
+    """
+    return np.any(
+        np.array([
+            np.all(
+                np.array([(numbers >> i) & 1 for i in bit_index]),
+                axis=0)
+            for bit_index in bit_indices]),
+        axis=0)
 
 
 def mjd2jd(mjd):

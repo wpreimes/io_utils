@@ -14,8 +14,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 from netCDF4 import num2date
 import pandas as pd
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class SMOSTs(GriddedNcOrthoMultiTs):
+class SMOSTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
     _t0_vars = {'sec': 'UTC_Seconds', 'days': 'Days'}
     _t0_unit = 'days since 2000-01-01'
@@ -38,7 +39,8 @@ class SMOSTs(GriddedNcOrthoMultiTs):
         units = self._t0_unit
 
         df['_date'] = df.index.values
-        num = df[self._t0_vars['days']].dropna() + (df[self._t0_vars['sec']].dropna() / 86400)
+        num = df[self._t0_vars['days']].dropna() + \
+              (df[self._t0_vars['sec']].dropna() / 86400)
         if len(num) == 0:
             df.loc[num.index, '_datetime'] = []
         else:
@@ -48,7 +50,7 @@ class SMOSTs(GriddedNcOrthoMultiTs):
 
         df = df.set_index('_datetime')
         df = df[df.index.notnull()]
-        return  df
+        return df
 
     def read(self, *args, **kwargs):
         df = super(SMOSTs, self).read(*args, **kwargs)
@@ -57,7 +59,3 @@ class SMOSTs(GriddedNcOrthoMultiTs):
 
         return df
 
-if __name__ == '__main__':
-    path = r"R:\Datapool\SMOS\02_processed\L3_SMOS_IC_Soil_Moisture\timeseries\DES"
-    ds = SMOSTs(path, exact_index=True)
-    ts = ds.read(-14, 14)

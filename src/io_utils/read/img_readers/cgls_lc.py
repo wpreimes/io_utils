@@ -6,6 +6,8 @@ from collections import OrderedDict
 from typing import List, Union, Literal
 from scipy.stats import mode
 import pygeogrids
+from io_utils.luts import ccilc_lut
+import matplotlib.patches as mpatches
 
 try:
     import matplotlib.pyplot as plt
@@ -14,6 +16,8 @@ try:
 except ImportError:
     plotlibs = False
 
+
+##### default colors and values as from the unresampled tiff files.:
 # R, G, B, Opacity
 colors_values = OrderedDict([
      (0,    [0.156862745098039, 0.156862745098039, 0.156862745098039, 1.0]),
@@ -68,6 +72,7 @@ colors_meanings = OrderedDict([
     (200,   'Open sea'),
     (255,   'No data'),
 ])
+
 
 colors_missing = {0: 1., 1: 1., 2: 1., 3: 0.}
 
@@ -173,6 +178,7 @@ def subblocks(arr, block_y, block_x, handle_mismatch='drop', flatten_inner=True)
     else:
         return blocks
 
+
 class CglsLcImg(xr.Dataset):
     """
     Read a single CGLS Landcover classification file from disk into memory
@@ -192,8 +198,8 @@ class CglsLcImg(xr.Dataset):
     _colors_values = colors_values
     _colors_meanings = colors_meanings
 
-    def __init__(self, dataset):
-        super(CglsLcImg, self).__init__(dataset)
+    def __init__(self, dataset, **kwargs):
+        super(CglsLcImg, self).__init__(dataset, **kwargs)
 
     @classmethod
     def from_netcdf(cls, path, extent=None) -> 'CglsLcImg':
@@ -217,7 +223,12 @@ class CglsLcImg(xr.Dataset):
         if extent is not None:
             ds = ds.sel(x=slice(extent[0], extent[1], None),
                         y=slice(extent[3], extent[2], None))
-        return cls(ds)
+
+        lc_values = np.array(list(colors_meanings.keys()))
+        lc_meanings = np.array(list(colors_meanings.values()))
+
+        return cls(ds, attrs={'lc_value': lc_values,
+                              'lc_meaning': lc_meanings})
 
     @classmethod
     def from_tiff(cls, path, extent=None) -> 'CglsLcImg':
@@ -248,7 +259,11 @@ class CglsLcImg(xr.Dataset):
 
         year = da.attrs['time_reference_year']
 
-        return cls(da.to_dataset('band').rename({1: f'lc_{year}'}))
+        lc_values = np.array(list(colors_meanings.keys()))
+        lc_meanings = np.array(list(colors_meanings.values()))
+
+        ds = da.to_dataset('band').rename({1: f'lc_{year}'})
+        return cls(ds, attrs={'lc_value': lc_values, 'lc_meaning': lc_meanings})
 
     @property
     def extent(self) -> List[float]:
@@ -281,6 +296,7 @@ class CglsLcImg(xr.Dataset):
         Parameters
         ----------
         cellsize: float, optional (default: 5.)
+            Cell size (not grid resolution!)
 
 
         Returns
@@ -288,11 +304,10 @@ class CglsLcImg(xr.Dataset):
 
         """
         grid = pygeogrids.grids.gridfromdims(
-            self['lon'].values, self['lat'].values,origin='bottom')\
+            self['lon'].values, self['lat'].values, origin='bottom')\
             .to_cell_grid(cellsize)
 
         return grid
-
 
     def spatial_resample(self, var='lc_2019', n=100):
         """ 
@@ -332,8 +347,84 @@ class CglsLcImg(xr.Dataset):
             data_vars[v] = (["lat", "lon"], data_blocks)
 
         return CglsLcImg(xr.Dataset(data_vars=data_vars,
-                                    coords=dict(lon=resampled_lons, lat=resampled_lats),
-                                    attrs=self.attrs))
+                                    coords=dict(lon=resampled_lons, lat=resampled_lats)),
+                         attrs=self.attrs)
+
+    def reclassify(self, lut, var='lc_2019', new_val=None) -> 'CglsLcImg':
+        """
+        Combine classes of the original image using the passed lookup table.
+        The lookup table takes the original class value, e.g 20 for shrubs,
+        as key and assigns a new class name as the value.
+
+        Parameters
+        ----------
+        var: str
+            Variable name in the input data set to use
+        lut : dict, optional default: _orig_to_short
+            The default lut creates 5 classes from all available and creates
+            the groups Forest, SparseVeg, Cropland, Other and None
+            e.g. # combine the classes to 4 groups: SparseVeg, Cropland, Forest and Other
+                    lut = OrderedDict([
+                        (0,     'None'),
+                        (20,    'SparseVeg'),
+                        (30,    'SparseVeg'),
+                        (40,    'Cropland'),
+                        (50,    'Other'),
+                        (60,    'SparseVeg'),
+                        (70,    'Other'),
+                        (80,    'Water'),
+                        (90,    'Other'),
+                        (100,   'Other'),
+                        (111,   'Forest'),
+                        (112,   'Forest'),
+                        (113,   'Forest'),
+                        (114,   'Forest'),
+                        (115,   'Forest'),
+                        (116,   'Forest'),
+                        (121,   'Forest'),
+                        (122,   'Forest'),
+                        (123,   'Forest'),
+                        (124,   'Forest'),
+                        (125,   'Forest'),
+                        (126,   'Forest'),
+                        (200,   'Water'),
+                        (255,   'None'),
+                    ])
+        new_val: dict, optional (default: None)
+            If you dont want to use the value of the first available old class
+            for the new class, you can set a LUT here that takes the new class
+            names as keys and assigns values. e.g. to select the correct
+            colors for plotting when you call .plot() for the reclassified
+            instance of the data set.
+            e.g {'Cropland': 40, 'None': 255, 'Forest': 122, 'Other': 50, 'SparseVeg': 20}
+
+        Returns
+        -------
+        ds : CglsLcImg
+            The new datasets with merged classes
+        """
+
+        legend = {}
+        new_val = {} if new_val is None else new_val
+
+        data = self[[var]]
+        for classname in np.array(list(lut.values())):
+            oldval = ccilc_lut(names=classname, orig_to_short=lut)
+            idx_y, idx_x = np.where(np.isin(data[var].values, oldval))
+            if (len(idx_y) > 0) and (len(idx_x) > 0):
+                if classname in new_val.keys():
+                    v = new_val[classname]
+                else:
+                    v = oldval[0]
+                d = data[var].values
+                d[idx_y, idx_x] = v
+                data[var].values = d
+                legend[v] = classname
+
+        data.attrs['lc_value'] = np.array(list(legend.keys()))
+        data.attrs['lc_meaning'] = np.array(list(legend.values()))
+
+        return CglsLcImg(data, attrs=data.attrs)
 
     def to_netcdf(self, *args, **kwargs):
         # Write current dataset to (compressed) netcdf file.
@@ -345,7 +436,7 @@ class CglsLcImg(xr.Dataset):
 
         super(CglsLcImg, self).to_netcdf(*args, encoding=encoding, **kwargs)
 
-    def plot(self, var='lc_2019', ax=None, **kwargs):
+    def plot(self, var='lc_2019', ax=None, legend=True, **kwargs):
         """
         Plot raster values using the CGLS LC color map using plt.imshow.
         Needs plotting libraries installed.
@@ -362,4 +453,64 @@ class CglsLcImg(xr.Dataset):
         im = ax.imshow(self[var], transform=data_crs, extent=self.extent,
                        cmap=lc_cmap, norm=norm, **kwargs)
 
+        if legend:
+            legend = dict(zip(self.attrs['lc_value'], self.attrs['lc_meaning']))
+            colors = [ im.cmap(im.norm(value)) for value in self.attrs['lc_value']]
+            # create a patch (proxy artist) for every color
+            patches = [ mpatches.Patch(color=colors[i], label=legend[v]
+                                       .format(l=v) ) for i, v in enumerate(legend.keys()) ]
+            # put those patched as legend-handles into the legend
+            plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0. )
+
+
         return im
+
+def example_usecase():
+    """
+    Read LC tiff image from data pool for a spatial subset, reclassify
+    it by combining similar classes, and resample it to 10 km in this case
+    (100 * 100 m). Finally stores the resampled, reclassified image as .nc
+    """
+    path_in = "/home/wpreimes/shares/radar/Datapool/CGLS/01_raw/LC/datasets/ProbaV_LC100_v3.0.1_global/epoch2019/" \
+              "PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
+    img = CglsLcImg.from_tiff(path_in, extent=[12.332089952, 16.5982636581,
+                                               -17.6250426905, -11.4678991358])
+
+    lut = OrderedDict([
+        (0,     'None'),
+        (20,    'SparseVeg'),
+        (30,    'SparseVeg'),
+        (40,    'Cropland'),
+        (50,    'Other'),
+        (60,    'SparseVeg'),
+        (70,    'Other'),
+        (80,    'Water'),
+        (90,    'Other'),
+        (100,   'Other'),
+        (111,   'Forest'),
+        (112,   'Forest'),
+        (113,   'Forest'),
+        (114,   'Forest'),
+        (115,   'Forest'),
+        (116,   'Forest'),
+        (121,   'Forest'),
+        (122,   'Forest'),
+        (123,   'Forest'),
+        (124,   'Forest'),
+        (125,   'Forest'),
+        (126,   'Forest'),
+        (200,   'Water'),
+        (255,   'None'),
+    ])
+
+    rc = img.reclassify(lut=lut,
+                        new_val={'Cropland': 40, 'None': 255, 'Forest': 122,
+                                 'Other': 50, 'SparseVeg': 20})
+    res = rc.spatial_resample(n=100)
+    res.plot(legend=True)
+    res.to_netcdf("/tmp/resamp_reclass_cgls_lc.nc")
+
+
+
+if __name__ == '__main__':
+    example_usecase()

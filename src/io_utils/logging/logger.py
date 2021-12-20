@@ -18,7 +18,8 @@ def setup(fname, level=logging.DEBUG, verbose=False):
         logger.addHandler(logging.StreamHandler(sys.stdout))
     logging.captureWarnings(True)
 
-    assert os.path.exists(fname)
+    if not os.path.exists(fname):
+        raise ValueError(f"Path does not exist: {fname}")
 
     return logger
 

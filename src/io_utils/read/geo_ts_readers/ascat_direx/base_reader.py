@@ -3,8 +3,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
 import os
 from io_utils.path_configs.ascat.paths_ascat_direx import path_settings
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class DirexTs(GriddedNcOrthoMultiTs):
+class DirexTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
     def __init__(self, ts_path, grid_path=None, **kwargs):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
@@ -31,5 +32,6 @@ class GeoDirexTs(DirexTs):
 
 
 if __name__ == '__main__':
-    ds = GeoDirexTs(('ASCAT', 'DIREX', 'v2', 'Senegal'))
+    ds = GeoDirexTs("/home/wpreimes/shares/radar/Projects/SMART-DRI/07_data/Senegal_ASCAT_DIREX_SWI_500m_v2.0/preprocessed/05_time_series/")
+    cs = ds.read_cell_file(29982)
     ts = ds.read(-14.416, 15.422).loc['2020-08-20':,:]

@@ -25,6 +25,8 @@ A_LEVEL2:
       deeper:
         deeper:
           bottom: None
+          # NOTE: this is e.g how the era5-land data reading works for multiple vars
+          !!python/tuple ['list', 'to', 'tuple']: {'num': 1}
           bottom_list:
             - 1
             - 2

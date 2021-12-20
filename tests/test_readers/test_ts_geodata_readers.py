@@ -74,7 +74,8 @@ def test_era5land_merged_reader(verbose=False):
 # no test data for this test in the repo
 def test_era5land_snow_reader(verbose=False):
     if verbose: print('Test reading ERA5Land, snow data from storage.')
-    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'snow'): ['snowc']}, ioclass_kws={'read_bulk': True},
+    reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'snow'): ['snowc']},
+                           ioclass_kws={'read_bulk': True},
                            scale_factors={'snowc': 1.})
     ts = reader.read(*test_loc)
     assert not ts.dropna(how='all').empty
@@ -214,14 +215,20 @@ def test_ascatssm_ts_reader(verbose=False):
     grid_path = os.path.join(root_path.r, 'Projects',
                         'H_SAF_CDOP3', '05_deliverables_products',
                         'auxiliary','warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
+
     reader = GeoHsafAscatSsmTs(dataset,
                                grid_path=grid_path,
                                parameters=['sm', 'proc_flag', 'conf_flag'],
                                exact_index=True,
+                               fn_format="H115_H116_{:04d}",
                                ioclass_kws={'read_bulk': True})
     ts = reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
+
+    cs = reader.read_cell_file(166)
+    if verbose: print(cs)
+    assert not cs.dropna(how='all').empty
 
 @pytest.mark.skipif(not pygenio_available,
                     reason="Pygenio is not installed.")
@@ -235,8 +242,6 @@ def test_ccigenio_ts_reader(verbose=False):
     ts = reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
-
-
 
 if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052

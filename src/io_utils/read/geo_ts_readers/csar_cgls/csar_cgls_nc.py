@@ -32,5 +32,10 @@ class GeoCglsNcTs(S1CglsTs):
 assert all([p in path_settings.keys() for p in GeoCglsNcTs._ds_implemented])
 
 if __name__ == '__main__':
-    ds = GeoCglsNcTs('/home/wpreimes/shares/home/code/io_utils/tests/00_testdata/read/cgls/CGLS_SWI_TS_synthetic_hawaii')
-    ts = ds.read(19.1222, 47.201232)
+    ds = S1CglsTs("/home/wpreimes/shares/radar/Projects/QA4SM_HR/07_data/SERVICE_DATA/CGLS_SCATSAR_SWI1km/CGLS_SCATSAR_SWI1km_V1_0/")
+
+    ds_new = GeoCglsNcTs('/home/wpreimes/shares/radar/Projects/QA4SM_HR/07_data/CGLS_TS_1_DEG/swi/')
+    ts_new = ds_new.read(2.5, 47.)
+
+    ds_old = GeoCglsNcTs('/home/wpreimes/shares/radar/Projects/QA4SM_HR/07_data/CGLS_TS_025_DEG/CGLS_SWI1km_V1.0_ts/')
+    ts_old = ds_old.read(2.5, 47.)
