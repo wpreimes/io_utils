@@ -34,7 +34,6 @@ class GeoHsafAscatSsmTs(base_reader.HSAFAscatSSMTs):
 
         super(GeoHsafAscatSsmTs, self).__init__(ts_path, **kwargs)
 
-
     def read(self, *args, **kwargs):
         ts = super(GeoHsafAscatSsmTs, self).read(*args, **kwargs)
         if self.parameters is not None:
