@@ -106,7 +106,7 @@ jobs:
       - name: Copy yml files into package
         shell: bash -l {0}
         run: |
-          cp .artifacts/env_py*.yml environments
+          cp .artifacts/Artifacts/env_py*.yml ./environments
       - name: commit and push new files to branch
         run: |
           git config --global user.name 'EnvBot 🤖'
