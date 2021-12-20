@@ -99,8 +99,8 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: $GITHUB_REF
+#        with:
+#          ref: $GITHUB_REF
       - name: Download all artifacts
         uses: actions/download-artifact@v2
         with:
