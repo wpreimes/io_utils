@@ -14,9 +14,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 from netCDF4 import num2date
 import pandas as pd
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class SMOSTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class SMOSTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
     _t0_vars = {'sec': 'UTC_Seconds', 'days': 'Days'}
     _t0_unit = 'days since 2000-01-01'

@@ -3,9 +3,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
 import os
 from io_utils.path_configs.ascat.paths_ascat_direx import path_settings
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class DirexTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class DirexTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
     def __init__(self, ts_path, grid_path=None, **kwargs):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")

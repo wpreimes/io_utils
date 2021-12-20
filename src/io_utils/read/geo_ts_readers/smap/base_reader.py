@@ -9,9 +9,9 @@ from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 from netCDF4 import num2date
 import pandas as pd
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class SMAPTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class SMAPTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
     _t0_var = 'tb_time_seconds'
     _t0_unit = 'seconds since 2000-01-01T12:00' # from tb_time_seconds long_name

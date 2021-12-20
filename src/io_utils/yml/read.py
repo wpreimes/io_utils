@@ -127,7 +127,7 @@ def read_settings(settings_file, groups=None):
     """
 
     with open(settings_file, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
+        cfg = yaml.load(ymlfile, Loader=yaml.Loader)
 
     for level, data in cfg.items():
         cfg[level] = read_level(data)

@@ -13,9 +13,9 @@ As in the gldas package (but we don't want to install the whole package)
 from pygeogrids.netcdf import load_grid
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class GLDASTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class GLDASTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
     def __init__(self, ts_path, grid_path=None, **kwargs):
         """
         Class for reading GLDAS time series after reshuffling.

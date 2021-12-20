@@ -8,9 +8,9 @@ import os
 import pygeogrids.netcdf as nc
 from cadati.jd_date import jd2dt
 from io_utils.utils import mjd2jd
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 
-class LPRMTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class LPRMTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
     _t0 = 'SCANTIME_MJD'
 

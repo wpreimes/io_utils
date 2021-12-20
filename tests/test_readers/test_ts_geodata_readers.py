@@ -215,17 +215,20 @@ def test_ascatssm_ts_reader(verbose=False):
     grid_path = os.path.join(root_path.r, 'Projects',
                         'H_SAF_CDOP3', '05_deliverables_products',
                         'auxiliary','warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
+
     reader = GeoHsafAscatSsmTs(dataset,
                                grid_path=grid_path,
                                parameters=['sm', 'proc_flag', 'conf_flag'],
                                exact_index=True,
+                               fn_format="H115_H116_{:04d}",
                                ioclass_kws={'read_bulk': True})
     ts = reader.read(*test_loc)
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
     cs = reader.read_cell_file(166)
-    assert not ts.dropna(how='all').empty
+    if verbose: print(cs)
+    assert not cs.dropna(how='all').empty
 
 @pytest.mark.skipif(not pygenio_available,
                     reason="Pygenio is not installed.")

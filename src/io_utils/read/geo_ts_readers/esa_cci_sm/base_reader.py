@@ -26,7 +26,7 @@ import xarray as xr
 from pygeogrids import CellGrid
 from smecv_grid import SMECV_Grid_v052
 
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
 from datetime import timedelta
 
 from cadati.jd_date import julian2date
@@ -180,7 +180,7 @@ class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
         return df
 
 
-class SmecvTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
     # The basic CCI/C3S TS netcdf reader, with some features
     # For the final product converted with the esa_cci_sm package.
 

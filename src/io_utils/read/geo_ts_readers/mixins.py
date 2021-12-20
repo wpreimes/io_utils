@@ -7,7 +7,8 @@ import netCDF4 as nc
 from pygeogrids.grids import CellGrid
 import xarray as xr
 
-class CellReaderMixin:
+class ContiguousRaggedTsCellReaderMixin:
+
     """
     Adds functionality to read whole cells. Can be added to time series
     readers that use the cell file structure of pynetcf.
@@ -35,7 +36,85 @@ class CellReaderMixin:
             A data frame holding all data for the cell.
         """
 
-        file_path = os.path.join(self.path, '{}.nc'.format("%04d" % (cell,)))
+        try:
+            fnformat = getattr(self, 'fn_format') + '.nc'
+        except AttributeError:
+            fnformat = "{:04d}.nc"
+
+        file_path = os.path.join(self.path, fnformat.format(cell))
+
+        with nc.Dataset(file_path) as ncfile:
+            loc_id = ncfile.variables['location_id'][:]
+            loc_id = loc_id[~loc_id.mask].data.flatten()
+            row_size = ncfile.variables['row_size'][:]
+            row_size = row_size[~row_size.mask].data
+
+            time = ncfile.variables['time'][:].data
+            unit_time = ncfile.variables['time'].units
+            variable = ncfile.variables[param][:].filled(np.nan)
+
+        cutoff_points = np.cumsum(row_size)
+        index = np.sort(np.unique(time))
+        times = np.split(time, cutoff_points)[:-1]
+        datas = np.split(variable, cutoff_points)[:-1]
+
+        assert len(times) == len(datas)
+
+        filled = np.full((len(datas), len(index)), fill_value=np.nan)
+        idx = np.array([np.isin(index, t) for t in times])
+        filled[idx] = variable
+
+        delta = lambda t: timedelta(t)
+        vfunc = np.vectorize(delta)
+        since = pd.Timestamp(unit_time.split('since ')[1])
+        index = since + vfunc(index)
+
+        filled = np.transpose(np.array(filled))
+
+        data = pd.DataFrame(index=index, data=filled, columns=loc_id)
+
+        if hasattr(self, 'clip_dates') and self.clip_dates:
+            if hasattr(self, '_clip_dates'):
+                data = self._clip_dates(data)
+            else:
+                warnings.warn("No method `_clip_dates` found.")
+
+        return data
+
+class OrthoMultiTsCellReaderMixin:
+    """
+    Adds functionality to read whole cells. Can be added to time series
+    readers that use the cell file structure of pynetcf.
+    """
+
+    path: str
+    grid: CellGrid
+
+    def read_cell_file(self, cell, param='sm'):
+        """
+        Reads a single variable for all points of a cell.
+
+        Parameters
+        ----------
+        cell: int
+            Cell number, will look for a file <cell>.nc that must exist.
+            The file must contain a variable `location_id` and `time`.
+            Time must have an attribute of form '<unit> since <refdate>'
+        param: str, optional (default: 'sm')
+            Variable to extract from files
+
+        Returns
+        -------
+        df: pd.DataFrame
+            A data frame holding all data for the cell.
+        """
+
+        try:
+            fnformat = getattr(self, 'fn_format') + '.nc'
+        except AttributeError:
+            fnformat = "{:04d}.nc"
+
+        file_path = os.path.join(self.path, fnformat.format(cell))
 
         with nc.Dataset(file_path) as ncfile:
             loc_id = ncfile.variables['location_id'][:]
@@ -88,8 +167,8 @@ class CellReaderMixin:
             return pd.DataFrame()
         else:
             axis = 0
-            if hasattr(self, 'exact_index') and self.exact_index:
-                axis = 1
+            # if hasattr(self, 'exact_index') and self.exact_index:
+            #     axis = 1
 
             return pd.concat(cell_data, axis=axis)
 
@@ -130,7 +209,12 @@ class CellReaderMixin:
             warnings.warn("Reading cell with exact index not yet supported. "
                           "Use read_cells()")
 
-        file_path = os.path.join(self.path, f'{cell:04}.nc')
+        try:
+            fnformat = getattr(self, 'fn_format') + '.nc'
+        except AttributeError:
+            fnformat = "{:04d}.nc"
+
+        file_path = os.path.join(self.path, fnformat.format(cell))
 
         params = np.atleast_1d(param)
 

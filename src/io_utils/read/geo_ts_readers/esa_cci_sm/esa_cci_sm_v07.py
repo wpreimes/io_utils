@@ -8,13 +8,15 @@ from smecv_grid.grid import SMECV_Grid_v052
 from io_utils.read.path_config import PathConfig
 import numpy as np
 from io_utils.read.geo_ts_readers.esa_cci_sm.base_reader import GriddedNcContiguousRaggedTsCompatible
+from io_utils.read.geo_ts_readers.mixins import ContiguousRaggedTsCellReaderMixin
 try:
     from io_utils.path_configs.esa_cci_sm.paths_esa_cci_sm_v07 import path_settings
 except ImportError:
     path_settings = {}
 
 # todo integrate exact index
-class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible):
+class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible,
+                             ContiguousRaggedTsCellReaderMixin):
     # Reader implementation that uses the PATH configuration from above
 
     # implememted subversion that have a set path configuration

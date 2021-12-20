@@ -4,9 +4,12 @@ from ascat.h_saf import AscatGriddedNcTs
 import os
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 from pygeogrids.netcdf import load_grid
-from io_utils.read.geo_ts_readers.mixins import CellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import (
+    ContiguousRaggedTsCellReaderMixin,
+    OrthoMultiTsCellReaderMixin,
+)
 
-class HSAFAscatSSMTs(AscatGriddedNcTs, CellReaderMixin):
+class HSAFAscatSSMTs(AscatGriddedNcTs, ContiguousRaggedTsCellReaderMixin):
 
     def __init__(self, ts_path, grid_path=None,
                  fn_format="H115_H116_{:04d}", **kwargs):
@@ -26,7 +29,7 @@ class HSAFAscatSSMTs(AscatGriddedNcTs, CellReaderMixin):
                                              **kwargs)
 
 
-class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs, CellReaderMixin):
+class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
     def __init__(self, ts_path, grid_path=None, **kwargs):
         """
