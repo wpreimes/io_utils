@@ -207,5 +207,5 @@ dependencies:
     - trollsift==0.3.5
     - xarray==0.18.2
     - zarr==2.10.3
-    - zipp==3.6.0
+    - zipp==3.7.0
     - zope-interface==5.4.0
