@@ -169,11 +169,11 @@ dependencies:
     - dask==2022.1.0
     - datetime==4.3
     - equi7grid==0.1.0
-    - fasteners==0.16.3
+    - fasteners==0.17.2
     - fsspec==2022.1.0
     - geographiclib==1.52
     - geopandas==0.10.2
-    - importlib-metadata==4.10.0
+    - importlib-metadata==4.10.1
     - iniconfig==1.1.1
     - ismn==1.2.0
     - iso3166==2.0.2
@@ -199,7 +199,7 @@ dependencies:
     - pyyaml==6.0
     - qa4sm-preprocessing==0.1.1
     - repurpose==0.8
-    - setuptools-scm==6.3.2
+    - setuptools-scm==6.4.0
     - smecv-grid==0.3
     - toml==0.10.2
     - tomli==2.0.0
