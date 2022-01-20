@@ -170,7 +170,7 @@ dependencies:
     - pyyaml==6.0
     - qa4sm-preprocessing==0.1.1.post1.dev1+gad4a310
     - repurpose==0.8
-    - setuptools-scm==6.4.1
+    - setuptools-scm==6.4.2
     - smecv-grid==0.3
     - toml==0.10.2
     - tomli==2.0.0
