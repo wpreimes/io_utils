@@ -31,7 +31,7 @@ dependencies:
   - font-ttf-inconsolata=2.001
   - font-ttf-source-code-pro=2.030
   - font-ttf-ubuntu=0.83
-  - fontconfig=2.13.1
+  - fontconfig=2.13.94
   - fonts-anaconda=1
   - fonts-conda-ecosystem=1
   - fonttools=4.25.0
@@ -164,12 +164,12 @@ dependencies:
     - configobj==5.0.6
     - configparser==5.2.0
     - country-bounding-boxes==0.2.3
-    - coverage==6.2
+    - coverage==6.3
     - cython==0.29.26
     - dask==2022.1.0
     - datetime==4.3
     - equi7grid==0.1.0
-    - fasteners==0.17.2
+    - fasteners==0.17.3
     - fsspec==2022.1.0
     - geographiclib==1.52
     - geopandas==0.10.2
