@@ -78,7 +78,7 @@ dependencies:
   - mkl_random=1.2.2
   - munch=2.5.0
   - munkres=1.1.4
-  - netcdf4=1.5.8
+  - netcdf4=1.5.7
   - numexpr=2.8.1
   - numpy=1.21.2
   - numpy-base=1.21.2
@@ -152,7 +152,7 @@ dependencies:
     - locket==0.2.1
     - lxml==4.7.1
     - more-itertools==8.12.0
-    - numba==0.55.0
+    - numba==0.55.1
     - numcodecs==0.9.1
     - parse==1.19.0
     - partd==1.2.0
