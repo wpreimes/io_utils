@@ -164,7 +164,7 @@ dependencies:
     - pynetcf==0.2.2
     - pyresample==1.22.3
     - pytesmo==0.13.3.post1.dev4+gead9b03
-    - pytest==6.2.5
+    - pytest==7.0.0
     - pytest-cov==3.0.0
     - pytileproj==0.0.16
     - pyyaml==6.0
@@ -172,11 +172,10 @@ dependencies:
     - repurpose==0.8
     - setuptools-scm==6.4.2
     - smecv-grid==0.3
-    - toml==0.10.2
     - tomli==2.0.0
     - toolz==0.11.2
     - tqdm==4.62.3
-    - trollsift==0.3.5
+    - trollsift==0.4.0
     - xarray==0.18.2
     - zarr==2.10.3
     - zipp==3.7.0
