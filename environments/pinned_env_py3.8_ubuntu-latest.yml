@@ -110,7 +110,7 @@ dependencies:
   - ncurses=6.3
   - netcdf4=1.5.7
   - nspr=4.33
-  - nss=3.69
+  - nss=3.74
   - numexpr=2.8.1
   - numpy=1.21.2
   - numpy-base=1.21.2
@@ -145,7 +145,7 @@ dependencies:
   - setuptools=58.0.4
   - shapely=1.8.0
   - six=1.16.0
-  - sqlite=3.37.0
+  - sqlite=3.37.2
   - tiledb=2.3.4
   - tk=8.6.11
   - tornado=6.1
@@ -206,6 +206,6 @@ dependencies:
     - tqdm==4.62.3
     - trollsift==0.4.0
     - xarray==0.18.2
-    - zarr==2.10.3
+    - zarr==2.11.0
     - zipp==3.7.0
     - zope-interface==5.4.0
