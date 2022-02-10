@@ -25,7 +25,7 @@ dependencies:
   - curl=7.80.0
   - cycler=0.11.0
   - dbus=1.13.18
-  - expat=2.4.1
+  - expat=2.4.4
   - fiona=1.8.20
   - font-ttf-dejavu-sans-mono=2.37
   - font-ttf-inconsolata=2.001
@@ -124,7 +124,7 @@ dependencies:
   - pip=21.2.4
   - pixman=0.40.0
   - poppler=21.09.0
-  - poppler-data=0.4.10
+  - poppler-data=0.4.11
   - postgresql=13.3
   - proj=8.0.1
   - pyparsing=3.0.4

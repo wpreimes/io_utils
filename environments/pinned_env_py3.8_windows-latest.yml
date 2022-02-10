@@ -21,7 +21,7 @@ dependencies:
   - cligj=0.7.2
   - curl=7.80.0
   - cycler=0.11.0
-  - expat=2.4.1
+  - expat=2.4.4
   - fiona=1.8.20
   - font-ttf-dejavu-sans-mono=2.37
   - font-ttf-inconsolata=2.001
