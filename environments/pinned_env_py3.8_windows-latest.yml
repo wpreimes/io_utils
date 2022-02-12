@@ -137,8 +137,8 @@ dependencies:
     - country-bounding-boxes==0.2.3
     - coverage==6.3.1
     - cython==0.29.27
-    - dask==2022.1.1
-    - datetime==4.3
+    - dask==2022.2.0
+    - datetime==4.4
     - equi7grid==0.1.0
     - fasteners==0.17.3
     - fsspec==2022.1.0
@@ -164,7 +164,7 @@ dependencies:
     - pynetcf==0.2.2
     - pyresample==1.22.3
     - pytesmo==0.13.3.post1.dev4+gead9b03
-    - pytest==7.0.0
+    - pytest==7.0.1
     - pytest-cov==3.0.0
     - pytileproj==0.0.16
     - pyyaml==6.0
