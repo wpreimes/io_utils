@@ -37,6 +37,7 @@ from datetime import timedelta
 from cadati.jd_date import julian2date
 import pytz
 from datetime import datetime
+from smecv_grid.grid import SMECV_Grid_v052
 
 class PygenioNotFoundError(ModuleNotFoundError):
     def __init__(self, msg=None):
