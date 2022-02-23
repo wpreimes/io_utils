@@ -100,8 +100,8 @@ dependencies:
   - libzip=1.8.0
   - llvm-openmp=12.0.1
   - lz4-c=1.9.3
-  - matplotlib=3.5.0
-  - matplotlib-base=3.5.0
+  - matplotlib=3.5.1
+  - matplotlib-base=3.5.1
   - munch=2.5.0
   - munkres=1.1.4
   - mysql-common=8.0.25
@@ -169,7 +169,7 @@ dependencies:
     - datetime==4.4
     - equi7grid==0.1.0
     - fasteners==0.17.3
-    - fsspec==2022.1.0
+    - fsspec==2022.2.0
     - geographiclib==1.52
     - geopandas==0.10.2
     - importlib-metadata==4.11.1
