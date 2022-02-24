@@ -64,6 +64,7 @@ dependencies:
   - libspatialite=5.0.1
   - libssh2=1.9.0
   - libtiff=4.3.0
+  - libwebp=1.2.2
   - libwebp-base=1.2.2
   - libxml2=2.9.12
   - libzip=1.8.0
@@ -87,7 +88,7 @@ dependencies:
   - packaging=21.3
   - pandas=1.4.1
   - pcre=8.45
-  - pillow=8.3.1
+  - pillow=8.4.0
   - pip=21.2.2
   - pixman=0.40.0
   - poppler=21.11.0
