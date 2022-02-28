@@ -144,7 +144,7 @@ dependencies:
     - fsspec==2022.2.0
     - geographiclib==1.52
     - geopandas==0.10.2
-    - importlib-metadata==4.11.1
+    - importlib-metadata==4.11.2
     - iniconfig==1.1.1
     - ismn==1.2.0
     - iso3166==2.0.2
