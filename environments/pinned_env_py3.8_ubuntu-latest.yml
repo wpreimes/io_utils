@@ -13,13 +13,13 @@ dependencies:
   - brotli=1.0.9
   - bzip2=1.0.8
   - c-ares=1.18.1
-  - ca-certificates=2021.10.26
+  - ca-certificates=2022.2.1
   - cairo=1.16.0
   - cartopy=0.20.0
   - certifi=2021.10.8
   - cfitsio=3.470
   - cftime=1.5.1.1
-  - click=8.0.3
+  - click=8.0.4
   - click-plugins=1.1.1
   - cligj=0.7.2
   - curl=7.80.0
@@ -157,7 +157,7 @@ dependencies:
   - zlib=1.2.11
   - zstd=1.5.0
   - pip:
-    - ascat==2.0.3
+    - ascat==2.0.4
     - asciitree==0.3.3
     - cadati==0.0.2
     - cloudpickle==2.0.0
