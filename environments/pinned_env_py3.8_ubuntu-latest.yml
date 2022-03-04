@@ -114,13 +114,12 @@ dependencies:
   - numexpr=2.8.1
   - numpy=1.21.2
   - numpy-base=1.21.2
-  - olefile=0.46
   - openjpeg=2.4.0
   - openssl=1.1.1m
   - packaging=21.3
   - pandas=1.4.1
   - pcre=8.45
-  - pillow=8.4.0
+  - pillow=9.0.1
   - pip=21.2.4
   - pixman=0.40.0
   - poppler=21.09.0
