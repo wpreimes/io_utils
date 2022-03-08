@@ -176,6 +176,6 @@ dependencies:
     - tqdm==4.63.0
     - trollsift==0.4.0
     - xarray==0.18.2
-    - zarr==2.11.0
+    - zarr==2.11.1
     - zipp==3.7.0
     - zope-interface==5.4.0
