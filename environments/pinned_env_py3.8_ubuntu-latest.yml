@@ -172,7 +172,7 @@ dependencies:
     - fsspec==2022.2.0
     - geographiclib==1.52
     - geopandas==0.10.2
-    - importlib-metadata==4.11.2
+    - importlib-metadata==4.11.3
     - iniconfig==1.1.1
     - ismn==1.2.0
     - iso3166==2.0.2
@@ -192,7 +192,7 @@ dependencies:
     - pynetcf==0.2.2
     - pyresample==1.22.3
     - pytesmo==0.13.3.post1.dev4+gead9b03
-    - pytest==7.0.1
+    - pytest==7.1.0
     - pytest-cov==3.0.0
     - pytileproj==0.0.16
     - pyyaml==6.0
