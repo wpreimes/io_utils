@@ -84,7 +84,7 @@ dependencies:
   - numpy=1.21.5
   - numpy-base=1.21.5
   - openjpeg=2.4.0
-  - openssl=1.1.1m
+  - openssl=1.1.1n
   - packaging=21.3
   - pandas=1.4.1
   - pcre=8.45
