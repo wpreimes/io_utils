@@ -64,6 +64,7 @@ class GeoC3STs(SmecvTs):
         return self._add_time(self._replace_with_nan(
             super(GeoC3STs, self).read(*args, **kwargs)))
 
+
 if __name__ == '__main__':
     # ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
     # ds.read(15,45)
