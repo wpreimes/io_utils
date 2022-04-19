@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: ['3.8']
         os: ["ubuntu-latest", "windows-latest"]
-        env: ["latest.yml"]
+        env: ["environments/latest.yml"]
 
     steps:
       - name: Checkout repository
