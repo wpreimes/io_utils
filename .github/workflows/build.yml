@@ -21,7 +21,7 @@ jobs:
       matrix:
         python-version: ['3.8']
         os: ["ubuntu-latest", "windows-latest"]
-        env: ["environments/latest.yml"]
+        ymlfile: ["latest.yml"]
 
     steps:
       - name: Checkout repository
@@ -45,7 +45,7 @@ jobs:
         run: |
           conda list
           conda info --env
-          mamba env update -f ${{ matrix.ymlfile }}
+          mamba env update -f environments/${{ matrix.ymlfile }}
       - name: Print environment infos
         shell: bash -l {0}
         run: |
