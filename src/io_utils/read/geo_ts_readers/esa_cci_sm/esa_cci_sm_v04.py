@@ -77,6 +77,3 @@ class GeoCCISMv4Ts(SmecvTs):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv4Ts._ds_implemented)
 
-if __name__ == '__main__':
-    ds = GeoCCISMv4Ts(r"R:\Projects\CCIplus_Soil_Moisture\07_data\ESA_CCI_SM_v06.1\064_break_correction\combined\ESA_CCI_SM_v061_COMBINED_ADJUSTED_QCM")
-    ts47 = ds.read(26.68595, 67.35922)

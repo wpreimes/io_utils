@@ -29,9 +29,3 @@ class GeoDirexTs(DirexTs):
         path = self.path_config.load_path(force_path_group=force_path_group)
 
         super().__init__(path, **kwargs)
-
-
-if __name__ == '__main__':
-    ds = GeoDirexTs("/home/wpreimes/shares/radar/Projects/SMART-DRI/07_data/Senegal_ASCAT_DIREX_SWI_500m_v2.0/preprocessed/05_time_series/")
-    cs = ds.read_cell_file(29982)
-    ts = ds.read(-14.416, 15.422).loc['2020-08-20':,:]

@@ -258,12 +258,3 @@ def ddek(index):
     """
     func = np.vectorize(dekad_startdate_from_date)
     return func(index.to_pydatetime())
-
-if __name__ == '__main__':
-
-
-
-    import matplotlib.pyplot as plt
-    ds = pd.DataFrame(index=pd.date_range(start='2000-01-01', end='2010-12-31', freq='D'),
-                   data={'data': range(4018), 'flag': np.full(4018, 1)})
-    fil = filter_months(ds, months=[12,1,2])

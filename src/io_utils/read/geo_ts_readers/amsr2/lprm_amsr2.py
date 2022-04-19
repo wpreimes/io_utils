@@ -33,9 +33,3 @@ class GeoAmsr2LPRMv6Ts(LPRMTs):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoAmsr2LPRMv6Ts._ds_implemented)
-
-if __name__ == '__main__':
-    ds = GeoAmsr2LPRMv6Ts(('AMSR2', 'LPRM', 'v6', 'ASC'),
-                          exact_index=True,
-                         ioclass_kws={'read_bulk': True})
-    ts = ds.read(15,45)

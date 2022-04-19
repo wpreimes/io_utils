@@ -43,7 +43,4 @@ class GeoCCISMv5Ts(SmecvTs):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCCISMv5Ts._ds_implemented)
 
-if __name__ == '__main__':
-    ds = GeoCCISMv5Ts(('ESA_CCI_SM', 'v052', 'COMBINED'), exact_index=True)
-    ts52 = ds.read(45, 15)
 

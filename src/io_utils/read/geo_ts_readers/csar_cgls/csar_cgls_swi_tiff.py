@@ -28,8 +28,3 @@ class GeoCSarSwiTiffReader(CSarTiffReader):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCSarSwiTiffReader._ds_implemented)
-
-if __name__ == '__main__':
-    ds = GeoCSarSwiTiffReader(('CSAR', 'CGLS', 'SWI', '1km', 'V1.0', 'geotiff'))
-    ts = ds.read(15.,45)
-    print(ts.loc['2010-08-17':'2020-08-30'])

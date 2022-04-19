@@ -35,10 +35,3 @@ class GeoEraIntGBG4Ts(ERATs):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoEraIntGBG4Ts._ds_implemented)
-
-if __name__ == '__main__':
-    reader = GeoEraIntGBG4Ts(dataset_or_path=('ERAINT-Land', 'GBG4', 'core'),
-                           resample='D', ioclass_kws={'read_bulk': True},
-                           parameters=['39'], scale_factors={'39': 100.})
-    ts = reader.read(15,48)
-    print(ts)

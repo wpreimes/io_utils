@@ -25,16 +25,3 @@ class GeoScatSarCglsSwiReader(ScatSarCglsSwiReader):
 
         super(GeoScatSarCglsSwiReader, self).__init__(path, grid_sampling=grid_sampling,
                                                       tval=tval)
-
-
-if __name__ == '__main__':
-    import pandas as pd
-    import os
-
-    ds = GeoScatSarCglsSwiReader(r"C:\Temp\scatsar\C0418")
-    ts = ds.read(4.3, 46.3)# type: pd.DataFrame
-    print(ts.dropna())
-    #ts.to_csv(os.path.join(r'C:\Temp\laura', 'abs_cgls.csv'))
-    #print(ts.index)
-    #print(ts['1'])
-    #ts = pd.read_csv(r'C:\Temp\scatsarts.csv', index_col=0, parse_dates=True)

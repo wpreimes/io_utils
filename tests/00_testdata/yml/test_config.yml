@@ -19,6 +19,9 @@ A_LEVEL2:
     sublev_c<IMPORT>: [numpy.ma, unique]
     sublev_pandas<IMPORT>: [pandas, DataFrame, mean]
     sublev_d: {'d': 1, 'func<IMPORT>': [numpy.ma, unique]}
+    sublev_import:
+      func1<IMPORT>: [numpy.ma, unique]
+      func2: !!python/name:numpy.ma.unique
     adapt: {'one': {'test': {'func<IMPORT>': [numpy.ma, unique]}},
             'two': 2, 'three': 3}
     deeper:

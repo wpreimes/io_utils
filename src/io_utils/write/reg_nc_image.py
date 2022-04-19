@@ -786,8 +786,3 @@ class ReadNcImg(object):
             df = df_filtered
 
         return df
-
-if __name__ == '__main__':
-    infile = r"\\?\C:\Temp\nc_compress\test1_with_test2.nc"
-    ds = ReadNcImg(filepath=infile)
-    ds.read(time=None, vars='n_obs')

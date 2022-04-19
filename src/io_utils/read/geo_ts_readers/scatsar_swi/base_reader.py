@@ -140,19 +140,3 @@ class ScatSarSWIDrypanReader(object):
             df *= -1
 
         return df
-
-if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers.scatsar_swi.scatsar_swi_drypan import \
-        SCATSARSWIDrypanAnomsFilename, SCATSARSWIDrypanAbsFilename
-
-    name = "SCATSAR_SWI_anomalies"
-
-    if name == 'SCATSAR_reprojected':
-        smart_filename_class = SCATSARSWIDrypanAbsFilename
-    else:
-        smart_filename_class = SCATSARSWIDrypanAnomsFilename
-
-    path = r"R:\Projects\DryPan\07_data\{}".format(name)
-    reader = ScatSarSWIDrypanReader(path, smart_filename_class=smart_filename_class)
-    lon, lat = 19.1222, 47.201232
-    ts = reader.read(lon, lat)

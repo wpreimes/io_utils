@@ -333,9 +333,3 @@ class NcScatteredStack(object):
 
         kwargs = {self.z_name: z}
         self._write_pt(data, **kwargs)
-
-
-if __name__ == '__main__':
-    filepath = r'C:\Temp\cube.nc'
-    z = pd.date_range('2000-01-01', '2000-01-10', freq='D')
-    NcScatteredStack(filepath, z_name='time', z=z)
