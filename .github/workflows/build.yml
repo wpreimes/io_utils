@@ -24,18 +24,18 @@ jobs:
         env: ["latest.yml"]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
           submodules: true
           fetch-depth: 0
-      - uses: conda-incubator/setup-miniconda@v2.0.1
+      - name: Setup conda environment with mamba
+        uses: mamba-org/provision-with-micromamba@v11
         with:
-          miniconda-version: "latest"
-          auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
           environment-file: environments/${{ matrix.env }}
-          activate-environment: io_utils
-          auto-activate-base: false
+          environment-name: io_utils
+          extra-specs: |
+            python=${{ matrix.python-version }}
       - name: Print environment infos
         shell: bash -l {0}
         run: |
