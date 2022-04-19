@@ -12,7 +12,7 @@ dependencies:
   - matplotlib
   - cartopy>=0.20
   - cftime>=1.1.2
-  - gdal
+  - geopandas
   - shapely
   - fiona
   - pyproj
