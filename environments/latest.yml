@@ -12,14 +12,13 @@ dependencies:
   - matplotlib
   - cartopy>=0.20
   - cftime>=1.1.2
-  - gdal<=3.4.1
+  - geopandas
   - shapely
   - fiona
   - pyproj
   - pip
   - pip:
       - setuptools_scm
-      - geopandas
       - datetime
       - pyyaml
       - xarray
