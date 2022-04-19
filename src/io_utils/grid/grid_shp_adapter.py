@@ -4,7 +4,7 @@ from collections import OrderedDict
 try:
     import ogr
     import osr
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     from osgeo import ogr, osr
 import os
 import numpy as np
