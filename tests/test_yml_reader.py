@@ -35,6 +35,8 @@ def test_read_yml():
     assert(LEVEL1.A_FUNCTION == np.ma.unique)
     assert(LEVEL1.A_MODULE == np.ma)
 
+    assert A_LEVEL2.sublev['sublev_import']['func1'] == A_LEVEL2.sublev['sublev_import']['func2']
+
     if 'win' in sys.platform:
         assert(LEVEL1.PATH == r'C:\Users')
         assert LEVEL1.OS_VAR == 'windows'
