@@ -30,7 +30,4 @@ class GeoCSarSsmTiffReader(CSarTiffReader):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoCSarSsmTiffReader._ds_implemented)
 
-if __name__ == '__main__':
-    ds = GeoCSarSsmNcReader(('CSAR', 'CGLS', 'SSM', '1km', 'V1.1'))
-    ts = ds.read(19.1222, 47.201232)
 

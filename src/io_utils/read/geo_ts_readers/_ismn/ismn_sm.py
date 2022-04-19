@@ -164,19 +164,4 @@ class GeoISMNTs(ISMN_Interface):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoISMNTs._ds_implemented)
 
-if __name__ == '__main__':
-    networks = ['AMMA-CATCH', 'CARBOAFRICA', 'DAHRA', 'CTP_SMTMN',
-                'MySMNet', 'OZNET', 'BIEBRZA_S-1', 'FMI', 'FR_Aqui',
-                'HOBE', 'REMEDHUS', 'RSMN', 'SMOSMANIA', 'TERENO',
-                'WEGENERNET', 'WSMN', 'BNZ-LTER', 'COSMOS',
-                'FLUXNET-AMERIFLUX', 'iRON', 'PBO_H2O', 'RISMA',
-                'SCAN', 'USCRN', 'LAB-net']
-
-    reader = GeoISMNTs(('ISMN', 'v20210131'),
-                       network=['SCAN'], scale_factors=None)
-    import numpy as np
-    data, nearest_station, distance = reader.read_nearest_station(
-        15, 45, variable='soil_moisture', max_dist=np.inf, return_distance=True)
-    ids = reader.get_dataset_ids('soil_moisture', 0, 0.1)
-
 

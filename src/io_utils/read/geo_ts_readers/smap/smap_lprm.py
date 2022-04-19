@@ -28,9 +28,3 @@ class GeoSMAPLPRMv6Ts(LPRMTs):
 
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoSMAPLPRMv6Ts._ds_implemented)
-
-if __name__ == '__main__':
-    ds = GeoSMAPLPRMv6Ts(r"\\project10\data-read\USERS\wpreimes\LPRM\v61\SMAP_S3_VEGC\timeseries\d",
-                          exact_index=True,
-                          ioclass_kws={'read_bulk': True})
-    ts = ds.read(15,45)

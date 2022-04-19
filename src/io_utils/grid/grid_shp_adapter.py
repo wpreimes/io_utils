@@ -173,15 +173,3 @@ class CountryShpReader(object):
             names = np.append(names, n)
 
         return names
-    
-if __name__ == '__main__':
-
-    country = 'Morocco'
-    from smos.grid import EASE25CellGrid
-    #from smecv_grid.grid import SMECV_Grid_v052
-    grid = EASE25CellGrid()
-    from pygeogrids.netcdf import save_grid
-    adapter = GridShpAdapter(grid)
-    grid = adapter.create_subgrid([country])
-    save_grid(r"R:\Projects\SMART-DRI\07_data\sm_country_data\SMOS-IC\ease25grid_{country}.nc".format(country=country),
-              grid=grid)

@@ -110,24 +110,3 @@ class GeoScatSarSWIDrypanAbsReader(ScatSarSWIDrypanReader):
         ts_point = super(GeoScatSarSWIDrypanAbsReader, self).read(*args, **kwargs)
         ts_point.values[ts_point.values >= 127] = np.nan
         return ts_point
-
-if __name__ == '__main__':
-
-    for anoms in [True, False]:
-        if anoms:
-            Reader = GeoScatSarSWIDrypanAnomsReader
-            dataset = ['SCATSAR', 'SWI', 'Drypan', 'Anoms']
-        else:
-            Reader = GeoScatSarSWIDrypanAbsReader
-            dataset = ['SCATSAR', 'SWI', 'Drypan', 'Abs']
-
-        #root_path = os.path.join(rsroot.r, "Projects", "DryPan", "07_data", name)
-        lon, lat = 19.1222, 47.201232
-        ds = Reader(dataset)
-
-        # single point time series reading
-        ts_point = ds.read(lon, lat)
-        print('DONE! (', datetime.now(), ')')
-        print(ts_point)
-        #äts_point.plot(grid=True, rot=90)
-        #print(ts_point.dropna())

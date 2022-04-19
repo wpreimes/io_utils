@@ -65,10 +65,3 @@ class GeoC3STs(SmecvTs):
             super(GeoC3STs, self).read(*args, **kwargs)))
 
 
-if __name__ == '__main__':
-    # ds = C3STs(r"R:\Datapool_processed\C3S\v201706\TCDR\063_images_to_ts\combined-daily")
-    # ds.read(15,45)
-    ds_new = GeoC3STs("/home/wpreimes/shares/radar/Datapool/C3S/02_processed/v201912/TCDR/063_images_to_ts/combined-daily",
-                      exact_index=True)
-    ts_new = ds_new.read(659123)
-

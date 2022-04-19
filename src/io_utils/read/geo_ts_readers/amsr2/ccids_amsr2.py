@@ -69,10 +69,3 @@ class GeoCCIDsAmsr2Ts(CCIDs):
     # check if datasets in reader and in dict match
 
 assert sorted(list(path_settings.keys())) == sorted(GeoCCIDsAmsr2Ts._ds_implemented)
-
-if __name__ == '__main__':
-    ds = GeoCCIDsAmsr2Ts(('CCIDs', 'v052', 'AMSR2', 'DES'),
-                         exact_index=True,
-                         parameters=['sm', 'flag', 'freqband'],
-                         ioclass_kws={'read_bulk': True})
-    ts = ds.read(0,20)

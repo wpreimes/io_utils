@@ -266,14 +266,4 @@ class NcVarCombPlotter(object):
         return df[name], f, imax
 
 
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    import xarray as xr
-    import cartopy.crs as ccrs
-    from plot_maps import map_add_cbar
-    file = "/home/wpreimes/shares/radar/Projects/C3S_312b/07_data/v202012_ICDR/060_daily_images_fixed/combined/2021/C3S-SOILMOISTURE-L3S-SSMV-COMBINED-DAILY-20210505000000-ICDR-v202012.0.0.nc"
-
-    f = NcVarPlotter(file, out_dir='/home/wpreimes/Temp/c3s_issue/')
-    f.plot_variable('flag', cbrange=(0,1000))
-
 

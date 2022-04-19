@@ -106,15 +106,3 @@ class CSarTiffReader(object):
 
         return decode(df).rename(columns={'1': self.param_rename})
 
-
-# class CSarNcTsReader():
-#     def __init__(self, path):
-
-if __name__ == '__main__':
-    path = r"C:\Temp\delete_me\geotiff\in"
-    str(datetime.now())
-    reader = CSarTiffReader(path)
-    lon, lat = 15.7,47
-    str(datetime.now())
-    ts = reader.read(lon, lat)
-    print(ts)

@@ -288,22 +288,3 @@ class ScatterImage(Dataset):
                 self.write_var(name, data=dat, dim=self.obs_dim)
             else:
                 self.append_var(name, dat)
-
-
-
-
-if __name__ == '__main__':
-    filepath = r'C:\Temp\myfile.nc'
-
-    ds = ScatterImage(filepath, mode='w')
-    data = {'var1': np.array([1.123,2.213,33.2, 33.4])}
-    lon = np.array([18,19, 20, 20])
-    lat = np.array([48,49, 50, 50])
-    ds.write_points(data=data, lon=lon, lat=lat, time=datetime(2000,1,1))
-    ds.close()
-
-    ds = ScatterImage(filepath)
-    data =ds.read_img(None)
-    data = ds.read_img(19, 49)
-    data = ds.read_img([1,2])
-    data = ds.read_img([18,19],[48,49])
