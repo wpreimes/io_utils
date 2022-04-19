@@ -9,7 +9,7 @@ dependencies:
   - pandas
   - netCDF4
   - matplotlib
-  - cartopy>=0.20
+  - cartopy
   - cftime>=1.1.2
   - gdal
   - shapely
