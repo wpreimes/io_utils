@@ -34,6 +34,8 @@ jobs:
         with:
           miniconda-version: "latest"
           auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
           python-version: ${{ matrix.python-version }}
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
