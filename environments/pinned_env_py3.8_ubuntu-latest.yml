@@ -91,7 +91,7 @@ dependencies:
   - openjpeg=2.4.0
   - openssl=1.1.1n
   - packaging=21.3
-  - pandas=1.4.1
+  - pandas=1.4.2
   - pcre=8.45
   - pillow=9.0.1
   - pip=22.0.4
