@@ -72,11 +72,15 @@ def read_level(data: dict):
             elif any([f"<{p.upper()}>" in k for p in not_current_platform]):
                 continue
 
+            # replace elements
+            if isinstance(v, str) and (v in _replace_str_lut.keys()):
+                v = _replace_str_lut[v]
+
             # handle other tags
-            if '<PATH>' in k:
+            if ('<PATH>' in k) and (k is not None):
                 k = k.replace('<PATH>', '')
                 v = os.path.join(*v)
-            if '<IMPORT>' in k:
+            if ('<IMPORT>' in k ) and (k is not None):
                 k = k.replace('<IMPORT>', '')
                 # Modules are strings.separated.by.dots:
                 if isinstance(v, str):
@@ -96,10 +100,6 @@ def read_level(data: dict):
                         "['module.string', 'function_name'] to import a "
                         "class/function from a module "
                         "(e.g. ['np.ma', 'masked_array'] )")
-
-            # replace elements
-            if isinstance(v, str) and (v in _replace_str_lut.keys()):
-                v = _replace_str_lut[v]
 
             new_data[k] = v
 

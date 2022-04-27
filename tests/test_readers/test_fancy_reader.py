@@ -9,6 +9,7 @@ from io_utils.read.geo_ts_readers import (
     GeoHsafAscatSsmTs,
     GeoEra5LandTs,
     GeoCglsNcTs,
+    GeoSpl3smpTs,
 )
 import numpy as np
 from datetime import datetime
@@ -18,6 +19,65 @@ import pandas as pd
 
 test_loc = (15, 45)
 
+@pytest.mark.geo_test_data
+def test_smap_sat_data():
+    """
+    Read ESA CCI SM 45 data, mask based on goodl-flags soil and create
+    sm anomalies based on 1991-2010 clim.
+    """
+    """
+    Read SMAP data, mask based on good-flags and create
+    sm anomalies based on clim.
+    """
+
+    reader_kwargs = {
+        "dataset_or_path": ('SMAP', 'SP3SMPv6', 'ASC'),
+        "force_path_group": "radar",
+        'parameters': ['surface_temperature', 'retrieval_qual_flag', 'soil_moisture'],
+        'exact_index': True,
+        "ioclass_kws": {"read_bulk": True},
+    }
+
+    adapters = {
+        "01-SelfMaskingAdapter":
+            # Usually one would read SMAP values where retrieval flag is 0 or 8
+            # (no bit active, or only the freeze thaw bit active)
+            {"op": np.isin, "threshold": [0,1,8], "column_name": "retrieval_qual_flag"},
+        "02-SelfMaskingAdapter":
+            {"op": ">=", "threshold": 273, "column_name": "surface_temperature"},
+        "03-AnomalyClimAdapter":
+            {
+                "columns": ["soil_moisture"],
+                "wraparound": True,
+                "timespan": ["1900-01-01", "2099-12-31"],
+            },
+    }
+
+    resample = None
+    params_rename = {"sm": "smap_sm"}
+
+    fancyreader = GeoTsReader(
+        GeoSpl3smpTs,
+        reader_kwargs,
+        adapters=adapters,
+        resample=resample,
+        filter_months=None,
+        params_rename=params_rename,
+    )
+
+    assert list(fancyreader.adapters.keys()) == \
+           ['01-SelfMaskingAdapter', '02-SelfMaskingAdapter', '03-AnomalyClimAdapter']
+
+    ts = fancyreader.read(*test_loc)
+
+    ts = ts.dropna(how="all")
+    for c in ['surface_temperature', 'retrieval_qual_flag', 'soil_moisture']:
+        assert c in ts.columns
+
+    assert np.all(np.isin(ts["retrieval_qual_flag"].dropna().values, [0,1,8]))
+    assert np.all(ts["surface_temperature"].dropna().values >= 273)
+    assert not ts["soil_moisture"].dropna().empty
+    assert not ts.empty
 
 @pytest.mark.geo_test_data
 def test_ascat_sat_data():
@@ -43,6 +103,7 @@ def test_ascat_sat_data():
         "dataset_or_path": ("HSAF_ASCAT", "SSM", "H115+H116"),
         "force_path_group": "radar",
         "grid_path": grid_path,
+        'fn_format': 'H115_H116_{:04d}',
         "parameters": ["sm", "proc_flag", "conf_flag"],
         "ioclass_kws": {"read_bulk": True},
     }
