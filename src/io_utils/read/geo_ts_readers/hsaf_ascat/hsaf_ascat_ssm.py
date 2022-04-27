@@ -32,10 +32,10 @@ class GeoHsafAscatSsmTs(base_reader.HSAFAscatSSMTs):
         self.path_config = PathConfig(self.dataset, path_config)
         ts_path = self.path_config.load_path(force_path_group=force_path_group)
 
-        super(GeoHsafAscatSsmTs, self).__init__(ts_path, **kwargs)
+        super().__init__(ts_path, **kwargs)
 
     def read(self, *args, **kwargs):
-        ts = super(GeoHsafAscatSsmTs, self).read(*args, **kwargs)
+        ts = super().read(*args, **kwargs)
         if self.parameters is not None:
             ts = ts[self.parameters]
 
@@ -48,5 +48,5 @@ assert sorted(list(path_settings.keys())) == sorted(GeoHsafAscatSsmTs._ds_implem
 if __name__ == '__main__':
     ds = GeoHsafAscatSsmTs(('HSAF_ASCAT', 'SSM', 'H115+H116'),
             grid_path="/home/wpreimes/shares/radar/projects/H_SAF_CDOP3/05_deliverables_products/auxiliary/warp5_grid/TUW_WARP5_grid_info_2_3.nc")
-    ts = ds.read(-14,14)
+    ts = ds.read(	-100.650 , 40)
     print(ts)

@@ -11,7 +11,8 @@ import numpy as np
 from io_utils.utils import filter_months, ddek
 import warnings
 from collections.abc import Iterable
-import io_utils.read.geo_ts_readers.adapters as adapters
+import io_utils.read.geo_ts_readers.adapters as _geoadapters
+
 
 def load_settings(setts_file):
     s = open(setts_file, 'r').read()
@@ -120,16 +121,19 @@ class GeoTsReader(object):
 
     def _adapt(self, reader):
         """ Apply adapters to reader, e.g. anomaly adapter, mask adapter, ... """
-        reader = adapters.BasicAdapter(reader, read_name=self.read_func_name)
+        reader = _geoadapters.BasicAdapter(reader, read_name=self.read_func_name)
         if self.adapters is not None:
             id = -1
             for adapter_name, adapter_kwargs in self.adapters.items():
-                assert '-' in adapter_name, "Adapter must be of form 'id-AdapterName'"
+                if '-' not in adapter_name:
+                    raise ValueError("Adapter must be of form 'id-AdapterName'")
                 i, adapter_name = adapter_name.split('-')
                 i = int(i)
-                assert i > id, "Wrong order of passed adapters"
+                if not i > id:
+                    raise ValueError("Wrong order of passed adapters")
+
                 id = i
-                Adapter = getattr(adapters, adapter_name)
+                Adapter = getattr(_geoadapters, adapter_name)
                 reader = Adapter(reader, read_name=self.read_func_name,
                                  **adapter_kwargs)
 
@@ -238,4 +242,3 @@ class GeoTsReader(object):
 
         data = pd.concat(data, axis=1, sort=True)
         return data
-
