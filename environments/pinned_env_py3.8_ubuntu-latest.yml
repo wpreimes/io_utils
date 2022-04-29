@@ -114,7 +114,7 @@ dependencies:
   - shapely=1.7.1
   - sip=4.19.13
   - six=1.16.0
-  - sqlite=3.38.2
+  - sqlite=3.38.3
   - tiledb=2.2.9
   - tk=8.6.12
   - tornado=6.1
