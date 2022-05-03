@@ -133,7 +133,7 @@ dependencies:
     - country-bounding-boxes==0.2.3
     - coverage==6.3.2
     - cython==0.29.28
-    - dask==2022.4.2
+    - dask==2022.5.0
     - datetime==4.4
     - equi7grid==0.1.0
     - fasteners==0.17.3
