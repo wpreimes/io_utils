@@ -89,7 +89,7 @@ dependencies:
   - numpy-base=1.19.2
   - olefile=0.46
   - openjpeg=2.4.0
-  - openssl=1.1.1n
+  - openssl=1.1.1o
   - pandas=1.1.5
   - pcre=8.45
   - pillow=8.3.1
@@ -114,7 +114,7 @@ dependencies:
   - shapely=1.7.1
   - sip=4.19.8
   - six=1.16.0
-  - sqlite=3.38.3
+  - sqlite=3.38.4
   - tiledb=2.2.9
   - tk=8.6.12
   - tornado=6.1
