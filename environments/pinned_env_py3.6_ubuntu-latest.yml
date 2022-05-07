@@ -114,7 +114,7 @@ dependencies:
   - shapely=1.7.1
   - sip=4.19.8
   - six=1.16.0
-  - sqlite=3.38.4
+  - sqlite=3.38.5
   - tiledb=2.2.9
   - tk=8.6.12
   - tornado=6.1
@@ -144,7 +144,7 @@ dependencies:
     - iso3166==2.0.2
     - llvmlite==0.36.0
     - lxml==4.8.0
-    - more-itertools==8.12.0
+    - more-itertools==8.13.0
     - numba==0.53.1
     - numcodecs==0.9.1
     - packaging==21.3
