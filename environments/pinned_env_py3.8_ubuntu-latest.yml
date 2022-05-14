@@ -74,7 +74,7 @@ dependencies:
   - libuuid=1.0.3
   - libwebp=1.2.2
   - libwebp-base=1.2.2
-  - libxcb=1.14
+  - libxcb=1.15
   - libxml2=2.9.12
   - libzip=1.5.1
   - libzlib=1.2.11
