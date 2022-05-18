@@ -86,8 +86,6 @@ dependencies:
   - ncurses=6.3
   - netcdf4=1.5.7
   - numexpr=2.8.1
-  - numpy=1.21.5
-  - numpy-base=1.21.5
   - openjpeg=2.4.0
   - openssl=1.1.1o
   - packaging=21.3
@@ -110,7 +108,7 @@ dependencies:
   - qt=5.9.7
   - readline=8.1
   - scipy=1.7.3
-  - setuptools=62.2.0
+  - setuptools=62.3.1
   - shapely=1.7.1
   - sip=4.19.13
   - six=1.16.0
@@ -132,7 +130,7 @@ dependencies:
     - configparser==5.2.0
     - country-bounding-boxes==0.2.3
     - coverage==6.3.3
-    - cython==0.29.29
+    - cython==0.29.30
     - dask==2022.5.0
     - datetime==4.4
     - equi7grid==0.1.0
@@ -149,6 +147,7 @@ dependencies:
     - more-itertools==8.13.0
     - numba==0.55.1
     - numcodecs==0.9.1
+    - numpy==1.21.6
     - parse==1.19.0
     - partd==1.2.0
     - pluggy==1.0.0

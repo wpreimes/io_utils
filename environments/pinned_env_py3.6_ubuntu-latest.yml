@@ -131,7 +131,7 @@ dependencies:
     - configparser==5.2.0
     - country-bounding-boxes==0.2.3
     - coverage==6.2
-    - cython==0.29.29
+    - cython==0.29.30
     - dask==2021.3.0
     - datetime==4.4
     - equi7grid==0.1.0
