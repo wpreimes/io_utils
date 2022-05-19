@@ -13,7 +13,7 @@ dependencies:
   - blas=1.0
   - bzip2=1.0.8
   - c-ares=1.18.1
-  - ca-certificates=2021.10.8
+  - ca-certificates=2022.5.18
   - cairo=1.16.0
   - cartopy=0.18.0
   - certifi=2021.5.30

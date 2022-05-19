@@ -15,7 +15,7 @@ dependencies:
   - brotli=1.0.9
   - bzip2=1.0.8
   - c-ares=1.18.1
-  - ca-certificates=2021.10.8
+  - ca-certificates=2022.5.18
   - cairo=1.16.0
   - cartopy=0.18.0
   - cfitsio=3.470
@@ -69,7 +69,7 @@ dependencies:
   - libpq=12.9
   - libspatialite=4.3.0a
   - libssh2=1.10.0
-  - libstdcxx-ng=12.1.0
+  - libstdcxx-ng=11.2.0
   - libtiff=4.2.0
   - libuuid=1.0.3
   - libwebp=1.2.2
