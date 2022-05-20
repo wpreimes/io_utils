@@ -15,7 +15,7 @@ dependencies:
   - brotli=1.0.9
   - bzip2=1.0.8
   - c-ares=1.18.1
-  - ca-certificates=2022.5.18
+  - ca-certificates=2022.5.18.1
   - cairo=1.16.0
   - cartopy=0.18.0
   - cfitsio=3.470
@@ -92,7 +92,7 @@ dependencies:
   - pandas=1.4.2
   - pcre=8.45
   - pillow=9.0.1
-  - pip=22.1
+  - pip=22.0.4
   - pixman=0.40.0
   - poppler=0.81.0
   - poppler-data=0.4.11
@@ -108,7 +108,7 @@ dependencies:
   - qt=5.9.7
   - readline=8.1
   - scipy=1.7.3
-  - setuptools=62.3.1
+  - setuptools=62.3.2
   - shapely=1.7.1
   - sip=4.19.13
   - six=1.16.0
@@ -135,7 +135,7 @@ dependencies:
     - datetime==4.4
     - equi7grid==0.1.0
     - fasteners==0.17.3
-    - fsspec==2022.3.0
+    - fsspec==2022.5.0
     - geographiclib==2.0
     - importlib-metadata==4.11.3
     - iniconfig==1.1.1
