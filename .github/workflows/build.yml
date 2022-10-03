@@ -26,7 +26,7 @@ jobs:
         include:
           - os: "windows-latest"
             python-version: '3.9'
-            ymlfile: [ "latest.yml" ]
+            ymlfile: "latest.yml"
 
     steps:
       - name: Checkout repository
