@@ -34,7 +34,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      - name: Setup conda and mamba
+      - name: Setup conda # and mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
@@ -42,6 +42,7 @@ jobs:
           # channels: conda-forge
           # channel-priority: strict
           python-version: ${{ matrix.python-version }}
+          environment-file: environments/${{ matrix.ymlfile }}
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
           # mamba-version: "*"
