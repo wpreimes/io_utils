@@ -33,12 +33,12 @@ class SMAPTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         df['_date'] = df.index.values
         num = df[self._t0_var].dropna()
         if len(num) == 0:
-            df.loc[num.index, '_datetime'] = []
+            df.loc[num.index, 'exact_time'] = []
         else:
-            df.loc[num.index, '_datetime'] = \
+            df.loc[num.index, 'exact_time'] = \
                 pd.DatetimeIndex(num2date(num.values, units=self._t0_unit,
                                  calendar='standard', only_use_cftime_datetimes=False))
-        df = df.set_index('_datetime')
+        df = df.set_index('exact_time')
         df = df[df.index.notnull()]
         return  df
 

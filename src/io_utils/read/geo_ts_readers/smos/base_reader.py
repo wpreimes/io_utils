@@ -42,13 +42,13 @@ class SMOSTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         num = df[self._t0_vars['days']].dropna() + \
               (df[self._t0_vars['sec']].dropna() / 86400)
         if len(num) == 0:
-            df.loc[num.index, '_datetime'] = []
+            df.loc[num.index, 'exact_time'] = []
         else:
-            df.loc[num.index, '_datetime']= \
+            df.loc[num.index, 'exact_time']= \
                 pd.DatetimeIndex(num2date(num.values, units=units,
                                  calendar='standard', only_use_cftime_datetimes=False))
 
-        df = df.set_index('_datetime')
+        df = df.set_index('exact_time')
         df = df[df.index.notnull()]
         return df
 

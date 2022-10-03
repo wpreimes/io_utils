@@ -56,3 +56,15 @@ class GeoC3Sv202012Ts(base_reader.GeoC3STs):
 # check if datasets in reader and in dict match
 assert sorted(list(path_settings.keys())) == sorted(GeoC3Sv202012Ts._ds_implemented)
 
+if __name__ == '__main__':
+    import pandas as pd
+    from smecv_grid.grid import SMECV_Grid_v052
+    reader = GeoC3Sv202012Ts(('C3S', 'v202012', 'COMBINED', 'DAILY', 'TCDR'),
+                             grid=SMECV_Grid_v052('land'))
+    cube = reader.read_agg_cell_cube(cell=2244, as_xr=True, params=['sm'], dt_index=pd.date_range('2000-01-01', '2000-01-31', freq='D'))
+    #
+    #
+    # TS_PATH = "/home/wpreimes/shares/radar/Datapool/C3S/02_processed/v202012/TCDR/063_images_to_ts/combined-daily/"
+    # READER = GeoC3Sv202012Ts(TS_PATH, ioclass_kws={'read_bulk': True})
+    # ts = READER.read_agg_cell_data(2244, 'sm', 'gpidict')
+    # ts = READER.read(15,45)

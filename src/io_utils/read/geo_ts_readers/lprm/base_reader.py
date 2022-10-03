@@ -29,7 +29,7 @@ class LPRMTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         df = super(LPRMTs, self).read(*args, **kwargs)
         if self.exact_index:
             df[self._t0] = jd2dt(mjd2jd(df[self._t0].values))
-            df = df.set_index(self._t0) # drop nan index
+            df = df.set_index(self._t0)  # drop nan index
             df = df.loc[df.index.dropna()]
 
         return df

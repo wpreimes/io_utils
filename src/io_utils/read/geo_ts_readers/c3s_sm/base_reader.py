@@ -51,11 +51,12 @@ class GeoC3STs(SmecvTs):
     def _add_time(self, df):
         t0 = self._t0_ref[0]
         if t0 in df.columns:
+            df.loc[df[t0] < 0, t0] = np.nan
             dt = pd.to_timedelta(df[t0], unit='d')
-            df['_datetime'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
+            df['exact_time'] = pd.Series(index=df.index, data=self._t0_ref[1]) + dt
             if self.exact_index:
-                df['_date'] = df.index
-                df = df.set_index('_datetime')
+                df['exact_time'] = df.index
+                df = df.set_index('exact_time')
                 df = df[df.index.notnull()]
 
         return df
