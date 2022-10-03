@@ -13,7 +13,7 @@ dependencies:
   - cftime>=1.1.2
   - gdal
   - shapely
-  - fiona
+  - fiona>=1.8
   - pyproj
   - pip
   - pip:

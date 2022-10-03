@@ -9,6 +9,7 @@ name: Automated Tests
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # daily
 
@@ -19,9 +20,13 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.6', '3.8']
-        os: ["ubuntu-latest"] # , "windows-2019"] issue with gdal and windows...
+        python-version: ['3.8', '3.9']
+        os: ["ubuntu-latest"]
         ymlfile: ["latest.yml"]
+        include:
+          - os: "windows-latest"
+            python-version: '3.9'
+            ymlfile: "latest.yml"
 
     steps:
       - name: Checkout repository
@@ -29,23 +34,24 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      - name: Setup conda and mamba
+      - name: Setup conda # and mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
           auto-update-conda: true
-          channels: conda-forge
-          channel-priority: strict
+          # channels: conda-forge
+          # channel-priority: strict
           python-version: ${{ matrix.python-version }}
+          environment-file: environments/${{ matrix.ymlfile }}
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
-          mamba-version: "*"
-      - name: Install conda dependencies with mamba
-        shell: bash -l {0}
-        run: |
-          conda list
-          conda info --env
-          mamba env update -f environments/${{ matrix.ymlfile }}
+          # mamba-version: "*"
+#      - name: Install conda dependencies with mamba
+#        shell: bash -l {0}
+#        run: |
+#          conda list
+#          conda info --env
+#          mamba env update -f environments/${{ matrix.ymlfile }}
       - name: Print environment infos
         shell: bash -l {0}
         run: |
@@ -74,20 +80,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
           COVERALLS_PARALLEL: true
-#      - name: Create wheel and dist package
-#        shell: bash -l {0}
-#        run: |
-#          pip install setuptools_scm
-#          if [ ${{ matrix.os }} == "windows-latest" ]
-#          then
-#            # build whls on windows
-#            pip install wheel
-#            python setup.py bdist_wheel --dist-dir .artifacts/dist
-#          else
-#            # build dist on linux
-#            python setup.py sdist --dist-dir .artifacts/dist
-#          fi
-#          ls .artifacts/dist
+      - name: Create wheel and dist package
+        shell: bash -l {0}
+        run: |
+          pip install setuptools_scm
+          if [ ${{ matrix.os }} == "windows-latest" ]
+          then
+            # build whls on windows
+            pip install wheel
+            python setup.py bdist_wheel --dist-dir .artifacts/dist
+          else
+            # build dist on linux
+            python setup.py sdist --dist-dir .artifacts/dist
+          fi
+          ls .artifacts/dist
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -124,10 +130,10 @@ jobs:
         run: |
           cp .artifacts/Artifacts/pinned_env_py*.yml ./environments
       - name: commit and push new files to branch
-        run: |    # git config --global user.name 'AutoUpdate 🤖'
+        run: |
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_REPOSITORY = $GITHUB_REPOSITORY"
-          git config user.name github-actions
+          git config user.name github-actions🤖
           git config user.email github-actions@github.com
           git status ./environments
           if [ -n "$(git status ./environments --porcelain)" ]; then

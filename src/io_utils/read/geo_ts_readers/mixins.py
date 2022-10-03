@@ -17,7 +17,7 @@ class ContiguousRaggedTsCellReaderMixin:
     path: str
     grid: CellGrid
 
-    def read_cell_file(self, cell, param='sm'):
+    def read_cell_file(self, cell, param='sm', fill_value=None):
         """
         Reads a single variable for all points of a cell.
 
@@ -29,6 +29,8 @@ class ContiguousRaggedTsCellReaderMixin:
             Time must have an attribute of form '<unit> since <refdate>'
         param: str, optional (default: 'sm')
             Variable to extract from files
+        fill_value: float or int, optional (default: None)
+            Value to use for gaps, None uses fill value from file
 
         Returns
         -------
@@ -51,7 +53,13 @@ class ContiguousRaggedTsCellReaderMixin:
 
             time = ncfile.variables['time'][:].data
             unit_time = ncfile.variables['time'].units
-            variable = ncfile.variables[param][:].filled(np.nan)
+            variable = ncfile.variables[param][:]
+            if fill_value is None:
+                fill_value = variable.fill_value
+            variable = variable.filled(fill_value)
+
+        if fill_value is None:
+            fill_value = np.nan
 
         cutoff_points = np.cumsum(row_size)
         index = np.sort(np.unique(time))
@@ -60,7 +68,7 @@ class ContiguousRaggedTsCellReaderMixin:
 
         assert len(times) == len(datas)
 
-        filled = np.full((len(datas), len(index)), fill_value=np.nan)
+        filled = np.full((len(datas), len(index)), fill_value=fill_value)
         idx = np.array([np.isin(index, t) for t in times])
         filled[idx] = variable
 
@@ -80,6 +88,96 @@ class ContiguousRaggedTsCellReaderMixin:
                 warnings.warn("No method `_clip_dates` found.")
 
         return data
+
+    def read_agg_cell_data(self, cell, param, format='pd_multidx_df',
+                           to_replace=None) -> dict or pd.DataFrame:
+        """
+        Read all time series for a single variable in the selected cell.
+
+        Parameters
+        ----------
+        cell: int
+            Cell number as in the c3s grid
+        param: list or str
+            Name of the variable(s) to read.
+        format : str, optional (default: 'multiindex')
+            * pd_multidx_df (default):
+                Returns one data frame with gpi as first, and time as
+                second index level.
+            * gpidict : Returns a dictionary of dataframes, with gpis as keys
+                        and time series data as values.
+            * var_np_arrays : Returns 2d arrays for each variable and a variable
+                              'index' with time stamps.
+        to_replace : dict of dicts, optional (default: None)
+            Dict for parameters of values to replace.
+            e.g. {'sm': {-999999.0: -9999}}
+            see pandas.to_replace()
+
+        Additional kwargs are given to xarray to open the dataset.W
+
+        Returns
+        -------
+        data : dict or pd.DataFrame
+            A DataFrame if a single variable was passed, otherwise
+            a dict of DataFrames with parameter name as key.
+        """
+        if hasattr(self, 'exact_index') and self.exact_index:
+            warnings.warn("Reading cell with exact index not yet supported. "
+                          "Use read_cells()")
+
+        params = np.atleast_1d(param)
+
+        df = []
+
+        for p in params:
+            _df = self.read_cell_file(cell, p)
+
+            idx = pd.MultiIndex.from_product([_df.columns.values, _df.index.values],
+                                             names=['locations', 'time'])
+            data = _df.transpose().values.flatten()
+            _df = pd.DataFrame(index=idx, data={p: data})
+            df.append(_df)
+
+        df = pd.concat(df, axis=1)
+
+        locations = df.index.get_level_values('locations').values
+        gpis = np.unique(locations)
+
+        df.index = df.index.set_levels(np.arange(len(gpis)), level=0)
+
+        if hasattr(self, 'clip_dates') and self.clip_dates:
+            if hasattr(self, '_clip_dates'):
+                df = self._clip_dates(df)
+            else:
+                warnings.warn("No method `_clip_dates` found.")
+
+        if to_replace is not None:
+            df = df.replace(to_replace=to_replace)
+
+        if format.lower() == 'pd_multidx_df':
+            index = df.index.set_levels(gpis, level=0) \
+                .set_names('gpi', level=0)
+            data = df.set_index(index)
+
+        elif format.lower() == 'gpidict':
+            if 'gpi' not in df.columns:
+                df['gpi'] = locations
+            df = df.set_index(df.index.droplevel(0))
+            data = dict(tuple(df.groupby(df.pop('gpi'))))
+
+        elif format.lower() == 'var_np_arrays':
+            df = df.set_index(df.index.droplevel(0))
+            index = df.index.unique()
+            data = {'index': index}
+            for col in df.columns:
+                if col == 'gpi': continue
+                data[col] = df.groupby('gpi')[col].apply(np.array)
+
+        else:
+            raise NotImplementedError
+
+        return data
+
 
 class OrthoMultiTsCellReaderMixin:
     """
@@ -263,6 +361,4 @@ class OrthoMultiTsCellReaderMixin:
             raise NotImplementedError
 
         return data
-
-
 

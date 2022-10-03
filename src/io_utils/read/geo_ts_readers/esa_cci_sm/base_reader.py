@@ -31,12 +31,13 @@ import numpy as np
 import xarray as xr
 from pygeogrids import CellGrid
 
-from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin
+from io_utils.read.geo_ts_readers.mixins import OrthoMultiTsCellReaderMixin, ContiguousRaggedTsCellReaderMixin
 from datetime import timedelta
 
 from cadati.jd_date import julian2date
 import pytz
 from datetime import datetime
+import matplotlib.pyplot as plt
 from smecv_grid.grid import SMECV_Grid_v052
 
 class PygenioNotFoundError(ModuleNotFoundError):
@@ -67,7 +68,7 @@ def julian2datetimeindex(j, tz=pytz.UTC):
                                  second, microsecond)])
 
 
-class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs):
+class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs, ContiguousRaggedTsCellReaderMixin):
     """
     Default writer for data to netcdf
 
@@ -350,7 +351,7 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
                     warnings.warn(f"{p} : Value is scaled but not replaced, are you sure?")
 
         data_df = self.read_agg_cell_data(cell,
-                                          params=params,
+                                          param=params,
                                           format='var_np_arrays',
                                           to_replace=to_replace)
 
@@ -372,6 +373,8 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
         timestamps = data_df.pop('index')
 
+        sel = np.isin(timestamps, dt_index)
+
         data_arr = {}
         for name, ds in data_df.items():
             if ds.index.size != cell_gpi.size:
@@ -391,7 +394,7 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
             arr = np.ndarray.view(np.transpose(np.vstack(data_df[name]))) # transpose?
 
             newshape = (len(timestamps), *cell_gpi_shape)
-            arr = np.reshape(arr, newshape) #flip?
+            arr = np.reshape(arr, newshape)[sel, :, :] #flip?
 
             data_arr[name] = np.ma.masked_equal(arr.astype(param_dtype[name]),
                                                 param_fill_val[name],
@@ -401,6 +404,8 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
             if name in param_scalf.keys():
                 data_arr[name] *= param_scalf[name]
+
+        timestamps = timestamps[sel]
 
         timestamps.name = 'time'
         if as_xr:
@@ -548,3 +553,22 @@ class CCIDs(GriddedTsBase):
         self.fid.dat_fid.close()
 
         return self.fid.idx, cell_data
+
+if __name__ == '__main__':
+    # from io_utils.read.geo_ts_readers.c3s_sm.base_reader import GeoC3STs
+    # path = "/home/wpreimes/shares/radar/Datapool/C3S/02_processed/v202012/TCDR/063_images_to_ts/combined-daily/"
+    # ds = GeoC3STs(path)
+    # ts = ds.read_agg_cell_data(2244, ['sm', 'flag']
+    import matplotlib
+    matplotlib.use("Qt5Agg")
+    from smecv_grid.grid import SMECV_Grid_v052
+    grid = SMECV_Grid_v052('land')
+    path = "/home/wpreimes/shares/radar/Projects/CCIplus_Soil_Moisture/07_data/ESA_CCI_SM_v07.1/011_resampledTemporal/smos_a/"
+    reader = GriddedNcContiguousRaggedTsCompatible(path, grid=grid)
+
+    dat = reader.read_agg_cell_data(2244, param=['sm', 'flag'], to_replace={'sm': {1e20: -999999.}},
+                                    format='gpidict')
+    ts = reader.read(346859).sm
+    stack = dat[['sm']].loc[346859, :].replace({-999999: np.nan}).dropna()
+    df = pd.concat([ts, stack], axis=1)
+
