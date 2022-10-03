@@ -45,12 +45,12 @@ jobs:
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
           # mamba-version: "*"
-      - name: Install conda dependencies with mamba
-        shell: bash -l {0}
-        run: |
-          conda list
-          conda info --env
-          mamba env update -f environments/${{ matrix.ymlfile }}
+#      - name: Install conda dependencies with mamba
+#        shell: bash -l {0}
+#        run: |
+#          conda list
+#          conda info --env
+#          mamba env update -f environments/${{ matrix.ymlfile }}
       - name: Print environment infos
         shell: bash -l {0}
         run: |
