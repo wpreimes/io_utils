@@ -567,7 +567,7 @@ if __name__ == '__main__':
     reader = GriddedNcContiguousRaggedTsCompatible(path, grid=grid)
 
     dat = reader.read_agg_cell_data(2244, param=['sm', 'flag'], to_replace={'sm': {1e20: -999999.}},
-                                    format='var_np_arrays')
+                                    format='gpidict')
     ts = reader.read(346859).sm
     stack = dat[['sm']].loc[346859, :].replace({-999999: np.nan}).dropna()
     df = pd.concat([ts, stack], axis=1)

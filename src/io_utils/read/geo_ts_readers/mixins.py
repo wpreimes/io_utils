@@ -128,8 +128,10 @@ class ContiguousRaggedTsCellReaderMixin:
         params = np.atleast_1d(param)
 
         df = []
+
         for p in params:
             _df = self.read_cell_file(cell, p)
+
             idx = pd.MultiIndex.from_product([_df.columns.values, _df.index.values],
                                              names=['locations', 'time'])
             data = _df.transpose().values.flatten()
