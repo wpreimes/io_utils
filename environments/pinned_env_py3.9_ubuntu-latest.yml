@@ -15,7 +15,7 @@ dependencies:
   - ca-certificates=2022.07.19
   - cairo=1.16.0
   - cartopy=0.18.0
-  - certifi=2022.9.14
+  - certifi=2022.9.24
   - cfitsio=3.470
   - cftime=1.5.1.1
   - click=8.0.4
@@ -200,7 +200,7 @@ dependencies:
     - toolz==0.12.0
     - tqdm==4.64.1
     - trollsift==0.4.0
-    - typing-extensions==4.3.0
+    - typing-extensions==4.4.0
     - veranda==1.0.0
     - xarray==0.18.2
     - zarr==2.13.2
