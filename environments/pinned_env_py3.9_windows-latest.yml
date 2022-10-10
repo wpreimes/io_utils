@@ -186,6 +186,6 @@ dependencies:
     - typing-extensions==4.4.0
     - veranda==1.0.0
     - xarray==0.18.2
-    - zarr==2.13.2
+    - zarr==2.13.3
     - zipp==3.9.0
     - zope-interface==5.4.0
