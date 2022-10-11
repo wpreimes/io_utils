@@ -78,8 +78,8 @@ dependencies:
   - libstdcxx-ng=11.2.0
   - libtiff=4.4.0
   - libuuid=1.0.3
-  - libwebp=1.2.2
-  - libwebp-base=1.2.2
+  - libwebp=1.2.4
+  - libwebp-base=1.2.4
   - libxcb=1.15
   - libxkbcommon=1.0.1
   - libxml2=2.9.14
@@ -205,4 +205,4 @@ dependencies:
     - xarray==0.18.2
     - zarr==2.13.3
     - zipp==3.9.0
-    - zope-interface==5.4.0
+    - zope-interface==5.5.0
