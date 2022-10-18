@@ -116,7 +116,7 @@ dependencies:
   - tk=8.6.12
   - toml=0.10.2
   - tornado=6.2
-  - tzdata=2022c
+  - tzdata=2022e
   - vc=14.2
   - vs2015_runtime=14.27.29016
   - wheel=0.37.1

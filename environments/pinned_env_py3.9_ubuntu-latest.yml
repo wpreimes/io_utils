@@ -136,7 +136,7 @@ dependencies:
   - tk=8.6.12
   - toml=0.10.2
   - tornado=6.2
-  - tzdata=2022c
+  - tzdata=2022e
   - wheel=0.37.1
   - xerces-c=3.2.3
   - xz=5.2.6
