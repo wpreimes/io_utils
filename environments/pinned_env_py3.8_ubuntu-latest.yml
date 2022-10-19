@@ -99,8 +99,8 @@ dependencies:
   - nspr=4.33
   - nss=3.74
   - numexpr=2.8.3
-  - numpy=1.23.1
-  - numpy-base=1.23.1
+  - numpy=1.23.3
+  - numpy-base=1.23.3
   - openjpeg=2.4.0
   - openssl=1.1.1q
   - packaging=21.3
@@ -169,7 +169,7 @@ dependencies:
     - llvmlite==0.39.1
     - locket==1.0.0
     - lxml==4.9.1
-    - more-itertools==8.14.0
+    - more-itertools==9.0.0
     - numba==0.56.3
     - numcodecs==0.10.2
     - parse==1.19.0
