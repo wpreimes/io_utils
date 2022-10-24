@@ -202,5 +202,5 @@ dependencies:
     - veranda==1.0.0
     - xarray==0.18.2
     - zarr==2.13.3
-    - zipp==3.9.0
+    - zipp==3.10.0
     - zope-interface==5.5.0
