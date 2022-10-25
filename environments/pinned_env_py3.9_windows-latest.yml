@@ -123,7 +123,7 @@ dependencies:
   - wincertstore=0.2
   - xerces-c=3.2.3
   - xz=5.2.6
-  - zlib=1.2.12
+  - zlib=1.2.13
   - zstd=1.5.2
   - pip:
     - affine==2.3.1
@@ -145,7 +145,7 @@ dependencies:
     - fasteners==0.18
     - fsspec==2022.10.0
     - geographiclib==2.0
-    - geopandas==0.11.1
+    - geopandas==0.12.0
     - geopathfinder==0.1.4
     - geospade==0.2.2
     - importlib-metadata==5.0.0

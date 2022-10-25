@@ -124,7 +124,7 @@ dependencies:
   - qt-main=5.15.2
   - qt-webengine=5.15.9
   - qtwebkit=5.212
-  - readline=8.1.2
+  - readline=8.2
   - scipy=1.9.1
   - setuptools=63.4.1
   - shapely=1.8.4
@@ -138,7 +138,7 @@ dependencies:
   - wheel=0.37.1
   - xerces-c=3.2.3
   - xz=5.2.6
-  - zlib=1.2.12
+  - zlib=1.2.13
   - zstd=1.5.2
   - pip:
     - affine==2.3.1
@@ -159,7 +159,7 @@ dependencies:
     - fasteners==0.18
     - fsspec==2022.10.0
     - geographiclib==2.0
-    - geopandas==0.11.1
+    - geopandas==0.12.0
     - geopathfinder==0.1.4
     - geospade==0.2.2
     - importlib-metadata==5.0.0
