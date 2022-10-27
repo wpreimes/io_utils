@@ -23,7 +23,7 @@ dependencies:
   - fftw=3.3.9
   - fiona=1.8.13.post1
   - fonttools=4.25.0
-  - freetype=2.10.4
+  - freetype=2.12.1
   - freexl=1.0.6
   - gdal=3.0.2
   - geos=3.8.0

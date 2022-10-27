@@ -29,7 +29,7 @@ dependencies:
   - fiona=1.8.21
   - fontconfig=2.13.1
   - fonttools=4.25.0
-  - freetype=2.11.0
+  - freetype=2.12.1
   - freexl=1.0.6
   - gdal=3.4.1
   - geos=3.8.0
