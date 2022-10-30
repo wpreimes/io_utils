@@ -162,7 +162,7 @@ dependencies:
     - fasteners==0.18
     - fsspec==2022.10.0
     - geographiclib==2.0
-    - geopandas==0.12.0
+    - geopandas==0.12.1
     - geopathfinder==0.1.4
     - geospade==0.2.2
     - importlib-metadata==5.0.0
