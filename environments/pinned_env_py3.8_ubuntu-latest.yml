@@ -102,7 +102,7 @@ dependencies:
   - numpy=1.23.3
   - numpy-base=1.23.3
   - openjpeg=2.4.0
-  - openssl=1.1.1q
+  - openssl=1.1.1s
   - packaging=21.3
   - pandas=1.4.4
   - pcre=8.45
@@ -125,7 +125,7 @@ dependencies:
   - qt-webengine=5.15.9
   - qtwebkit=5.212
   - readline=8.2
-  - scipy=1.9.1
+  - scipy=1.9.3
   - setuptools=65.5.0
   - shapely=1.8.4
   - sip=6.6.2
@@ -156,7 +156,7 @@ dependencies:
     - datetime==4.7
     - entrypoints==0.4
     - equi7grid==0.2.0
-    - exceptiongroup==1.0.0
+    - exceptiongroup==1.0.1
     - fasteners==0.18
     - fsspec==2022.10.0
     - geographiclib==2.0
@@ -171,7 +171,7 @@ dependencies:
     - locket==1.0.0
     - lxml==4.9.1
     - more-itertools==9.0.0
-    - numba==0.56.3
+    - numba==0.56.4
     - numcodecs==0.10.2
     - parse==1.19.0
     - partd==1.3.0
