@@ -3,7 +3,6 @@ import pandas as pd
 from pynetcf.time_series import OrthoMultiTs
 import xarray as xr
 import numpy as np
-from smecv_grid.grid import SMECV_Grid_v052
 import os
 
 # todo: store grid file upon conversion
@@ -80,41 +79,9 @@ def datacube2orthomulti(ds, out_path, time_from=None, time_to=None,
             iter_kwargs['dat'].append(dat.compute())
             iter_kwargs['cell'].append(cell)
     ds.close()
+
     del ds
+
     apply_to_elements(_store, ITER_KWARGS=iter_kwargs,
                       STATIC_KWARGS={'out_path': out_path},
                       n_proc=n_proc)
-
-if __name__ == '__main__':
-    globgrid = SMECV_Grid_v052(None)
-    landgrid = SMECV_Grid_v052('land')
-    mask = np.full((720*1440), True)
-    mask[landgrid.activegpis] = False
-    mask = np.flipud(mask.reshape((720, 1440)))
-
-    time = pd.date_range('2019-02-01', '2019-02-28', freq='D')
-    gpis = np.flipud(np.arange(0, 720 * 1440).reshape(720, 1440).astype(np.int32))
-    var1 = np.stack([gpis + i for i in range(len(time))], axis=0).astype(np.float32)
-    cells = np.flipud(np.repeat(np.arange(36*72).reshape(72, 36).transpose(), 20, axis=1).repeat(20, axis=0)).astype(np.int16)
-    gpis = np.flipud(np.arange(0, 720*1440).reshape(720, 1440).astype(np.int32))
-
-    res_stat = xr.Dataset(
-        data_vars={
-            'var1': (['time', 'lat', 'lon'], var1),
-            'gpi': (['lat', 'lon'], gpis),
-            'cell': (['lat', 'lon'], cells),
-            'ts_mask': (['lat', 'lon'], mask.astype(bool)),
-        },
-        coords={
-            'lon': np.sort(np.unique(globgrid.activearrlon)),
-            'lat': np.flipud(np.sort(np.unique(globgrid.activearrlat))),
-            'time': time
-        },
-        attrs=dict(description="Test"),
-    )
-    res_stat['var1'].attrs = {'name': 'test'}
-    #res_stat = res_stat.chunk({'lon': 20, 'lat': 20})
-    #res_stat.to_netcdf('/tmp/test.nc')
-
-    datacube2orthomulti(res_stat, '/tmp/cellfiles', n_proc=4,
-                        time_from='2019-02-10', cells=[2244,2245,2246,2247])

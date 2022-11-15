@@ -249,10 +249,3 @@ class GeoTsReader(object):
                 i += 1
 
         return {n: pd.concat(d, axis=1, sort=True) for n, d in data.items()}
-
-if __name__ == '__main__':
-    from io_utils.read.geo_ts_readers import GeoC3Sv202012Ts
-    from pygeogrids.netcdf import load_grid
-    path = "/data-write/USERS/wpreimes/G3P/production_anom/06_finalised_ts/"
-    ds = GeoC3Sv202012Ts(path, grid=load_grid("/home/wpreimes/shares/radar/Projects/G3P/07_data/C3S_SSM/G3P_Gapfilled_C3S_SM/v0.4/g3p_landgrid.nc"))
-    ts = ds.read(15,45)
