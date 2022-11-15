@@ -75,7 +75,7 @@ def test_pretty_plot():
                      cb_extend='both', cb_ext_label_min='DRY',
                      cb_ext_label_max='WET', cb_loc='right')
 
-    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.), veg_mask=True,
+    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.),
                          cmap=cm_sm, projection=ccrs.Sinusoidal(),
                          title='Overloaded Plot with too much Information',
                          ocean=True, land='grey', gridspace=(60,20), states=True,
