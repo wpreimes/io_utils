@@ -468,7 +468,7 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
 def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
            cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
-           veg_mask=False, gridspace=(60,20), grid_label_loc='0011', style=None,
+           gridspace=(60,20), grid_label_loc='0011', style=None,
            ocean=False, land='grey', states=False, borders=False, scale_factor=1., watermark=None,
            show_cbar=True, ax=None, cb_kwargs=None, plot_kwargs=None):
 
@@ -688,28 +688,6 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
                              rasterized=True, **plot_kwargs)
 
     im.set_clim(vmin=cbrange[0], vmax=cbrange[1])
-
-    # if veg_mask:
-    #     if not resxy == (0.25, 0.25):
-    #         raise ValueError(resxy, 'Vegetation mask only implemented for 0.25x0.25 grid')
-    #     # Plot a dense vegetation mask as in the ESA CCI SM grid
-    #     veg_gpis, veg_lons, veg_lats, _  = SMECV_Grid_v042('rainforest').get_grid_points()
-    #     glob_df['veg_mask'] = np.nan
-    #     if isinstance(glob_df.index, pd.MultiIndex):
-    #         veg_index = pd.MultiIndex.from_arrays([veg_lats, veg_lons], names=['lat', 'lon'])
-    #         glob_df.loc[veg_index, 'veg_mask'] = 1.
-    #     else:
-    #         glob_df.loc[glob_df.loc[veg_gpis].index, 'veg_mask'] = 1.
-    #     img = np.empty(glob_df.index.size, dtype='float32')
-    #     img.fill(np.nan)
-    #     img[range(glob_df.index.size)] = glob_df['veg_mask'].values
-    #     veg_img_masked = np.ma.masked_invalid(img.reshape((180 * 4, 360 * 4)))
-    #
-    #     colors = [(7. / 255., 79. / 255., 25. / 255.), (1., 1., 1.)]  # dark green
-    #     vegcmap = LinearSegmentedColormap.from_list('Veg', colors, N=2)
-    #
-    #     imax.pcolormesh(glob_lons, glob_lats, veg_img_masked, cmap=vegcmap, transform=data_crs,
-    #                     rasterized=True)
 
     imax.coastlines(resolution=coastline_size, color='black', linewidth=0.25)
     #imax.add_feature(cartopy.feature.LAND, color='white', zorder=0)
