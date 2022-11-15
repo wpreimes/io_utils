@@ -7,7 +7,6 @@ from io_utils.write.xr2pynetcf import datacube2orthomulti
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 
-
 def test_datacube_to_timeseries():
     globgrid = SMECV_Grid_v052(None)
     landgrid = SMECV_Grid_v052('land')
@@ -45,8 +44,10 @@ def test_datacube_to_timeseries():
         datacube2orthomulti(
             res_stat, outdir, n_proc=1,
             time_from='2019-02-02',
-            cells=[1322, 1323, 1324, 1358, 1359, 1360])
+            cells=[1322, 1323, 1324, 1358, 1359, 1360]
+        )
         assert len(os.listdir(outdir)) == 6
         ds = GriddedNcOrthoMultiTs(outdir, grid=landgrid)
         ts_land = ds.read(5, 48)
         assert not ts_land.empty
+        ds.close()
