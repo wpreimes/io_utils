@@ -130,7 +130,7 @@ dependencies:
     - ascat==2.0.5
     - asciitree==0.3.3
     - cadati==0.0.2
-    - cf-xarray==0.7.4
+    - cf-xarray==0.7.5
     - cloudpickle==2.2.0
     - colorama==0.4.6
     - configobj==5.0.6
@@ -138,11 +138,11 @@ dependencies:
     - country-bounding-boxes==0.2.3
     - coverage==6.5.0
     - cython==0.29.32
-    - dask==2022.10.2
+    - dask==2022.11.0
     - datetime==4.7
     - entrypoints==0.4
     - equi7grid==0.2.0
-    - exceptiongroup==1.0.3
+    - exceptiongroup==1.0.4
     - fasteners==0.18
     - fsspec==2022.11.0
     - geographiclib==2.0
