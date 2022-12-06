@@ -349,11 +349,13 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
             for p in param_scalf:
                 if p not in param_fill_val:
                     warnings.warn(f"{p} : Value is scaled but not replaced, are you sure?")
-
-        data_df = self.read_agg_cell_data(cell,
-                                          param=params,
-                                          format='var_np_arrays',
-                                          to_replace=to_replace)
+        try:
+            data_df = self.read_agg_cell_data(cell,
+                                              param=params,
+                                              format='var_np_arrays',
+                                              to_replace=to_replace)
+        except FileNotFoundError:
+            data_df = None
 
         for p in params:
             if p not in param_fill_val.keys():

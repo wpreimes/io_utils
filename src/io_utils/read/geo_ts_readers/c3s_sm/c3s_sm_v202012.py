@@ -17,7 +17,13 @@ class GeoC3Sv202012Ts(base_reader.GeoC3STs):
     _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
 
     _col_fillvalues = {'sm': [-9999.0],
+                       'original': [-9999.0],
+                       'filled': [-9999.0],
+                       'gapfilled': [-9999.0],
+                       'anomaly': [-9999.0],
+                       'climatology': [-9999.0],
                        'sm_uncertainty': [-9999.0],
+                       'uncertainty': [-9999.0],
                        _t0_ref[0]: [-3440586.5]}
 
     _ds_implemented = [

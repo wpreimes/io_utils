@@ -187,7 +187,7 @@ class GeoTsReader(object):
 
         return df
 
-    def read_multiple(self, locs, var='sm', dtype='float32'):
+    def read_multiple(self, locs, var='sm', dtype='float32', verbose=False):
         """
         Read a list of locations, either from gpis, from lonlats or from a grid.
         Applies all the filtering and conversion from the reader generation.
@@ -198,18 +198,22 @@ class GeoTsReader(object):
         ----------
         locs : list
             Either a set of locations [gpi,...] or [(lon, lat), ...]
-        var : str, optional (default: 'sm')
+        var : str or list, optional (default: 'sm')
             Variable to take from the dataframe that the read() function returns.
+            If multiple are passed, then a dict is returned
+        verbose: bool, optional (default: False)
+            Print some messages
 
         Returns
         -------
-        df : pd.DataFrame
+        df : pd.DataFrame or dict
             Dataframe of time series for the var of all locs, named by gpi.
         """
 
         if self.grid is None:
             raise ValueError("No grid found for the current reader.")
 
+        var = np.atleast_1d(var)
         gpis = {}
 
         for loc in locs:
@@ -224,21 +228,24 @@ class GeoTsReader(object):
             else:
                 gpis[cell].append(gpi)
 
-        print(f'Read {len(locs)} locations in {len(list(gpis.keys()))} cells')
+        if verbose:
+            print(f'Read {len(locs)} locations in {len(list(gpis.keys()))} cells')
 
-        data = []
+        data = {v: [] for v in var}
 
         i = 0
         for cell, cell_gpis in gpis.items():
             for gpi in cell_gpis:
-                print(f'Reading loc {i} of {len(locs)}')
+                if verbose:
+                    print(f'Reading loc {i} of {len(locs)}')
                 try:
-                    df = self._read(gpi)[[var]].rename(columns={var: gpi})
+                    df = self._read(gpi)
+                    for v in var:
+                        if not df.empty:
+                            data[v].append(df[[v]].rename(columns={v: gpi}).astype(dtype))
                 except:
                     warnings.warn(f'Reading TS for GPI {gpi} failed. Continue.')
                     continue
-                if not df.empty: data.append(df.astype(dtype))
                 i += 1
 
-        data = pd.concat(data, axis=1, sort=True)
-        return data
+        return {n: pd.concat(d, axis=1, sort=True) for n, d in data.items()}
