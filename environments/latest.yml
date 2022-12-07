@@ -20,7 +20,7 @@ dependencies:
       - setuptools_scm
       - datetime
       - pyyaml
-      - xarray
+      - xarray>=0.19
       - configparser
       - more_itertools
       - Equi7Grid
