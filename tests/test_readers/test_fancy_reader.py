@@ -32,7 +32,7 @@ def test_smap_sat_data():
 
     reader_kwargs = {
         "dataset_or_path": ('SMAP', 'SP3SMPv6', 'ASC'),
-        "force_path_group": "radar",
+        "force_path_group": "climers",
         'parameters': ['surface_temperature', 'retrieval_qual_flag', 'soil_moisture'],
         'exact_index': True,
         "ioclass_kws": {"read_bulk": True},
@@ -168,7 +168,7 @@ def test_cci_sat_data():
     """
     reader_kwargs = {
         "dataset_or_path": ("ESA_CCI_SM", "v061", "COMBINED"),
-        "force_path_group": "radar",
+        "force_path_group": "climers",
         "exact_index": True,
         "parameters": ["sm", "flag", "t0", "sm_uncertainty"],
         "ioclass_kws": {"read_bulk": True},
@@ -220,7 +220,7 @@ def test_gldas_model_data():
     """
     reader_kwargs = {
         "dataset_or_path": ("GLDAS21", "core"),
-        "force_path_group": "radar",
+        "force_path_group": "climers",
         "parameters": ["SoilMoi0_10cm_inst", "SoilTMP0_10cm_inst"],
         "ioclass_kws": {"read_bulk": True},
     }
