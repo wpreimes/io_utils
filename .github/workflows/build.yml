@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9']  # main python version(s) to runs sdist for
-        os: [ "ubuntu-latest", "windows-latest" ]  # windows: whl, linux: dist
+        os: [ "ubuntu-latest"] #, "windows-latest" ]  # windows: whl, linux: dist
         package: [true]  # run setup.py sdist
         include:
           # Other runs where sdist is not called:
@@ -42,12 +42,14 @@ jobs:
         with:
           miniconda-version: "latest"
           auto-update-conda: true
-          #miniforge-variant: Mambaforge
-          #channels: conda-forge,defaults
           python-version: ${{ matrix.python-version }}
-          environment-file: environments/latest.yml
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
+      - name: Update environment
+        shell: bash -l {0}
+        run: |
+          conda install -c conda-forge mamba
+          mamba env update -f environments/latest.yml -n io_utils
       - name: Print environment infos
         shell: bash -l {0}
         run: |
