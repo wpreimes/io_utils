@@ -23,14 +23,14 @@ jobs:
         python-version: ['3.9']  # main python version(s) to runs sdist for
         os: [ "ubuntu-latest"] #, "windows-latest" ]  # windows: whl, linux: dist
         package: [true]  # run setup.py sdist
-        include:
-          # Other runs where sdist is not called:
-          - os: "ubuntu-latest"
-            python-version: '3.8'
-            package: false
-          - os: "ubuntu-latest"
-            python-version: '3.10'
-            package: false
+#        include:
+#          # Other runs where sdist is not called:
+#          - os: "ubuntu-latest"
+#            python-version: '3.8'
+#            package: false
+#          - os: "ubuntu-latest"
+#            python-version: '3.10'
+#            package: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -44,13 +44,15 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: io_utils
+          environment-file: environments/latest.yml
+          mamba-version: "*"
           auto-activate-base: false
-      - name: Update environment
-        shell: bash -l {0}
-        run: |
-          # Installing via setup-miniconda directly leads to errors...
-          conda install -c conda-forge mamba
-          mamba env update -f environments/latest.yml -n io_utils
+#      - name: Update environment
+#        shell: bash -l {0}
+#        run: |
+#          # Installing via setup-miniconda directly leads to errors...
+#          conda install -c conda-forge mamba
+#          mamba env update -f environments/latest.yml -n io_utils
       - name: Print environment infos
         shell: bash -l {0}
         run: |
