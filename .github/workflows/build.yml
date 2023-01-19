@@ -14,7 +14,7 @@ on:
     - cron: '0 0 * * *' # daily
 
 env:
-  DIST_PY_VERS: '3.10'
+  DIST_PY_VERS: '3.9'
 
 jobs:
   build:
@@ -23,15 +23,13 @@ jobs:
 
     strategy:
       matrix:
+        python-version: [${{ env.DIST_PY_VERS }}]
+        os: [ "ubuntu-latest", "windows-latest" ]
         include:
           - os: "ubuntu-latest"
             python-version: '3.8'
           - os: "ubuntu-latest"
-            python-version: ${{ env.DIST_PY_VERS }}
-          - os: "ubuntu-latest"
             python-version: '3.10'
-          - os: "windows-latest"
-            python-version: ${{ env.DIST_PY_VERS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
