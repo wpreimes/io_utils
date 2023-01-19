@@ -20,7 +20,7 @@ dependencies:
       - setuptools_scm
       - datetime
       - pyyaml
-      - xarray>=0.19
+      - xarray
       - configparser
       - more_itertools
       - Equi7Grid
@@ -32,7 +32,6 @@ dependencies:
       - lxml
       - smecv_grid
       - pygeogrids
-      - qa4sm_preprocessing
       - git+https://github.com/awst-austria/qa4sm-preprocessing@master
       - git+https://github.com/wpreimes/pytesmo@master
       - pytest

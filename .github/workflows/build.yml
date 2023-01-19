@@ -20,13 +20,14 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8', '3.9']
+        python-version: ['3.8', '3.9', '3.10']
         os: ["ubuntu-latest"]
-        ymlfile: ["latest.yml"]
+        ymlfile: "environments/latest.yml"
         include:
           - os: "windows-latest"
             python-version: '3.9'
-            ymlfile: "latest.yml"
+            ymlfile: "environments/latest.yml"
+
 
     steps:
       - name: Checkout repository
@@ -34,24 +35,17 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-      - name: Setup conda # and mamba
+      - name: Setup conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
           auto-update-conda: true
-          # channels: conda-forge
-          # channel-priority: strict
+          mamba-version: "*"
+          channels: conda-forge,defaults
           python-version: ${{ matrix.python-version }}
-          environment-file: environments/${{ matrix.ymlfile }}
+          environment-file: ${{ matrix.ymlfile }}
           activate-environment: io_utils # todo: must match with name in environment.yml
           auto-activate-base: false
-          # mamba-version: "*"
-#      - name: Install conda dependencies with mamba
-#        shell: bash -l {0}
-#        run: |
-#          conda list
-#          conda info --env
-#          mamba env update -f environments/${{ matrix.ymlfile }}
       - name: Print environment infos
         shell: bash -l {0}
         run: |
@@ -70,7 +64,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install setuptools_scm
-          python setup.py develop
+          pip install .
           pytest -m "not geo_test_data"
       - name: Upload Coverage
         shell: bash -l {0}

@@ -16,31 +16,18 @@ def print_test_config(dataset, path_group=None):
     print('Test reading {} data from {}.'.format(ds, pg))
 
 @pytest.mark.geo_test_data
-def test_smecv_rzsm_v0_reader(verbose=False):
-    if verbose: print('Test reading CCI47 SWI from storage.')
+def test_smecv_rzsm_v1_reader(verbose=False):
+    if verbose: print('Test reading RZSM from storage.')
     reader = GeoSmecSwiRzsmnv0Ts(
-        dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
-                                     'SWI', 'SWI_CCI_04.7', 'SWI_CCI_v04.7_TS'),
+        dataset_or_path=os.path.join(root_path.m, 'Projects', 'G3P', '07_data',
+                                     'D3.4_C3S_RZSM', 'RZSM_1.5_gap_free',
+                                     '_reshuffled'),
                           ioclass_kws={'read_bulk': True},
-                          parameters=['SWI_001', 'SWI_010', 'QFLAG_001', 'QFLAG_010'],
-                          scale_factors={'SWI_001': 1.})
+                          parameters=['rzsm_1', 'rzsm_2', 'rzsm_3'],
+                          scale_factors={'rzsm_1': 1.})
     #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
     ts = reader.read(*test_loc)
-    assert 'SWI_001' in ts.columns
-    assert not ts.empty
-    if verbose: print(ts)
-
-@pytest.mark.geo_test_data
-def test_smecvrzsm_v0_reader(verbose=False):
-    if verbose: print('Test reading C3S RZSMv0 from storage.')
-    reader = GeoSmecSwiRzsmnv0Ts(
-        dataset_or_path=os.path.join(root_path.r, 'Projects', 'G3P', '07_data',
-                                     'C3S_v202012_RZSM', 'time_series'),
-        ioclass_kws={'read_bulk': True},
-        parameters=['QFLAG_0-10cm', 'SSM', 'RZSM_0-10cm'],
-        scale_factors={'SSM': 1.})
-    #reader = SelfMaskingAdapter(reader, '>', 1, 'QFLAG_001')
-    ts = reader.read(*test_loc)
+    assert 'rzsm_1' in ts.columns
     assert not ts.empty
     if verbose: print(ts)
 
@@ -95,7 +82,7 @@ def test_eraint_reader(verbose=False):
 @pytest.mark.geo_test_data
 def test_C3S201706_combined_readers(verbose=False):
     dataset = ('C3S', 'v201706', 'COMBINED',  'DAILY')
-    force_path_group = 'radar'
+    force_path_group = 'climers'
     if verbose: print_test_config(dataset, force_path_group)
 
     reader = GeoC3Sv201706FullCDRTs(
@@ -234,7 +221,7 @@ def test_ascatssm_ts_reader(verbose=False):
                     reason="Pygenio is not installed.")
 @pytest.mark.geo_test_data
 def test_ccigenio_ts_reader(verbose=False):
-    path = os.path.join(root_path.r, 'Projects', "CCIplus_Soil_Moisture",
+    path = os.path.join(root_path.m, 'Projects', "CCIplus_Soil_Moisture",
                         "07_data", "ESA_CCI_SM_v06.1", "042_combined_MergedProd")
     reader = GeoCCISMv6GenioTs(path,
                                parameters=['sm', 'flag', 'freqband'],
