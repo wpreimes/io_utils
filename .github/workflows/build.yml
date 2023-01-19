@@ -22,11 +22,10 @@ jobs:
       matrix:
         python-version: ['3.8', '3.9', '3.10']
         os: ["ubuntu-latest"]
-        ymlfile: "environments/latest.yml"
+        ymlfile: environments/latest.yml
         include:
           - os: "windows-latest"
             python-version: '3.9'
-            ymlfile: "environments/latest.yml"
 
 
     steps:
