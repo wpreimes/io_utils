@@ -34,6 +34,6 @@ dependencies:
       - pygeogrids
       - pytest
       - pytest-cov
-      - qa4sm-preprocessing.git
+      - qa4sm-preprocessing
       - git+https://github.com/wpreimes/pytesmo@master
 
