@@ -20,15 +20,17 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
-        os: ["ubuntu-latest"]
-        ymlfile: "environments/latest.yml"
+        python-version: ['3.9']  # main python version(s) to runs sdist for
+        os: [ "ubuntu-latest"] #, "windows-latest" ]  # windows: whl, linux: dist
+        package: [true]  # run setup.py sdist
         include:
-          - os: "windows-latest"
-            python-version: '3.9'
-            ymlfile: "environments/latest.yml"
-
-
+          # Other runs where sdist is not called:
+          - os: "ubuntu-latest"
+            python-version: '3.8'
+            package: false
+          - os: "ubuntu-latest"
+            python-version: '3.10'
+            package: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -40,12 +42,17 @@ jobs:
         with:
           miniconda-version: "latest"
           auto-update-conda: true
-          mamba-version: "*"
-          channels: conda-forge,defaults
           python-version: ${{ matrix.python-version }}
-          environment-file: ${{ matrix.ymlfile }}
-          activate-environment: io_utils # todo: must match with name in environment.yml
+          activate-environment: io_utils
+          environment-file: environments/latest.yml
+          mamba-version: "*"
           auto-activate-base: false
+#      - name: Update environment
+#        shell: bash -l {0}
+#        run: |
+#          # Installing via setup-miniconda directly leads to errors...
+#          conda install -c conda-forge mamba
+#          mamba env update -f environments/latest.yml -n io_utils
       - name: Print environment infos
         shell: bash -l {0}
         run: |
@@ -64,7 +71,8 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install setuptools_scm
-          pip install .
+          # DON'T change this to pip install -e .
+          python setup.py develop
           pytest -m "not geo_test_data"
       - name: Upload Coverage
         shell: bash -l {0}
@@ -76,6 +84,7 @@ jobs:
           COVERALLS_PARALLEL: true
       - name: Create wheel and dist package
         shell: bash -l {0}
+        if: ${{ matrix.package == 'true' }}
         run: |
           pip install setuptools_scm
           if [ ${{ matrix.os }} == "windows-latest" ]
@@ -89,7 +98,7 @@ jobs:
           fi
           ls .artifacts/dist
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Artifacts
           path: .artifacts/*
