@@ -32,7 +32,8 @@ dependencies:
       - lxml
       - smecv_grid
       - pygeogrids
-      - git+https://github.com/awst-austria/qa4sm-preprocessing@master
-      - git+https://github.com/wpreimes/pytesmo@master
       - pytest
       - pytest-cov
+      - git+https://github.com/awst-austria/qa4sm-preprocessing.git@master
+      - git+https://github.com/wpreimes/pytesmo@master
+

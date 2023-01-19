@@ -26,7 +26,6 @@ jobs:
           - os: "windows-latest"
             python-version: '3.9'
 
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -62,7 +61,8 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install setuptools_scm
-          pip install .
+          # DON'T change this to pip install -e .
+          python setup.py develop
           pytest -m "not geo_test_data"
       - name: Upload Coverage
         shell: bash -l {0}
