@@ -13,6 +13,9 @@ on:
   schedule:
     - cron: '0 0 * * *' # daily
 
+env:
+  DIST_PY_VERS: '3.10'
+
 jobs:
   build:
     name: Build py${{ matrix.python-version }} @ ${{ matrix.os }} 🐍
@@ -20,12 +23,15 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
-        os: ["ubuntu-latest"]
         include:
+          - os: "ubuntu-latest"
+            python-version: '3.8'
+          - os: "ubuntu-latest"
+            python-version: ${{ env.DIST_PY_VERS }}
+          - os: "ubuntu-latest"
+            python-version: '3.10'
           - os: "windows-latest"
-            python-version: '3.9'
-
+            python-version: ${{ env.DIST_PY_VERS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -74,6 +80,7 @@ jobs:
           COVERALLS_PARALLEL: true
       - name: Create wheel and dist package
         shell: bash -l {0}
+        if: ${{ env.DIST_PY_VERS}} == ${{ matrix.python-version }}
         run: |
           pip install setuptools_scm
           if [ ${{ matrix.os }} == "windows-latest" ]
@@ -87,7 +94,7 @@ jobs:
           fi
           ls .artifacts/dist
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Artifacts
           path: .artifacts/*
