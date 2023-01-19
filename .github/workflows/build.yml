@@ -21,16 +21,16 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9']  # main python version(s) to runs sdist for
-        os: [ "ubuntu-latest", "windows-latest" ]  # windows: whl, linux: dist
+        os: [ "ubuntu-latest"] #, "windows-latest" ]  # windows: whl, linux: dist
         package: [true]  # run setup.py sdist
-#        include:
-#          # Other runs where sdist is not called:
-#          - os: "ubuntu-latest"
-#            python-version: '3.8'
-#            package: false
-#          - os: "ubuntu-latest"
-#            python-version: '3.10'
-#            package: false
+        include:
+          # Other runs where sdist is not called:
+          - os: "ubuntu-latest"
+            python-version: '3.8'
+            package: false
+          - os: "ubuntu-latest"
+            python-version: '3.10'
+            package: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
