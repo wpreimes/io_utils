@@ -27,11 +27,11 @@ jobs:
           - os: "ubuntu-latest"
             python-version: '3.8'
           - os: "ubuntu-latest"
-            python-version: $DIST_PY_VERS
+            python-version: ${{ env.DIST_PY_VERS }}
           - os: "ubuntu-latest"
             python-version: '3.10'
           - os: "windows-latest"
-            python-version: $DIST_PY_VERS
+            python-version: ${{ env.DIST_PY_VERS }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -80,7 +80,7 @@ jobs:
           COVERALLS_PARALLEL: true
       - name: Create wheel and dist package
         shell: bash -l {0}
-        if: $DIST_PY_VERS == ${{ matrix.python-version }}
+        if: ${{ env.DIST_PY_VERS }} == ${{ matrix.python-version }}
         run: |
           pip install setuptools_scm
           if [ ${{ matrix.os }} == "windows-latest" ]

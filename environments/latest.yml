@@ -34,6 +34,6 @@ dependencies:
       - pygeogrids
       - pytest
       - pytest-cov
-      - git+https://github.com/awst-austria/qa4sm-preprocessing.git@master
+      - qa4sm-preprocessing.git
       - git+https://github.com/wpreimes/pytesmo@master
 
