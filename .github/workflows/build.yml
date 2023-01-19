@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [${{ env.DIST_PY_VERS }}]
+        python-version: [$DIST_PY_VERS]
         os: [ "ubuntu-latest", "windows-latest" ]
         include:
           - os: "ubuntu-latest"
