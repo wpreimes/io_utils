@@ -130,7 +130,7 @@ dependencies:
   - munkres=1.1.4
   - mysql-common=8.0.32
   - mysql-libs=8.0.32
-  - ncurses=6.3
+  - ncurses=6.4
   - netcdf4=1.6.2
   - nspr=4.35
   - nss=3.82
