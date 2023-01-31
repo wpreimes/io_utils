@@ -164,7 +164,7 @@ dependencies:
   - readline=8.2
   - scipy=1.9.3
   - setuptools=65.6.3
-  - shapely=2.0.0
+  - shapely=2.0.1
   - sip=6.7.6
   - six=1.16.0
   - snappy=1.1.9
