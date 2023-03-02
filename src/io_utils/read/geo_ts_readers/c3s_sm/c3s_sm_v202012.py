@@ -16,15 +16,15 @@ class GeoC3Sv202012Ts(base_reader.GeoC3STs):
     # Flagging should be done with the masking adapter from pytesmo
     _t0_ref = ('t0', datetime(1970,1,1,0,0,0))
 
-    _col_fillvalues = {'sm': [-9999.0],
-                       'original': [-9999.0],
-                       'filled': [-9999.0],
-                       'gapfilled': [-9999.0],
-                       'anomaly': [-9999.0],
-                       'climatology': [-9999.0],
-                       'sm_uncertainty': [-9999.0],
-                       'uncertainty': [-9999.0],
-                       _t0_ref[0]: [-3440586.5]}
+    _sm_cols = ['sm', 'original', 'filled', 'gapfilled', 'anomaly', 'climatology',
+                'rzsm_1', 'rzsm_2', 'rzsm_3', 'rzsm_4',
+                'uncertainty', 'sm_uncertainty' 'uncertainty_1', 'uncertainty_2',
+                'uncertainty_3', 'uncertainty_4']
+
+    _col_fillvalues = {_t0_ref[0]: [-3440586.5]}
+
+    for col in _sm_cols:
+        _col_fillvalues[col] = [-9999.]
 
     _ds_implemented = [
         ('C3S', 'v202012', 'COMBINED', 'DAILY', 'TCDR'),

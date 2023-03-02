@@ -37,3 +37,24 @@ cm_reds = colors.LinearSegmentedColormap.from_list('Reds',
               [255, 239, 161],
               [255, 51, 51]]) / 255.)
 
+def cm_sm_div_esotc(N=256, set_over_under=True):
+    cmap =  colors.LinearSegmentedColormap.from_list(
+        'EsotcSmAnom',
+        np.array([
+            [129, 74, 8],
+            [178, 117,36],
+            [211, 172, 99],
+            [236, 216, 167],
+            [244, 238, 221],
+            [229, 238, 243],
+            [183, 215, 232],
+            [119, 179, 212],
+            [58, 135, 189],
+            [27, 91, 157],
+            ]) / 255.,
+        N=N
+    )
+    if set_over_under:
+        cmap.set_under([104/255,60/255,6/255])
+        cmap.set_over([14/ 255, 67/ 255, 123/ 255])
+    return cmap
