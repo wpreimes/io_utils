@@ -176,6 +176,8 @@ def lookup_ismn(names, orig_to_merged=_ismn_sensor_types, remove_postfix=True):
         Landcover class(es) to be looked up.
     orig_to_merged: dict
         Lookup table to use
+    remove_postfix: bool, optional
+        Remove (-A, -B etc.) postfix from sensor type that is often in the data
 
     Returns
     -------
@@ -187,4 +189,3 @@ def lookup_ismn(names, orig_to_merged=_ismn_sensor_types, remove_postfix=True):
         names = np.array([x[:-2] if
         x.endswith(('-A', '-B', '-C', '-D', '-E', '-F')) else x for x in names])
     return lookup(names, orig_to_merged)
-
