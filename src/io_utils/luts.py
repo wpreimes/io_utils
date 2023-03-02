@@ -12,6 +12,7 @@ Generally useful lookup tables.
 
 import itertools
 from collections.abc import Iterable
+import warnings
 
 import numpy as np
 
@@ -86,6 +87,8 @@ _ismn_sensor_types = {
     'Hydraprobe-Analog-(5.0-Volt)': 'Capacitance',
     'Hydraprobe-Digital-Sdi-12-(2.5-Volt)': 'Capacitance',
     'Hydraprobe-Digital-Sdi-12-Thermistor-(linear)': 'Capacitance',
+    'Hydraprobe-II-Sdi-12-S': 'Capacitance',
+    'Hydraprobe-II-Sdi-12-W': 'Capacitance',
     'n.s.': 'not specified',
     'ThetaProbe-ML3': 'Capacitance',
     'EC5': 'Capacitance',
@@ -108,11 +111,21 @@ _ismn_sensor_types = {
     'GPS': 'GPS*',
     'Hydraprobe-Analog-(CR800)':'Capacitance',
     'Hydraprobe-T1000A':'Capacitance',
+    'TDR-100': 'TDR',
+    'AquaCheck': 'Capacitance',  # Capacitance/FRD
+    'Buriable-Waveguide': 'TDR',
+    'GS1-Port-2': 'Capacitance',  # Capacitance/FRD
+    'GS1-Port-1': 'Capacitance',
+    'GS1-Port-3': 'Capacitance',
+    'HYDRA': 'Capacitance',
+    'TEROS10': 'Capacitance',   # Capacitance/FRD
+    'TEROS12': 'Capacitance',   # Capacitance/FRD
+    'TRIME-EZ': 'TDR',
+    'Flower-Power': 'Flower-Power',
 }
 
 
-
-def lookup(names, lut, handle_missing='error'):
+def lookup(names, lut, ignore_missing=False):
     """
     Search in LUT (both directions).
 
@@ -122,17 +135,16 @@ def lookup(names, lut, handle_missing='error'):
         One or more classes names that are being looked up
     lut: dict
         Lookup table (works in both directions)
-    handle_missing: str
-        - error: raise an error when the name is not found
-        - warn: print warning when the name is not found (not implemented)
+    ignore_missing: bool, optional
+        Values that are not in the LUT (or if values from the left and right
+        are mixed) a warning is raised for the cases.
+        If this is False, then an Error is raised instead.
 
     Returns
     -------
     lu_name : str or list
         The looked up input
     """
-    if handle_missing.lower() != 'error':
-        raise NotImplementedError("Only 'error' is implemented for handle_missing")
 
     if isinstance(names, str) or not isinstance(names, Iterable):
         names = [names]
@@ -150,12 +162,30 @@ def lookup(names, lut, handle_missing='error'):
         lu_names = [short_to_orig[n] for n in names]
         lu_names = list(itertools.chain.from_iterable(lu_names))
     else:
-        raise ValueError('Some input value is not in the list of classes or classes names are mixed.')
+        if ignore_missing:
+            n_from_right = np.count_nonzero(np.array([n in short_to_orig.keys() for n in names]))
+            n_from_left = np.count_nonzero(np.array([n in lut.keys() for n in names]))
+            if n_from_left >= n_from_right:
+                pass
+            else:
+                lut = short_to_orig
+            looked_up = []
+            for n in names:
+                try:
+                    looked_up.append(lut[n])
+                except KeyError:
+                    warnings.warn(f"Could not find `{n}` in lookup table.")
+                    looked_up.append(np.nan)
+            return looked_up
+        else:
+            raise ValueError(
+                "Some input value is not in the list of classes or "
+                "classes names are mixed. You can ignore these cases by setting"
+                " `handle_missing='warn'")
 
+    return np.array(lu_names)
 
-    return lu_names
-
-def lookup_lc(names, lut=_cci_lc_lut_orig_to_short):
+def lookup_lc(names, lut=_cci_lc_lut_orig_to_short, ignore_missing=False):
     """
     Generalise Land Cover classes to a smaller number of classes.
 
@@ -165,6 +195,10 @@ def lookup_lc(names, lut=_cci_lc_lut_orig_to_short):
         Landcover class(es) to be looked up.
     lut: dict
         Lookup table to use
+    ignore_missing: bool, optional
+        Values that are not in the LUT (or if values from the left and right
+        are mixed) a warning is raised for the cases (otherwise an Error
+         is raised).
 
     Returns
     -------
@@ -172,9 +206,10 @@ def lookup_lc(names, lut=_cci_lc_lut_orig_to_short):
         Generalised landcover class(es)
     """
     names = np.atleast_1d(names)
-    return lookup(names, lut)
+    return lookup(names, lut, ignore_missing=ignore_missing)
 
-def lookup_ismn_sensor(names, lut=_ismn_sensor_types, remove_postfix=True):
+def lookup_ismn_sensor(names, lut=_ismn_sensor_types, remove_postfix=True,
+                       ignore_missing=True):
     """
     Generalise ISMN sensor type classes to a smaller number of classes.
 
@@ -186,6 +221,10 @@ def lookup_ismn_sensor(names, lut=_ismn_sensor_types, remove_postfix=True):
         Lookup table to use
     remove_postfix: bool, optional
         Remove (-A, -B etc.) postfix from sensor type that is often in the data
+    ignore_missing: bool, optional
+        Values that are not in the LUT (or if values from the left and right
+        are mixed) a warning is raised for the cases (otherwise an Error
+         is raised).
 
     Returns
     -------
@@ -196,4 +235,5 @@ def lookup_ismn_sensor(names, lut=_ismn_sensor_types, remove_postfix=True):
     if remove_postfix:
         names = np.array([x[:-2] if
         x.endswith(('-A', '-B', '-C', '-D', '-E', '-F')) else x for x in names])
-    return lookup(names, lut)
+    return lookup(names, lut, ignore_missing=ignore_missing)
+
