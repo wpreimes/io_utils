@@ -112,32 +112,40 @@ _ismn_sensor_types = {
 
 
 
-def lookup(names, orig_to_short=_cci_lc_lut_orig_to_short):
+def lookup(names, lut, handle_missing='error'):
     """
-    LUT between ESA CCI LC and combined LC classes and vice verse.
+    Search in LUT (both directions).
 
     Parameters
     ----------
     name : str or list
-        One or more classes names that are being looked uo
+        One or more classes names that are being looked up
+    lut: dict
+        Lookup table (works in both directions)
+    handle_missing: str
+        - error: raise an error when the name is not found
+        - warn: print warning when the name is not found (not implemented)
 
     Returns
     -------
     lu_name : str or list
         The looked up input
     """
+    if handle_missing.lower() != 'error':
+        raise NotImplementedError("Only 'error' is implemented for handle_missing")
+
     if isinstance(names, str) or not isinstance(names, Iterable):
         names = [names]
 
     short_to_orig = {}
-    for orig, short in orig_to_short.items():
+    for orig, short in lut.items():
         if short not in short_to_orig.keys():
             short_to_orig[short] = [orig]
         else:
             short_to_orig[short].append(orig)
 
-    if all([n in orig_to_short.keys() for n in names]):
-        lu_names = [orig_to_short[n] for n in names]
+    if all([n in lut.keys() for n in names]):
+        lu_names = [lut[n] for n in names]
     elif all([n in short_to_orig.keys() for n in names]):
         lu_names = [short_to_orig[n] for n in names]
         lu_names = list(itertools.chain.from_iterable(lu_names))
@@ -147,7 +155,7 @@ def lookup(names, orig_to_short=_cci_lc_lut_orig_to_short):
 
     return lu_names
 
-def lookup_lc(names, orig_to_merged=_cci_lc_lut_orig_to_short):
+def lookup_lc(names, lut=_cci_lc_lut_orig_to_short):
     """
     Generalise Land Cover classes to a smaller number of classes.
 
@@ -155,7 +163,7 @@ def lookup_lc(names, orig_to_merged=_cci_lc_lut_orig_to_short):
     ----------
     names: int or str or list
         Landcover class(es) to be looked up.
-    orig_to_merged: dict
+    lut: dict
         Lookup table to use
 
     Returns
@@ -164,9 +172,9 @@ def lookup_lc(names, orig_to_merged=_cci_lc_lut_orig_to_short):
         Generalised landcover class(es)
     """
     names = np.atleast_1d(names)
-    return lookup(names, orig_to_merged)
+    return lookup(names, lut)
 
-def lookup_ismn(names, orig_to_merged=_ismn_sensor_types, remove_postfix=True):
+def lookup_ismn(names, lut=_ismn_sensor_types, remove_postfix=True):
     """
     Generalise ISMN sensor type classes to a smaller number of classes.
 
@@ -174,7 +182,7 @@ def lookup_ismn(names, orig_to_merged=_ismn_sensor_types, remove_postfix=True):
     ----------
     names: str or list
         Landcover class(es) to be looked up.
-    orig_to_merged: dict
+    lut: dict
         Lookup table to use
     remove_postfix: bool, optional
         Remove (-A, -B etc.) postfix from sensor type that is often in the data
@@ -182,10 +190,10 @@ def lookup_ismn(names, orig_to_merged=_ismn_sensor_types, remove_postfix=True):
     Returns
     -------
     values: np.array
-        Generalised landcover class(es)
+        Generalised sensor type(s)
     """
     names = np.atleast_1d(names)
     if remove_postfix:
         names = np.array([x[:-2] if
         x.endswith(('-A', '-B', '-C', '-D', '-E', '-F')) else x for x in names])
-    return lookup(names, orig_to_merged)
+    return lookup(names, lut)
