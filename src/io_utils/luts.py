@@ -174,7 +174,7 @@ def lookup_lc(names, lut=_cci_lc_lut_orig_to_short):
     names = np.atleast_1d(names)
     return lookup(names, lut)
 
-def lookup_ismn(names, lut=_ismn_sensor_types, remove_postfix=True):
+def lookup_ismn_sensor(names, lut=_ismn_sensor_types, remove_postfix=True):
     """
     Generalise ISMN sensor type classes to a smaller number of classes.
 
