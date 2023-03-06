@@ -35,7 +35,7 @@ def _store(dat: xr.Dataset, cell: int, out_path: str):
             filename=os.path.join(out_path, f"{cell:04}.nc"),
             n_loc=len(gpis), mode=mode)
 
-        cell_writer.write_ts_all_loc(gpis, data, time,
+        cell_writer.write_all(gpis, data, time,
                                      lons=lons, lats=lats,
                                      attributes=var_attrs)
         cell_writer.close()
