@@ -561,7 +561,7 @@ def test_ordered_adding(limit=None):
 
 class ReadNcImg(object):
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
-                 z_var='time', cell_center_origin=True, subgrid=None):
+                 z_var='time', cell_center_origin=True, subgrid=None, fill_values=None):
         """
         Wrapper Class for reading 2D images at a certain time stamp from an nc file
 
@@ -587,6 +587,8 @@ class ReadNcImg(object):
             Whether the origin of the point is in the middle of the pixel or not.
         subgrid : pygeogrids.BasicGrid, optional (default: NOne)
             Only load data for that grid
+        fill_values: dict, optional (default: None)
+            Columns as keys and values to replace with nan as values
         """
         if resxy is None:
             self.irregular = True
@@ -602,7 +604,10 @@ class ReadNcImg(object):
         self.filepath = filepath
         self.filename = os.path.basename(os.path.normpath(filepath))[:-3]
         self.parent_dir = os.path.abspath(os.path.join(filepath, os.pardir))
+        self.fill_values = fill_values
+
         self.ds = self._open()
+
 
         self.time = None
         self.df = None # will be done when needed
@@ -646,6 +651,10 @@ class ReadNcImg(object):
         except TypeError:
             ds = xr.open_dataset(self.filepath)
 
+        if self.fill_values is not None:
+            for k, v in self.fill_values.items():
+                ds[k].values[np.where(np.isin(ds[k].values, np.atleast_1d(v)))] \
+                    = np.nan
         return ds
 
     def _subset_with_grid(self, df) -> pd.DataFrame:

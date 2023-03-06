@@ -2,12 +2,11 @@
 # To create the full conda environment: conda env create -f environment.yml
 name: io_utils
 channels:
-  - defaults
   - conda-forge
 dependencies:
   - numpy
   - pandas
-  - netCDF4
+  - netCDF4!=1.6.2
   - matplotlib
   - cartopy>=0.21
   - cftime>=1.1.2
@@ -35,5 +34,5 @@ dependencies:
       - pytest
       - pytest-cov
       - qa4sm-preprocessing
-      - git+https://github.com/wpreimes/pytesmo@master
+      - pytesmo
 

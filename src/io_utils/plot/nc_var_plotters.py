@@ -48,16 +48,19 @@ class NcVarPlotter(ReadNcImg):
     dpi : int, optional (default: 300)
         Resolution (dots per inch) of the map (also affects rasterised parts of
         vector plots!!)
+    fill_values: dict, optional (default: None)
+        Names and one or multiple values that should be nan in the plot
     """
 
     def __init__(self, filepath, resxy=(0.25, 0.25), lat_var='lat', lon_var='lon',
                  z_var='time', cell_center_origin=True, subgrid=None,
-                 out_dir=None, dpi=300):
+                 out_dir=None, dpi=300, fill_values=None):
 
         super(NcVarPlotter, self).__init__(filepath=filepath, resxy=resxy,
                                            lat_var=lat_var, lon_var=lon_var,
                                            z_var=z_var, subgrid=subgrid,
-                                           cell_center_origin=cell_center_origin)
+                                           cell_center_origin=cell_center_origin,
+                                           fill_values=fill_values)
 
         self.out_dir = out_dir if out_dir else self.parent_dir
         self.dpi = dpi
