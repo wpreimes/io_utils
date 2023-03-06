@@ -59,7 +59,7 @@ _ismn_sensor_types = {
     'CS616-1': 'TDR',
     'CS616-2': 'TDR',
     'CS616': 'TDR',
-    'SMP1': 'Resitance', #smp is probably restistance
+    'SMP1': 'Resistance', #smp is probably restistance
     'Water-Matric-Potential-Sensor-229L': 'Hygrometric',
     'Water-Matric-Potential-Sensor-229L-W': 'Hygrometric',
     'GS-3': 'Capacitance',
