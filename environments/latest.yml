@@ -2,6 +2,7 @@
 # To create the full conda environment: conda env create -f environment.yml
 name: io_utils
 channels:
+  - defaults
   - conda-forge
 dependencies:
   - numpy
