@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9']  # main python version(s) to runs sdist for
-        os: [ "ubuntu-latest"] #, "windows-latest" ]  # windows: whl, linux: dist
+        os: [ "ubuntu-latest", "windows-latest" ]  # windows: whl, linux: dist
         package: [true]  # run setup.py sdist
         include:
           # Other runs where sdist is not called:
