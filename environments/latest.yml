@@ -27,7 +27,7 @@ dependencies:
       - smecv_grid
       - pygeogrids
       - qa4sm-preprocessing
-      - https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
+      - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
       - pytesmo
       - pytest
       - pytest-cov
