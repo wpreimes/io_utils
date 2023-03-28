@@ -43,12 +43,15 @@ def test_read_yml():
     else:
         assert LEVEL1.OS_VAR == 'linux'
         assert(LEVEL1.PATH == '/home')
+        assert LEVEL1.PATH_HOME == os.path.join(os.path.expanduser('~'), 'test')
+        assert LEVEL1.PATH_HOME2 == os.path.join(os.path.expanduser('~'), 'test', 'mydir')
 
     assert LEVEL1.relPATH == os.path.join('this', 'relpath')
     assert(OTHER.TEST_1 == 'TEST1')
     assert(OTHER.TEST_2 == 2)
     assert(OTHER.TEST_DICT == {'one':1})
     assert(OTHER.TEST_LIST == [1,2,3])
+
 
 
 if __name__ == '__main__':

@@ -6,6 +6,8 @@ LEVEL1:
   A_MODULE<IMPORT>: numpy.ma
   PATH<PATH><WIN> : ['C:\', 'Users']
   PATH<PATH><LINUX> : ['/', 'home']
+  PATH_HOME<PATH><LINUX> : '~/test'
+  PATH_HOME2<PATH><LINUX> : ['~', 'test', 'mydir']
   relPATH<PATH>:
     - 'this'
     - 'relpath'
