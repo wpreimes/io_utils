@@ -79,7 +79,9 @@ def read_level(data: dict):
             # handle other tags
             if ('<PATH>' in k) and (k is not None):
                 k = k.replace('<PATH>', '')
-                v = os.path.join(*v)
+                v = os.path.join(*v) if not isinstance(v, str) else v
+                if '~' in v:
+                    v = v.replace('~', os.path.expanduser('~'))
             if ('<IMPORT>' in k ) and (k is not None):
                 k = k.replace('<IMPORT>', '')
                 # Modules are strings.separated.by.dots:
