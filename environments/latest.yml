@@ -2,25 +2,19 @@
 # To create the full conda environment: conda env create -f environment.yml
 name: io_utils
 channels:
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
-  - numpy
-  - pandas
-  - netCDF4!=1.6.2
+  - geopandas   # let geopandas install gdal, pyproj etc.
+  - netCDF4
   - matplotlib
   - cartopy>=0.21
-  - cftime>=1.1.2
-  - gdal
-  - shapely
-  - fiona>=1.8
-  - pyproj
+  - xarray
   - pip
   - pip:
       - setuptools_scm
       - datetime
       - pyyaml
-      - xarray
       - configparser
       - more_itertools
       - Equi7Grid
@@ -32,8 +26,8 @@ dependencies:
       - lxml
       - smecv_grid
       - pygeogrids
+      - qa4sm-preprocessing
+      - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
+      - pytesmo
       - pytest
       - pytest-cov
-      - qa4sm-preprocessing
-      - pytesmo
-
