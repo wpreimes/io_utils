@@ -75,6 +75,7 @@ dependencies:
   - libclang13=15.0.7
   - libcurl=7.88.1
   - libdeflate=1.18
+  - libexpat=2.5.0
   - libffi=3.4.2
   - libgdal=3.6.3
   - libglib=2.74.1
