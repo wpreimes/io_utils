@@ -150,7 +150,7 @@ dependencies:
   - mysql-libs=8.0.32
   - ncurses=6.3
   - netcdf4=1.6.3
-  - networkx=3.0
+  - networkx=3.1
   - nspr=4.35
   - nss=3.89
   - openjpeg=2.5.0
@@ -158,13 +158,13 @@ dependencies:
   - packaging=23.0
   - pandas=1.5.3
   - pcre2=10.40
-  - pillow=9.4.0
+  - pillow=9.5.0
   - pip=23.0.1
   - pixman=0.40.0
   - platformdirs=3.2.0
   - ply=3.11
   - pooch=1.7.0
-  - poppler=23.03.0
+  - poppler=23.04.0
   - poppler-data=0.4.12
   - postgresql=15.2
   - proj=9.2.0
@@ -243,7 +243,7 @@ dependencies:
       - configobj==5.0.8
       - configparser==5.3.0
       - country-bounding-boxes==0.2.3
-      - coverage==7.2.2
+      - coverage==7.2.3
       - cython==0.29.34
       - dask==2023.3.2
       - datetime==5.1
