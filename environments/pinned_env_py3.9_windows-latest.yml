@@ -199,7 +199,7 @@ dependencies:
       - equi7grid==0.2.0
       - exceptiongroup==1.1.1
       - fasteners==0.18
-      - fsspec==2023.3.0
+      - fsspec==2023.4.0
       - geographiclib==2.0
       - geopathfinder==0.1.4
       - geospade==0.2.3
@@ -223,7 +223,7 @@ dependencies:
       - pynetcf==0.4.0.post1.dev11+g5bf538c
       - pyresample==1.26.1
       - pytesmo==0.15.1
-      - pytest==7.2.2
+      - pytest==7.3.0
       - pytest-cov==4.0.0
       - pytileproj==0.0.16
       - pyyaml==6.0
