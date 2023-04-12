@@ -2,24 +2,33 @@
 
 from collections import OrderedDict
 try:
-    import ogr
-    import osr
-except (ImportError, ModuleNotFoundError):
-    from osgeo import ogr, osr
+    try:
+        import ogr
+        import osr
+    except (ImportError, ModuleNotFoundError):
+        from osgeo import ogr, osr
+except ImportError:
+    raise ImportError('Could not import ogr/osr, please install `gdal` with conda.')
 import os
 import numpy as np
 import pandas as pd
 from pygeogrids.grids import CellGrid
+from typing import Union, List, Optional
+from io_utils.utils import deprecated
 
+path_shp_countries = os.path.join(
+    os.path.dirname(__file__), 'countries_shp', 'ne_110m_admin_0_countries.shp')
+
+@deprecated("Use get_shp_grid_points function")
 class GridShpAdapter(object):
     def __init__(self, grid):
         self.grid = grid
         self.shp_reader = CountryShpReader()
-        self.country_names = sorted(np.unique(self.shp_reader.df['country'].values))
-        self.continent_names = sorted(np.unique(self.shp_reader.df['continent'].values))
+        self.country_names = sorted(np.unique(self.shp_reader.features['NAME'].values))
+        self.continent_names = sorted(np.unique(self.shp_reader.features['CONTINENT'].values))
 
     def __repr__(self):
-        s =  (
+        s = (
             f"Continent Names: \n"
             f"{self.continent_names} \n"
             f"Country Names: \n"
@@ -33,7 +42,7 @@ class GridShpAdapter(object):
 
         Parameters
         ----------
-        names : list
+        names : list[str]
             List of countries and/or continents
         verbose : bool, optional (default: False)
             Show progress when creating subgrid
@@ -47,8 +56,8 @@ class GridShpAdapter(object):
         gpis = np.array([], dtype=int)
 
         ids = []
-        ids += self.shp_reader.country_ids(*names)
-        ids += self.shp_reader.country_ids(*self.shp_reader.continent_countries(*names))
+        ids += self.shp_reader.country_ids(*names).tolist()
+        ids += self.shp_reader.country_ids(*self.shp_reader.continent_ids(names)).tolist()
 
         ids = np.unique(np.array([ids]))
 
@@ -57,7 +66,7 @@ class GridShpAdapter(object):
                 print('Creating subset {} of {} ... to speed this up '
                       'improve pygeogrids.grids.get_shp_grid_points()'.format(i + 1, ids.size))
 
-            subgrid = self.grid.get_shp_grid_points(self.shp_reader._geom(id))
+            subgrid = self.grid.get_shp_grid_points(self.shp_reader.geom(id))
             if subgrid is not None:
                 poly_gpis = subgrid.activegpis
                 gpis = np.append(gpis, poly_gpis)
@@ -88,10 +97,10 @@ class GridShpAdapter(object):
         cont_cells : OrderedDict
             Cells per continent.
         """
-        df = self.shp_reader.df
+        df = self.shp_reader.features
         cont_cells = dict()
 
-        all_conts = np.sort(np.unique(df['continent'].values))
+        all_conts = np.sort(np.unique(df['CONTINENT'].values))
 
         if continents is None:
             continents = all_conts
@@ -114,54 +123,129 @@ class GridShpAdapter(object):
 
         return cont_cells
 
-class CountryShpReader(object):
+class ShpReader:
+    """
+    Wrapper around gdal to read geometries with chosen name from passed
+    shapefile field. Shapefiles with more features and many feature columns
+    are smaller than fewer features / columns.
+    If you know the column where you look for a values, pass it as the `field`,
+    this will also speed up the search.
+    """
+    def __init__(
+            self,
+            shp_path: str,
+            fields: Optional[Union[list, str]] = None,
+            driver: str = 'ESRI Shapefile'
+        ):
+        """
 
-    def __init__(self, name_field="NAME", continent_field="CONTINENT"):
+        Parameters
+        ----------
+        shp_path: str
+            Path to shapefile
+        fields: list[str], str or None
+            Shapefile fields to read from attribute table. If None is passed,
+            all fields are read.
+        driver: str, optional
+            Driver to use for reading shapefile. Default is ESRI Shapefile.
+        """
+        self.shp_path = shp_path
+        self.driver = driver
+        self._init_open_shp()
 
-        self.name_field = name_field
-        self.continent_field = continent_field
+        self.fields = None if fields is None else np.atleast_1d(fields)
+        all_fields = [field.name for field in self.layer.schema]
 
-        self.path = os.path.join(os.path.dirname(__file__),
-                            'countries_shp', 'ne_110m_admin_0_countries.shp')
-        self._build()
+        if self.fields is None:
+            self.fields = all_fields
+        else:
+            # check each element of fields is in all_fields
+            for field in self.fields:
+                if field not in all_fields:
+                    raise ValueError(f"Field {field} not in shapefile")
 
-    def _build(self):
-        shp = ogr.Open(self.path, 0)
-        layer = shp.GetLayer()
-        n_features = layer.GetFeatureCount()
+        self.features = self._init_build_feature_table()
 
-        names, conts, ids = [], [], []
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"shp_path: {self.shp_path}\n" \
+               f"See `{name}.features` for the full feature table.\n" \
+               f"----------------------------------------------------\n" \
+               f"{len(self.features.index)} features with Fields: " \
+               f"{self.fields}"
 
-        for n in range(n_features):
-            feature = layer.GetFeature(n)
-            name = feature.GetField(self.name_field)
-            cont = feature.GetField(self.continent_field)
-            names.append(name)
-            conts.append(cont)
+    def _init_open_shp(self):
+        """
+        Open shapefile and get layer
+        """
+        self.driver = ogr.GetDriverByName(self.driver)
+        self.ds = self.driver.Open(self.shp_path)
+        self.layer = self.ds.GetLayer()
+        self.srs = self.layer.GetSpatialRef()
+
+    def _init_build_feature_table(self):
+        """
+        Extract names of features in the relevant fields and stores them
+        in a pandas dataframe.
+        Each row in the data frame refers to the same feature in the shapefile.
+        The index is the id under which the feature is found.
+        Columns can be used to find the id(s) for a given name.
+
+        Returns
+        -------
+        df: pd.DataFrame
+            Dataframe with feature ids and names for features in passed fields
+
+        """
+        ids = []
+        features = {}
+
+        for n in range(self.layer.GetFeatureCount()):
+            feature = self.layer.GetFeature(n)
+            for field in self.fields:
+                if field not in features:
+                    features[field] = []
+                features[field].append(feature.GetField(field))
             ids.append(n)
 
-        self.df = pd.DataFrame(index=ids, data={'continent': conts, 'country': names})
+        return pd.DataFrame(index=ids, data=features)
 
-    def _geom(self, id):
-        shp = ogr.Open(self.path, 0)
-        layer = shp.GetLayer()
-        feature = layer.GetFeature(id)
+    def lookup_id(self, names: Union[str, list, np.ndarray]) -> np.ndarray:
+        """
+        Lookup ids for passed names in passed field
+        """
+        names = np.atleast_1d(names)
+        rows = np.unique(np.where(np.isin(self.features.values, names))[0])
+        return self.features.index.values[rows]
+
+    def geom(self, id) -> ogr.Geometry:
+        """
+        Get geometry of feature with passed id
+        """
+        feature = self.layer.GetFeature(id)
         geom = feature.geometry().Clone()
-        # sref = osr.SpatialReference()
-        # sref = sref.ImportFromEPSG(4326)
-        #geom = geom.AssignSpatialReference(sref)
         return geom
 
-    def country_ids(self, *names):
-        if isinstance(names, str):
-            names = [names]
-        ids = []
-        for name in names:
-            country_ids = self.df.loc[self.df.country == name].index.values
-            for id in country_ids:
-                ids.append(id)
+@deprecated("Use get_shp_grid_points function")
+class CountryShpReader(ShpReader):
+    def __init__(self):
+        path = os.path.join(os.path.dirname(__file__),
+                            'countries_shp', 'ne_110m_admin_0_countries.shp')
 
-        return ids
+        super().__init__(shp_path=path, fields=['NAME', 'CONTINENT'])
+
+    def get_geoms(self, names: Union[str, list]) -> list:
+        """
+        Get geometries for passed names
+
+        Parameters
+        ----------
+        names: str or list
+            Names of countries or continents to get geometries for.
+            Possible names are
+        """
+        ids = self.lookup_id(names)
+        return [self.geom(id) for id in ids]
 
     def continent_countries(self, *continents):
         if isinstance(continents, str):
@@ -169,7 +253,154 @@ class CountryShpReader(object):
 
         names = np.array([])
         for continent in continents:
-            n = self.df.loc[self.df.continent == continent, 'country'].values
+            n = self.features.loc[self.features["CONTINENT"] == continent, 'NAME'].values
             names = np.append(names, n)
 
         return names
+
+    def country_ids(self, *names) -> np.array:
+        """
+        Get feature ids of passed COUNTRY names.
+
+        Parameters
+        ----------
+        name: str
+            Name(s) of one or multiple countries to get ids for
+
+        Returns
+        -------
+        ids: list[int]
+            Ids of countries with passed names
+        """
+        return self.lookup_id(names)
+
+    def continent_ids(self, names) -> np.array:
+        """
+        Get feature ids of passed CONTINENT names.
+        Note that Europe and Asia were arbitrarily split into two continents.
+
+        Parameters
+        ----------
+        name: str, list[str]
+            Name(s) of one or multiple continents to get ids for
+
+        Returns
+        -------
+        ids: list[int]
+            Ids of countries with passed names
+        """
+        return self.lookup_id(names)
+
+def subgrid_for_shp(grid, values, shp_path=path_shp_countries,
+                    field=None, shp_driver='ESRI Shapefile',
+                    verbose=False):
+    """
+    Cut grid to selected shape(s) from passed shapefile
+
+    Parameters
+    ----------
+    grid: CellGrid
+        Grid that should be cut to shape(s) in passed shapefile
+    values: np.ndarray or list
+        Values in field that are used to select the shape(s) to cut the grid
+        to. Usually e.g. a list of country names
+    shp_path: str, optional
+        Path to shapefile. By default we use the 110m resolution country
+        shape file provided with this code.
+        ----------------------------------------------------------------------
+        It contains the following country names (field: 'NAME'):
+        ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Antarctica',
+        'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas',
+        'Bangladesh','Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia',
+        'Bosnia and Herz.', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso',
+        'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Central African Rep.', 'Chad',
+        'Chile','China', 'Colombia', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus',
+        'Czechia', "Côte d'Ivoire", 'Dem. Rep. Congo', 'Denmark', 'Djibouti',
+        'Dominican Rep.', 'Ecuador', 'Egypt', 'El Salvador', 'Eq. Guinea',
+        'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Is.', 'Fiji', 'Finland',
+        'Fr. S. Antarctic Lands', 'France', 'France (SA)', 'Gabon', 'Gambia',
+        'Georgia', 'Germany', 'Ghana', 'Greece', 'Greenland', 'Guatemala',
+        'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary',
+        'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel',
+        'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kosovo',
+        'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia',
+        'Libya', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi',
+        'Malaysia', 'Mali', 'Mauritania', 'Mexico', 'Moldova', 'Mongolia',
+        'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'N. Cyprus',
+        'Namibia', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand',
+        'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'Norway', 'Oman',
+        'Pakistan', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay',
+        'Peru', 'Philippines', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar',
+        'Romania', 'Russia (AS)', 'Russia (EU)', 'Rwanda', 'S. Sudan',
+        'Saudi Arabia', 'Senegal', 'Serbia', 'Sierra Leone', 'Slovakia',
+        'Slovenia', 'Solomon Is.', 'Somalia', 'Somaliland', 'South Africa',
+        'South Korea', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden',
+        'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand',
+        'Timor-Leste', 'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey',
+        'Turkmenistan', 'Uganda', 'Ukraine', 'United Arab Emirates',
+        'United Kingdom', 'United States of America', 'Uruguay', 'Uzbekistan',
+        'Vanuatu', 'Venezuela', 'Vietnam', 'W. Sahara', 'Yemen', 'Zambia',
+        'Zimbabwe', 'eSwatini']
+        ----------------------------------------------------------------------
+        and the following continent names (field: 'CONTINENT'):
+        ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania',
+        'Seven seas (open ocean)', 'South America']
+
+
+    field: str or list[str], optional
+        Shapefile fields to read from attribute table. The chosen fields
+        are expected to contain the passed value(s). If None is passed,
+        all fields are read (slow).
+        Usually a name field, e.g. to look up country or continent names.
+    shp_driver: str, optional
+        Driver to use for reading vector shapefile. Default is ESRI Shapefile.
+    verbose: bool, optional
+        If True, print some information while processing
+
+    Returns
+    -------
+    subgrid: CellGrid
+        Subgrid that is cut to the shape(s) in the shapefile
+    """
+    shp_reader = ShpReader(shp_path, fields=field, driver=shp_driver)
+
+    if verbose:
+        print(shp_reader)
+
+    if verbose:
+        print("--------------")
+        print("Feature table:")
+        print(shp_reader.features)
+
+    ids = np.unique(shp_reader.lookup_id(values))
+
+    if len(ids) == 0:
+        raise ValueError(f"No features found for {values} in "
+                         f"fields {shp_reader.fields}")
+
+    gpis = np.array([], dtype=int)
+    for i, id in enumerate(ids):
+        if verbose:
+            print('Creating subset {} of {} ... to speed this up '
+                  'improve pygeogrids.grids.get_shp_grid_points()'.format(
+                   i + 1, ids.size))
+
+        subgrid = grid.get_shp_grid_points(shp_reader.geom(id))
+        if subgrid is not None:
+            poly_gpis = subgrid.activegpis
+            gpis = np.append(gpis, poly_gpis)
+        else:
+            pass
+
+    if gpis.size == 0:
+        empty_arr = np.array([])
+        return CellGrid(lon=empty_arr, lat=empty_arr, cells=empty_arr)
+    else:
+        return grid.subgrid_from_gpis(np.unique(gpis))
+
+
+if __name__ == '__main__':
+    from smecv_grid.grid import SMECV_Grid_v052
+    grid = SMECV_Grid_v052()
+    sgrid = subgrid_for_shp(grid, ['Germany', 'France', 'Spain', 'Italy', 'Austria'],
+                            verbose=True)

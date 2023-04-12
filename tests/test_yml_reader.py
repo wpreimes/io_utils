@@ -43,8 +43,8 @@ def test_read_yml():
     else:
         assert LEVEL1.OS_VAR == 'linux'
         assert(LEVEL1.PATH == '/home')
-        assert LEVEL1.PATH_HOME == os.path.join(os.path.expanduser('~'), 'test')
-        assert LEVEL1.PATH_HOME2 == os.path.join(os.path.expanduser('~'), 'test', 'mydir')
+        assert LEVEL1.PATH_HOME == os.path.join('/', 'home', os.environ['USER'], 'test')
+        assert LEVEL1.PATH_HOME2 == os.path.join('/', 'home', os.environ['USER'], 'test', 'mydir')
 
     assert LEVEL1.relPATH == os.path.join('this', 'relpath')
     assert(OTHER.TEST_1 == 'TEST1')

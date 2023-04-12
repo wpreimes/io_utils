@@ -2,13 +2,15 @@
 
 """
 Recursively reads content of a yml file as a dictionary.
-Supports tags for keys to transform elements while reading.
-    <PATH>: turns a string/list into a python path object
-    <WIN> or <LINUX>: Marks elements for inclusion only when running under OS
+Supports custom <tags> to transform elements while reading.
+    <PATH>: turns a string/list into a python path object with os.path.join
+    <WIN> or <LINUX>: Marks elements for inclusion only for certain OS
+                      Elements from other OS are DROPPED
     <IMPORT>: Marks element to be imported
         str: import as module (e.g. `numpy.ma`)
         [str, str]: import function or class (e.g. [`np.ma`,`masked_array`])
 """
+
 import numpy as np
 import yaml
 import sys
@@ -81,7 +83,7 @@ def read_level(data: dict):
                 k = k.replace('<PATH>', '')
                 v = os.path.join(*v) if not isinstance(v, str) else v
                 if '~' in v:
-                    v = v.replace('~', os.path.expanduser('~'))
+                    v = v.replace('~', f"/home/{os.environ['USER']}")
             if ('<IMPORT>' in k ) and (k is not None):
                 k = k.replace('<IMPORT>', '')
                 # Modules are strings.separated.by.dots:
