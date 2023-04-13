@@ -138,7 +138,8 @@ class ShpReader:
             driver: str = 'ESRI Shapefile'
         ):
         """
-
+        Read shp-file and create feature table
+        
         Parameters
         ----------
         shp_path: str
@@ -148,6 +149,13 @@ class ShpReader:
             all fields are read.
         driver: str, optional
             Driver to use for reading shapefile. Default is ESRI Shapefile.
+        
+        Attributes
+        ----------
+        features: pd.DataFrame
+            Feature table where each row is a polygon in the shp file and
+            each column represents a field. Fields contain attributes used
+            to filter out the relevant polygons.
         """
         self.shp_path = shp_path
         self.driver = driver
@@ -164,6 +172,10 @@ class ShpReader:
                 if field not in all_fields:
                     raise ValueError(f"Field {field} not in shapefile")
 
+        # The feature table contains all geometries in the shp file and
+        # their attributes from shp fields as columns.
+        # Attributes are used to select relevant features, e.g. countries
+        # by name.
         self.features = self._init_build_feature_table()
 
     def __repr__(self):
@@ -225,6 +237,7 @@ class ShpReader:
         feature = self.layer.GetFeature(id)
         geom = feature.geometry().Clone()
         return geom
+
 
 @deprecated("Use get_shp_grid_points function")
 class CountryShpReader(ShpReader):
@@ -291,6 +304,7 @@ class CountryShpReader(ShpReader):
         """
         return self.lookup_id(names)
 
+
 def subgrid_for_shp(grid, values, shp_path=path_shp_countries,
                     field=None, shp_driver='ESRI Shapefile',
                     verbose=False):
@@ -303,18 +317,22 @@ def subgrid_for_shp(grid, values, shp_path=path_shp_countries,
         Grid that should be cut to shape(s) in passed shapefile
     values: np.ndarray or list
         Values in field that are used to select the shape(s) to cut the grid
-        to. Usually e.g. a list of country names
+        to. Usually e.g. a list of country names or continent names.
+        The passed values are looked up in all loaded fields, i.e. in all
+        columns of the feature table. A polygon is selected if the value
+        appears in ANY of the columns (fields) of the feature table.
     shp_path: str, optional
         Path to shapefile. By default we use the 110m resolution country
-        shape file provided with this code.
+        shape file provided in this package.
         ----------------------------------------------------------------------
         It contains the following country names (field: 'NAME'):
         ['Afghanistan', 'Albania', 'Algeria', 'Angola', 'Antarctica',
-        'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas',
-        'Bangladesh','Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia',
-        'Bosnia and Herz.', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso',
-        'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Central African Rep.', 'Chad',
-        'Chile','China', 'Colombia', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus',
+        'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+        'Bahamas', 'Bangladesh','Belarus', 'Belgium', 'Belize', 'Benin',
+        'Bhutan', 'Bolivia', 'Bosnia and Herz.', 'Botswana', 'Brazil',
+        'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia',
+        'Cameroon', 'Canada', 'Central African Rep.', 'Chad', 'Chile','China',
+        'Colombia', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus',
         'Czechia', "Côte d'Ivoire", 'Dem. Rep. Congo', 'Denmark', 'Djibouti',
         'Dominican Rep.', 'Ecuador', 'Egypt', 'El Salvador', 'Eq. Guinea',
         'Eritrea', 'Estonia', 'Ethiopia', 'Falkland Is.', 'Fiji', 'Finland',
@@ -323,39 +341,42 @@ def subgrid_for_shp(grid, values, shp_path=path_shp_countries,
         'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary',
         'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel',
         'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kosovo',
-        'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia',
-        'Libya', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi',
-        'Malaysia', 'Mali', 'Mauritania', 'Mexico', 'Moldova', 'Mongolia',
-        'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'N. Cyprus',
-        'Namibia', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand',
-        'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'Norway', 'Oman',
-        'Pakistan', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay',
-        'Peru', 'Philippines', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar',
-        'Romania', 'Russia (AS)', 'Russia (EU)', 'Rwanda', 'S. Sudan',
-        'Saudi Arabia', 'Senegal', 'Serbia', 'Sierra Leone', 'Slovakia',
-        'Slovenia', 'Solomon Is.', 'Somalia', 'Somaliland', 'South Africa',
-        'South Korea', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden',
-        'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand',
-        'Timor-Leste', 'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey',
-        'Turkmenistan', 'Uganda', 'Ukraine', 'United Arab Emirates',
-        'United Kingdom', 'United States of America', 'Uruguay', 'Uzbekistan',
-        'Vanuatu', 'Venezuela', 'Vietnam', 'W. Sahara', 'Yemen', 'Zambia',
-        'Zimbabwe', 'eSwatini']
+        'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho',
+        'Liberia', 'Libya', 'Lithuania', 'Luxembourg', 'Macedonia',
+        'Madagascar', 'Malawi', 'Malaysia', 'Mali', 'Mauritania', 'Mexico',
+        'Moldova', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique',
+        'Myanmar', 'N. Cyprus', 'Namibia', 'Nepal', 'Netherlands',
+        'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria',
+        'North Korea', 'Norway', 'Oman', 'Pakistan', 'Palestine', 'Panama',
+        'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland',
+        'Portugal', 'Puerto Rico', 'Qatar', 'Romania', 'Russia (AS)',
+        'Russia (EU)', 'Rwanda', 'S. Sudan', 'Saudi Arabia', 'Senegal',
+        'Serbia', 'Sierra Leone', 'Slovakia', 'Slovenia', 'Solomon Is.',
+        'Somalia', 'Somaliland', 'South Africa', 'South Korea', 'Spain',
+        'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria',
+        'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo',
+        'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Uganda',
+        'Ukraine', 'United Arab Emirates', 'United Kingdom',
+        'United States of America', 'Uruguay', 'Uzbekistan', 'Vanuatu',
+        'Venezuela', 'Vietnam', 'W. Sahara', 'Yemen', 'Zambia', 'Zimbabwe',
+        'eSwatini']
         ----------------------------------------------------------------------
         and the following continent names (field: 'CONTINENT'):
         ['Africa', 'Antarctica', 'Asia', 'Europe', 'North America', 'Oceania',
         'Seven seas (open ocean)', 'South America']
-
-
     field: str or list[str], optional
-        Shapefile fields to read from attribute table. The chosen fields
-        are expected to contain the passed value(s). If None is passed,
-        all fields are read (slow).
-        Usually a name field, e.g. to look up country or continent names.
+        Shapefile field(s) to use for attribute table columns.
+        If None is passed, all fields are used (slow). Limiting the fields
+        leads to faster lookup times and is recommended especially for complex
+        shapefiles.
+        For the default countries shp file it is suggested to use the fields:
+        "NAME" and "CONTINENT" to search for countries and continents by their
+        names.
     shp_driver: str, optional
         Driver to use for reading vector shapefile. Default is ESRI Shapefile.
     verbose: bool, optional
-        If True, print some information while processing
+        If True, print some information while processing. This also prints
+        all available fields and the attribute table after loading the file.
 
     Returns
     -------
@@ -402,5 +423,5 @@ def subgrid_for_shp(grid, values, shp_path=path_shp_countries,
 if __name__ == '__main__':
     from smecv_grid.grid import SMECV_Grid_v052
     grid = SMECV_Grid_v052()
-    sgrid = subgrid_for_shp(grid, ['Germany', 'France', 'Spain', 'Italy', 'Austria'],
+    sgrid = subgrid_for_shp(grid, ['Russia'],
                             verbose=True)
