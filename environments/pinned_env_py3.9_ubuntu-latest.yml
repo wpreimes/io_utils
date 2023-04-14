@@ -29,7 +29,7 @@ dependencies:
   - cligj=0.7.2
   - contourpy=1.0.7
   - cryptography=40.0.1
-  - curl=7.88.1
+  - curl=8.0.1
   - cycler=0.11.0
   - dbus=1.13.6
   - expat=2.5.0
@@ -89,7 +89,7 @@ dependencies:
   - libclang=15.0.7
   - libclang13=15.0.7
   - libcups=2.3.3
-  - libcurl=7.88.1
+  - libcurl=8.0.1
   - libdb=6.2.32
   - libdeflate=1.18
   - libedit=3.1.20191231
