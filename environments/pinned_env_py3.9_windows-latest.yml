@@ -24,7 +24,7 @@ dependencies:
   - cligj=0.7.2
   - colorama=0.4.6
   - contourpy=1.0.7
-  - cryptography=40.0.1
+  - cryptography=40.0.2
   - curl=8.0.1
   - cycler=0.11.0
   - expat=2.5.0
@@ -79,7 +79,7 @@ dependencies:
   - libffi=3.4.2
   - libgdal=3.6.3
   - libglib=2.74.1
-  - libhwloc=2.9.0
+  - libhwloc=2.9.1
   - libiconv=1.17
   - libjpeg-turbo=2.1.5.1
   - libkml=1.3.0
@@ -156,7 +156,7 @@ dependencies:
   - six=1.16.0
   - snappy=1.1.10
   - sqlite=3.40.0
-  - tbb=2021.8.0
+  - tbb=2021.9.0
   - threadpoolctl=3.1.0
   - tiledb=2.13.2
   - tk=8.6.12
@@ -194,7 +194,7 @@ dependencies:
       - country-bounding-boxes==0.2.3
       - coverage==7.2.3
       - cython==0.29.34
-      - dask==2023.3.2
+      - dask==2023.4.0
       - datetime==5.1
       - entrypoints==0.4
       - equi7grid==0.2.0
@@ -224,7 +224,7 @@ dependencies:
       - pynetcf==0.4.0.post1.dev11+g5bf538c
       - pyresample==1.26.1
       - pytesmo==0.15.1
-      - pytest==7.3.0
+      - pytest==7.3.1
       - pytest-cov==4.0.0
       - pytileproj==0.0.16
       - pyyaml==6.0
@@ -232,7 +232,7 @@ dependencies:
       - rasterio==1.3.6
       - regex==2023.3.23
       - repurpose==0.9
-      - rioxarray==0.14.0
+      - rioxarray==0.14.1
       - setuptools-scm==7.1.0
       - smecv-grid==0.3
       - snuggs==1.4.7
