@@ -155,7 +155,7 @@ dependencies:
   - pillow=9.5.0
   - pip=23.1.2
   - pixman=0.40.0
-  - platformdirs=3.4.0
+  - platformdirs=3.5.0
   - ply=3.11
   - pooch=1.7.0
   - poppler=23.04.0
@@ -236,9 +236,9 @@ dependencies:
       - configobj==5.0.8
       - configparser==5.3.0
       - country-bounding-boxes==0.2.3
-      - coverage==7.2.3
+      - coverage==7.2.5
       - cython==0.29.34
-      - dask==2023.4.0
+      - dask==2023.4.1
       - datetime==5.1
       - entrypoints==0.4
       - equi7grid==0.2.0
