@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - attrs=22.2.0
+  - attrs=23.1.0
   - blosc=1.21.3
   - boost-cpp=1.78.0
   - branca=0.6.0
@@ -172,6 +172,7 @@ dependencies:
   - unicodedata2=15.0.0
   - urllib3=1.26.15
   - vc=14.3
+  - vc14_runtime=14.34.31931
   - vs2015_runtime=14.34.31931
   - wheel=0.40.0
   - win_inet_pton=1.1.0
@@ -188,7 +189,7 @@ dependencies:
       - affine==2.4.0
       - ascat==2.1.0
       - asciitree==0.3.3
-      - cadati==0.0.2
+      - cadati==0.0.4
       - cf-xarray==0.8.0
       - cloudpickle==2.2.1
       - configobj==5.0.8
@@ -231,7 +232,7 @@ dependencies:
       - pyyaml==6.0
       - qa4sm-preprocessing==0.2
       - rasterio==1.3.6
-      - regex==2023.5.4
+      - regex==2023.5.5
       - repurpose==0.9
       - rioxarray==0.14.1
       - setuptools-scm==7.1.0
