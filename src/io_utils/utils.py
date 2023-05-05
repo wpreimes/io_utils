@@ -23,6 +23,8 @@ from typing import List
 import functools
 import inspect
 import warnings
+import pytz
+from cadati.jd_date import jd2dt
 
 def deprecated(message: str = None):
     """
@@ -314,3 +316,8 @@ def ddek(index):
     """
     func = np.vectorize(dekad_startdate_from_date)
     return func(index.to_pydatetime())
+
+
+def julian2datetimeindex(jd: np.ndarray, tz: pytz.BaseTzInfo = pytz.UTC):
+    """Convert julian dates to datetimeindex"""
+    return pd.DatetimeIndex(jd2dt(jd), tz=tz)
