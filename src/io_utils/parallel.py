@@ -14,15 +14,8 @@ from multiprocessing import Pool
 from datetime import datetime
 import sys
 
-logger = logging.getLogger()
-streamHandler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-streamHandler.setFormatter(formatter)
-
-
 # Note: Might not work under windows... Maybe with py 3.10?
-# TODO: Move to io_utils
+
 def apply_to_elements(
         FUNC, ITER_KWARGS, STATIC_KWARGS=None, n_proc=1,
         show_progress_bars=True, ignore_errors=False, log_path=None,
@@ -62,6 +55,12 @@ def apply_to_elements(
     results: list
         List of return values from each function call
     """
+    logger = logging.getLogger()
+    streamHandler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    streamHandler.setFormatter(formatter)
+
     if STATIC_KWARGS is None:
         STATIC_KWARGS = dict()
 
@@ -115,13 +114,13 @@ def apply_to_elements(
 
     results = []
 
-    def update(r):
+    def update(r) -> None:
         if r is not None:
             results.append(r)
         if pbar is not None:
             pbar.update()
 
-    def error(e):
+    def error(e) -> None:
         logging.error(e)
         if not ignore_errors:
             raise e
@@ -153,5 +152,10 @@ def apply_to_elements(
 
     if debug_mode:
         logger.handlers.clear()
+
+    handlers = logger.handlers[:]
+    for handler in handlers:
+        logger.removeHandler(handler)
+        handler.close()
 
     return results
