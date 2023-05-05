@@ -71,8 +71,8 @@ dependencies:
   - libbrotlidec=1.0.9
   - libbrotlienc=1.0.9
   - libcblas=3.9.0
-  - libclang=16.0.2
-  - libclang13=16.0.2
+  - libclang=16.0.3
+  - libclang13=16.0.3
   - libcurl=8.0.1
   - libdeflate=1.18
   - libexpat=2.5.0

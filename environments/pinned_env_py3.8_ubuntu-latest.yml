@@ -83,8 +83,8 @@ dependencies:
   - libbrotlienc=1.0.9
   - libcap=2.67
   - libcblas=3.9.0
-  - libclang=16.0.2
-  - libclang13=16.0.2
+  - libclang=16.0.3
+  - libclang13=16.0.3
   - libcups=2.3.3
   - libcurl=8.0.1
   - libdeflate=1.18
