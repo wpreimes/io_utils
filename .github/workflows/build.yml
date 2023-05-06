@@ -131,9 +131,9 @@ jobs:
       - name: Copy yml files into package
         shell: bash -l {0}
         run: |
-          for file in .artifacts/pinned_*.yml
+          for file in .artifacts/Artifacts/pinned_*.yml
           do
-            io_utils merge_yml .artifacts/latest.yml $file
+            io_utils merge_yml .artifacts/Artifacts/latest.yml $file
             cp $file ./environments
           done
       - name: commit and push new files to branch
