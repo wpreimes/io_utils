@@ -18,12 +18,13 @@ import numpy as np
 import pandas as pd
 from matplotlib.dates import date2num
 from pygeogrids.grids import CellGrid
-from io_utils.grid.grid_shp_adapter import GridShpAdapter
 from cadati.dekad import dekad_startdate_from_date
 from typing import List
 import functools
 import inspect
 import warnings
+import pytz
+from cadati.jd_date import jd2dt
 
 def deprecated(message: str = None):
     """
@@ -115,6 +116,27 @@ def area_folder_name(cells_identifier):
     return  area_str
 
 def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array:
+    """
+    Applies GridShpAdapter to grid to extract cells for the passed identifier.
+
+    Parameters
+    ----------
+    ref_grid: pygeogrids.CellGrid
+        Grid to filter
+    cells_identifier: str or list[str] or list[int], optional
+        Identifier for the cells to be processed. Can be a list of cell ids
+        or a string that is passed to GridShpAdapter to extract the cells.
+        Default: 'global'
+    n_proc: int, optional
+        Number of processes to split the cells up for. Default: 1
+
+    Returns
+    -------
+    cells_for_process: np.array
+        Array of cells (split for the chosen number of processes).
+
+    """
+    from io_utils.grid.grid_shp_adapter import GridShpAdapter
 
     if not isinstance(ref_grid, CellGrid):
         ref_grid = ref_grid.to_cell_grid(5.)
@@ -127,7 +149,7 @@ def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array
         if isinstance(cells_identifier, str):
             cells_identifier = [cells_identifier]
 
-        if isinstance(cells_identifier[0], int):
+        if isinstance(cells_identifier[0], (int, np.integer)):
             cells = split_cells_gpi_equal(cells_identifier, n=n_proc,
                                           grid=ref_grid)
         else:
@@ -294,3 +316,8 @@ def ddek(index):
     """
     func = np.vectorize(dekad_startdate_from_date)
     return func(index.to_pydatetime())
+
+
+def julian2datetimeindex(jd: np.ndarray, tz: pytz.BaseTzInfo = pytz.UTC):
+    """Convert julian dates to datetimeindex"""
+    return pd.DatetimeIndex(jd2dt(jd), tz=tz)

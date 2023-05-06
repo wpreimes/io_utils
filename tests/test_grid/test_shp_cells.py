@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
 from io_utils.grid.grid_functions import read_cells_for_continent
-from io_utils.grid.grid_shp_adapter import CountryShpReader, GridShpAdapter
+from io_utils.grid.grid_shp_adapter import subgrid_for_shp
 from smecv_grid.grid import SMECV_Grid_v052
 import os
 import io_utils.root_path as root_path
+import numpy as np
+# deprecated:
+from io_utils.grid.grid_shp_adapter import CountryShpReader, GridShpAdapter
+
+def test_subgrid_from_shapefile():
+    subgrid = subgrid_for_shp(SMECV_Grid_v052('land'),
+                              ['Austria', 'Australia'])
+    assert 792782 in subgrid.gpis
+    assert 364136 in subgrid.gpis
+
 
 def test_shp_reader():
+    # deprecated
     reader = CountryShpReader()
 
     counts = reader.continent_countries('Europe', 'Asia')
@@ -13,15 +24,17 @@ def test_shp_reader():
     assert 'Austria' in counts
 
     ids_at_de = reader.country_ids('Austria', 'Germany')
-    assert ids_at_de == [113, 120]
+    assert ids_at_de.tolist() == [113, 120]
 
-    poly_at = reader._geom(113)
+    poly_at = reader.geom(113)
     assert poly_at is not None
 
 def test_subgrid_country_cont_names():
+    # deprecated
     full_grid = SMECV_Grid_v052('land')
     adp = GridShpAdapter(full_grid)
-    sgrid = adp.create_subgrid(names=['Austria', 'Seven seas (open ocean)'], verbose=False)
+    sgrid = adp.create_subgrid(names=['Austria', 'Seven seas (open ocean)'],
+                               verbose=False)
 
     gpis, lons, lats, cells = sgrid.get_grid_points()
     assert 795661 in gpis
@@ -31,6 +44,7 @@ def test_subgrid_country_cont_names():
     assert sgrid.gpi2lonlat(232835) == (68.875, -49.625)
 
 def test_cells_for_continent():
+    # deprecated
     grid = SMECV_Grid_v052(None)
     adp = GridShpAdapter(grid)
 
@@ -38,6 +52,7 @@ def test_cells_for_continent():
     assert 1808 in cells['Seven seas (open ocean)']
 
 def test_read_cells_for_continents():
+    # deprecated
     infile = os.path.join(root_path.src_root, 'grid', 'continents_grid_cells',
                           'SMECV_v052_land_cells')
 
