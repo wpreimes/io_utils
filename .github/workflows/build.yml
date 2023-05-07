@@ -74,6 +74,14 @@ jobs:
           # DON'T change this to pip install -e .
           python setup.py develop
           pytest -m "not geo_test_data"
+      - name: Replace post-build with URL
+        shell: bash -l {0}
+        run: |
+          # Call command to transfer URLs from latest.yml to pinned envs
+          for file in .artifacts/pinned_*.yml
+          do
+          io_utils merge_yml environments/latest.yml $file
+          done
       - name: Upload Coverage
         shell: bash -l {0}
         run: |
@@ -128,16 +136,10 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           path: .artifacts
-      - name: Copy yml files into package
-        shell: bash -l {0}
-        run: |
-          for file in .artifacts/Artifacts/pinned_*.yml
-          do
-            io_utils merge_yml .artifacts/Artifacts/latest.yml $file
-            cp $file ./environments
-          done
       - name: commit and push new files to branch
         run: |
+          cp .artifacts/Artifacts/pinned_*.yml ./environments
+          ls ./environments
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_REPOSITORY = $GITHUB_REPOSITORY"
           git config user.name github-actions🤖
