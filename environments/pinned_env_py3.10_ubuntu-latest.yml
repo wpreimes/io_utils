@@ -46,8 +46,8 @@ dependencies:
   - freetype=2.12.1
   - freexl=1.0.6
   - gdal=3.6.4
-  - geopandas=0.12.2
-  - geopandas-base=0.12.2
+  - geopandas=0.13.0
+  - geopandas-base=0.13.0
   - geos=3.11.2
   - geotiff=1.7.1
   - gettext=0.21.1
