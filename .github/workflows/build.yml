@@ -47,12 +47,6 @@ jobs:
           environment-file: environments/latest.yml
           mamba-version: "*"
           auto-activate-base: false
-#      - name: Update environment
-#        shell: bash -l {0}
-#        run: |
-#          # Installing via setup-miniconda directly leads to errors...
-#          conda install -c conda-forge mamba
-#          mamba env update -f environments/latest.yml -n io_utils
       - name: Print environment infos
         shell: bash -l {0}
         run: |
@@ -123,7 +117,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   env_update:
     name: Update Conda Yamls 🤖
-    # Runs on schedule / master, when not tagged, on owner repo
+    # Runs on schedule / master, and when not tagged, and on owner repo only
     if: |
       github.event_name == 'schedule' &&
       !startsWith(github.ref, 'refs/tags/v') &&
