@@ -42,7 +42,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.39.3
+- fonttools=4.39.4
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.6.4
@@ -233,7 +233,7 @@ dependencies:
   - ascat==2.1.0
   - asciitree==0.3.3
   - cadati==0.0.4
-  - cf-xarray==0.8.0
+  - cf-xarray==0.8.1
   - cloudpickle==2.2.1
   - configobj==5.0.8
   - configparser==5.3.0
