@@ -40,7 +40,7 @@ dependencies:
 - fonttools=4.39.4
 - freetype=2.12.1
 - freexl=1.0.6
-- gdal=3.6.4
+- gdal=3.7.0
 - geopandas=0.13.0
 - geopandas-base=0.13.0
 - geos=3.11.2
@@ -66,6 +66,7 @@ dependencies:
 - lcms2=2.15
 - lerc=4.0.0
 - libaec=1.0.6
+- libarchive=3.6.2
 - libblas=3.9.0
 - libbrotlicommon=1.0.9
 - libbrotlidec=1.0.9
@@ -77,7 +78,7 @@ dependencies:
 - libdeflate=1.18
 - libexpat=2.5.0
 - libffi=3.4.2
-- libgdal=3.6.4
+- libgdal=3.7.0
 - libglib=2.76.2
 - libhwloc=2.9.1
 - libiconv=1.17
@@ -101,6 +102,7 @@ dependencies:
 - libzip=1.9.2
 - libzlib=1.2.13
 - lz4-c=1.9.4
+- lzo=2.10
 - m2w64-gcc-libgfortran=5.3.0
 - m2w64-gcc-libs=5.3.0
 - m2w64-gcc-libs-core=5.3.0
@@ -112,7 +114,7 @@ dependencies:
 - matplotlib-base=3.7.1
 - mkl=2022.1.0
 - msys2-conda-epoch=20160418
-- munch=2.5.0
+- munch=3.0.0
 - munkres=1.1.4
 - netcdf4=1.6.3
 - networkx=3.1
@@ -164,7 +166,7 @@ dependencies:
 - tk=8.6.12
 - toml=0.10.2
 - tomli=2.0.1
-- tornado=6.3
+- tornado=6.3.2
 - typing-extensions=4.5.0
 - typing_extensions=4.5.0
 - tzdata=2023c
