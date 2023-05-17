@@ -8,14 +8,14 @@ dependencies:
 - alsa-lib=1.2.8
 - attr=2.5.1
 - attrs=23.1.0
-- blosc=1.21.3
+- blosc=1.21.4
 - boost-cpp=1.78.0
 - branca=0.6.0
 - brotli=1.0.9
 - brotli-bin=1.0.9
 - brotlipy=0.7.0
 - bzip2=1.0.8
-- c-ares=1.18.1
+- c-ares=1.19.0
 - ca-certificates=2023.5.7
 - cairo=1.16.0
 - cartopy=0.21.1
@@ -68,7 +68,7 @@ dependencies:
 - jinja2=3.1.2
 - joblib=1.2.0
 - json-c=0.16
-- kealib=1.5.0
+- kealib=1.5.1
 - keyutils=1.6.1
 - kiwisolver=1.4.4
 - krb5=1.20.1
@@ -120,7 +120,7 @@ dependencies:
 - libsndfile=1.2.0
 - libspatialindex=1.9.3
 - libspatialite=5.0.1
-- libsqlite=3.41.2
+- libsqlite=3.42.0
 - libssh2=1.10.0
 - libstdcxx-ng=12.2.0
 - libsystemd0=253
@@ -190,7 +190,7 @@ dependencies:
 - sip=6.7.9
 - six=1.16.0
 - snappy=1.1.10
-- sqlite=3.41.2
+- sqlite=3.42.0
 - threadpoolctl=3.1.0
 - tiledb=2.13.2
 - tk=8.6.12
