@@ -29,11 +29,11 @@ dependencies:
 - cligj=0.7.2
 - contourpy=1.0.7
 - cryptography=40.0.2
-- curl=8.0.1
+- curl=8.1.0
 - cycler=0.11.0
 - dbus=1.13.6
 - expat=2.5.0
-- fiona=1.9.3
+- fiona=1.9.4
 - folium=0.14.0
 - font-ttf-dejavu-sans-mono=2.37
 - font-ttf-inconsolata=3.000
@@ -85,7 +85,7 @@ dependencies:
 - libclang=16.0.3
 - libclang13=16.0.3
 - libcups=2.3.3
-- libcurl=8.0.1
+- libcurl=8.1.0
 - libdeflate=1.18
 - libedit=3.1.20191231
 - libev=4.33
@@ -267,7 +267,7 @@ dependencies:
   - pygeogrids==0.4.2
   - pykdtree==1.3.7.post0
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
-  - pyresample==1.26.1
+  - pyresample==1.27.0
   - pytesmo==0.15.1
   - pytest==7.3.1
   - pytest-cov==4.0.0
