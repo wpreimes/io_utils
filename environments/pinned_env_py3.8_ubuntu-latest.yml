@@ -224,7 +224,7 @@ dependencies:
 - xorg-xextproto=7.3.0
 - xorg-xf86vidmodeproto=2.3.1
 - xorg-xproto=7.0.31
-- xyzservices=2023.2.0
+- xyzservices=2023.5.0
 - xz=5.2.6
 - zipp=3.15.0
 - zlib=1.2.13
