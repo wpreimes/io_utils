@@ -7,39 +7,52 @@ Collection of colormaps used within plots for cci and c3s products.
 import numpy as np
 from matplotlib import colors
 
-cm_sm = colors.LinearSegmentedColormap.from_list('BrownBlue',
-    np.array([[134, 80, 16],
-            [164, 117, 13],
-            [219, 190, 24],
-            [250, 249, 156],
-            [144, 202, 240],
-            [4, 145, 251],
-            [8, 83, 211],
-            [13, 37, 161]]) / 255.)
+def smecv_sm(N: int = 256, set_over_under: bool = True) \
+        -> colors.LinearSegmentedColormap:
+    """
+    Default Colormap for soil moisture in CCI and C3S
+    Brown-Yellow-Blue
+    """
+    steps = np.array([[134, 80, 16],
+                      [164, 117, 13],
+                      [219, 190, 24],
+                      [250, 249, 156],
+                      [144, 202, 240],
+                      [4, 145, 251],
+                      [8, 83, 211],
+                      [13, 37, 161]]) / 255.
+    cmap = colors.LinearSegmentedColormap.from_list('smecv_sm', steps, N=N)
 
-cm_sm_anom_c3s = colors.LinearSegmentedColormap.from_list('BrownBlue',
-    np.array([[231, 78, 19],
-             [255, 255, 255],
-             [0, 50, 107]]) / 255.)
+    if set_over_under:
+        cmap.set_under(np.array([112, 65, 12]) / 255)
+        cmap.set_over(np.array([7, 25, 106]) / 255)
 
-cm_sm_anom_c3s_r = colors.LinearSegmentedColormap.from_list('BrownBlue',
-    np.array([[0, 50, 107],
-           [255, 255, 255],
-           [231, 78, 19]]) / 255.)
+    return cmap
 
-cm_red_yellow_blue = colors.LinearSegmentedColormap.from_list('RdYlGn',
-    np.array([[209, 56, 76],
-             [255, 239, 161],
-             [50, 133, 187]]) / 255.)
+def smecv_nobs(N: int = 256, set_over_under: bool = True) \
+        -> colors.LinearSegmentedColormap:
+    """
+    Colormap used for number of observations in CCI and C3S.
+    Red-Yellow-Green-Blue
+    """
+    steps = np.array([[209, 56, 76],
+                      [255, 239, 161],
+                      [50, 133, 187]]) / 255.
+    cmap = colors.LinearSegmentedColormap.from_list('smecv_nobs', steps, N=N)
 
-cm_reds = colors.LinearSegmentedColormap.from_list('Reds',
-    np.array([[255, 255, 255],
-              [255, 239, 161],
-              [255, 51, 51]]) / 255.)
+    if set_over_under:
+        cmap.set_under(np.array([172, 46, 62]) / 255.)
+        cmap.set_over(np.array([45, 122, 170]) / 255)
 
-def cm_sm_div_esotc(N=256, set_over_under=True):
-    cmap =  colors.LinearSegmentedColormap.from_list(
-        'EsotcSmAnom',
+    return cmap
+
+def smecv_esotc_anom(N: int = 256, set_over_under: bool = True) \
+        -> colors.LinearSegmentedColormap:
+    """
+    Colormap used to plot soil moisture anomalies, in the C3S ESotC report.
+    """
+    cmap = colors.LinearSegmentedColormap.from_list(
+        'smecv_esotc_anom',
         np.array([
             [129, 74, 8],
             [178, 117,36],
@@ -55,6 +68,6 @@ def cm_sm_div_esotc(N=256, set_over_under=True):
         N=N
     )
     if set_over_under:
-        cmap.set_under([104/255,60/255,6/255])
-        cmap.set_over([14/ 255, 67/ 255, 123/ 255])
+        cmap.set_under(np.array([104,60,6]) / 255)
+        cmap.set_over(np.array([14, 67, 123]) / 255)
     return cmap

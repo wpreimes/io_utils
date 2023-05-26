@@ -4,7 +4,7 @@ import os
 
 import pandas
 
-from io_utils.yml.read import spaceify, read_settings
+from io_utils.config.yml.parser import spaceify, read_settings
 import numpy as np
 import sys
 
