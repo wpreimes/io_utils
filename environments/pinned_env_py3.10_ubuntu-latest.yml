@@ -191,8 +191,8 @@ dependencies:
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.2
-- typing-extensions=4.6.1
-- typing_extensions=4.6.1
+- typing-extensions=4.6.2
+- typing_extensions=4.6.2
 - tzcode=2023c
 - tzdata=2023c
 - unicodedata2=15.0.0
@@ -234,7 +234,7 @@ dependencies:
   - configparser==5.3.0
   - country-bounding-boxes==0.2.3
   - coverage==7.2.6
-  - cython==0.29.34
+  - cython==0.29.35
   - dask==2023.5.0
   - datetime==5.1
   - entrypoints==0.4
