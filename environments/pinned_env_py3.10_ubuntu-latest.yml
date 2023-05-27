@@ -235,7 +235,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.2.6
   - cython==0.29.35
-  - dask==2023.5.0
+  - dask==2023.5.1
   - datetime==5.1
   - entrypoints==0.4
   - equi7grid==0.2.0
