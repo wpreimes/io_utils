@@ -148,7 +148,7 @@ dependencies:
 - openjpeg=2.5.0
 - openssl=3.1.0
 - packaging=23.1
-- pandas=2.0.1
+- pandas=2.0.2
 - pcre2=10.40
 - pillow=9.5.0
 - pip=23.1.2
@@ -233,7 +233,7 @@ dependencies:
   - configobj==5.0.8
   - configparser==5.3.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.2.6
+  - coverage==7.2.7
   - cython==0.29.35
   - dask==2023.5.1
   - datetime==5.1
