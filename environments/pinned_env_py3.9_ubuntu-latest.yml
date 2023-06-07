@@ -43,8 +43,8 @@ dependencies:
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
-- geopandas=0.13.1
-- geopandas-base=0.13.1
+- geopandas=0.13.2
+- geopandas-base=0.13.2
 - geos=3.11.2
 - geotiff=1.7.1
 - gettext=0.21.1
@@ -141,8 +141,8 @@ dependencies:
 - munkres=1.1.4
 - mysql-common=8.0.32
 - mysql-libs=8.0.32
-- ncurses=6.3
-- netcdf4=1.6.3
+- ncurses=6.4
+- netcdf4=1.6.4
 - networkx=3.1
 - nspr=4.35
 - nss=3.89
