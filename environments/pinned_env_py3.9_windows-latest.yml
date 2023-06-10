@@ -194,13 +194,13 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.2.7
   - cython==0.29.35
-  - dask==2023.5.1
+  - dask==2023.6.0
   - datetime==5.1
   - entrypoints==0.4
   - equi7grid==0.2.0
   - exceptiongroup==1.1.1
   - fasteners==0.18
-  - fsspec==2023.5.0
+  - fsspec==2023.6.0
   - geographiclib==2.0
   - geopathfinder==0.1.4
   - geospade==0.2.3
