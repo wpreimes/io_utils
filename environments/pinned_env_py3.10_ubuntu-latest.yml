@@ -153,7 +153,7 @@ dependencies:
 - pillow=9.5.0
 - pip=23.1.2
 - pixman=0.40.0
-- platformdirs=3.5.1
+- platformdirs=3.5.3
 - ply=3.11
 - pooch=1.7.0
 - poppler=23.05.0
@@ -264,7 +264,7 @@ dependencies:
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.27.0
   - pytesmo==0.15.1
-  - pytest==7.3.1
+  - pytest==7.3.2
   - pytest-cov==4.1.0
   - pytileproj==0.0.16
   - pyyaml==6.0
