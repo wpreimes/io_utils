@@ -25,7 +25,7 @@ dependencies:
 - click=8.1.3
 - click-plugins=1.1.1
 - cligj=0.7.2
-- contourpy=1.0.7
+- contourpy=1.1.0
 - curl=8.1.2
 - cycler=0.11.0
 - dbus=1.13.6
@@ -119,7 +119,7 @@ dependencies:
 - libssh2=1.11.0
 - libstdcxx-ng=13.1.0
 - libsystemd0=253
-- libtiff=4.5.0
+- libtiff=4.5.1
 - libuuid=2.38.1
 - libvorbis=1.3.7
 - libwebp-base=1.3.0
@@ -263,7 +263,7 @@ dependencies:
   - pykdtree==1.3.7.post0
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.27.0
-  - pytesmo==0.15.1
+  - pytesmo==0.15.2
   - pytest==7.3.2
   - pytest-cov==4.1.0
   - pytileproj==0.0.16
@@ -280,5 +280,5 @@ dependencies:
   - tqdm==4.65.0
   - trollsift==0.5.0
   - veranda==1.0.1
-  - zarr==2.14.2
+  - zarr==2.15.0
   - zope-interface==6.0
