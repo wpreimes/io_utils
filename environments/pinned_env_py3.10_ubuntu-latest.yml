@@ -89,7 +89,7 @@ dependencies:
 - libevent=2.1.12
 - libexpat=2.5.0
 - libffi=3.4.2
-- libflac=1.4.2
+- libflac=1.4.3
 - libgcc-ng=13.1.0
 - libgcrypt=1.10.1
 - libgdal=3.7.0
@@ -177,7 +177,7 @@ dependencies:
 - requests=2.31.0
 - rtree=1.0.1
 - scikit-learn=1.2.2
-- scipy=1.10.1
+- scipy=1.11.0
 - setuptools=68.0.0
 - shapely=2.0.1
 - sip=6.7.9
@@ -197,7 +197,7 @@ dependencies:
 - unicodedata2=15.0.0
 - urllib3=2.0.3
 - wheel=0.40.0
-- xarray=2023.5.0
+- xarray=2023.6.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.0
@@ -234,7 +234,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.2.7
   - cython==0.29.35
-  - dask==2023.6.0
+  - dask==2023.6.1
   - datetime==5.1
   - entrypoints==0.4
   - equi7grid==0.2.1
@@ -254,7 +254,7 @@ dependencies:
   - more-itertools==9.1.0
   - numba==0.57.1
   - numcodecs==0.11.0
-  - numpy==1.24.3
+  - numpy==1.24.4
   - parse==1.19.1
   - partd==1.4.0
   - pluggy==1.2.0
