@@ -147,7 +147,7 @@ dependencies:
 - qt-main=5.15.8
 - requests=2.31.0
 - rtree=1.0.1
-- scikit-learn=1.2.2
+- scikit-learn=1.3.0
 - scipy=1.11.1
 - setuptools=68.0.0
 - shapely=2.0.1
