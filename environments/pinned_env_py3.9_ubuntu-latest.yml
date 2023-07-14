@@ -23,7 +23,7 @@ dependencies:
 - cfitsio=4.2.0
 - cftime=1.6.2
 - charset-normalizer=3.2.0
-- click=8.1.4
+- click=8.1.5
 - click-plugins=1.1.1
 - cligj=0.7.2
 - contourpy=1.1.0
@@ -40,7 +40,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.40.0
+- fonttools=4.41.0
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
@@ -187,7 +187,7 @@ dependencies:
 - six=1.16.0
 - snappy=1.1.10
 - sqlite=3.42.0
-- threadpoolctl=3.1.0
+- threadpoolctl=3.2.0
 - tiledb=2.13.2
 - tk=8.6.12
 - toml=0.10.2
@@ -220,7 +220,7 @@ dependencies:
 - xorg-xextproto=7.3.0
 - xorg-xf86vidmodeproto=2.3.1
 - xorg-xproto=7.0.31
-- xyzservices=2023.5.0
+- xyzservices=2023.7.0
 - xz=5.2.6
 - zipp=3.16.0
 - zlib=1.2.13
