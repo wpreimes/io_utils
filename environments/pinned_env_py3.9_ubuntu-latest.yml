@@ -222,7 +222,7 @@ dependencies:
 - xorg-xproto=7.0.31
 - xyzservices=2023.7.0
 - xz=5.2.6
-- zipp=3.16.0
+- zipp=3.16.2
 - zlib=1.2.13
 - zstd=1.5.2
 - pip:
