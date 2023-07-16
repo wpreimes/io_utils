@@ -122,9 +122,9 @@ dependencies:
 - pandas=2.0.3
 - pcre2=10.40
 - pillow=10.0.0
-- pip=23.1.2
+- pip=23.2
 - pixman=0.40.0
-- platformdirs=3.8.1
+- platformdirs=3.9.0
 - ply=3.11
 - pooch=1.7.0
 - poppler=23.05.0
