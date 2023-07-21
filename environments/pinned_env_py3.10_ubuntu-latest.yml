@@ -8,6 +8,19 @@ dependencies:
 - alsa-lib=1.2.9
 - attr=2.5.1
 - attrs=23.1.0
+- aws-c-auth=0.7.0
+- aws-c-cal=0.6.0
+- aws-c-common=0.8.23
+- aws-c-compression=0.2.17
+- aws-c-event-stream=0.3.1
+- aws-c-http=0.7.11
+- aws-c-io=0.13.28
+- aws-c-mqtt=0.8.14
+- aws-c-s3=0.3.13
+- aws-c-sdkutils=0.1.11
+- aws-checksums=0.1.16
+- aws-crt-cpp=0.20.3
+- aws-sdk-cpp=1.10.57
 - blosc=1.21.4
 - boost-cpp=1.78.0
 - branca=0.6.0
@@ -23,7 +36,7 @@ dependencies:
 - cfitsio=4.2.0
 - cftime=1.6.2
 - charset-normalizer=3.2.0
-- click=8.1.5
+- click=8.1.6
 - click-plugins=1.1.1
 - cligj=0.7.2
 - contourpy=1.1.0
@@ -53,8 +66,8 @@ dependencies:
 - glib=2.76.4
 - glib-tools=2.76.4
 - graphite2=1.3.13
-- gst-plugins-base=1.22.4
-- gstreamer=1.22.4
+- gst-plugins-base=1.22.5
+- gstreamer=1.22.5
 - harfbuzz=7.3.0
 - hdf4=4.2.15
 - hdf5=1.14.1
@@ -177,6 +190,7 @@ dependencies:
 - readline=8.2
 - requests=2.31.0
 - rtree=1.0.1
+- s2n=1.3.46
 - scikit-learn=1.3.0
 - scipy=1.11.1
 - setuptools=68.0.0
@@ -196,9 +210,9 @@ dependencies:
 - tzcode=2023c
 - tzdata=2023c
 - unicodedata2=15.0.0
-- urllib3=2.0.3
+- urllib3=2.0.4
 - wheel=0.40.0
-- xarray=2023.6.0
+- xarray=2023.7.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.0
@@ -234,9 +248,9 @@ dependencies:
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
   - coverage==7.2.7
-  - cython==0.29.36
-  - dask==2023.7.0
-  - datetime==5.1
+  - cython==3.0.0
+  - dask==2023.7.1
+  - datetime==5.2
   - entrypoints==0.4
   - equi7grid==0.2.1
   - exceptiongroup==1.1.2
@@ -268,7 +282,7 @@ dependencies:
   - pytest==7.4.0
   - pytest-cov==4.1.0
   - pytileproj==0.0.16
-  - pyyaml==6.0
+  - pyyaml==6.0.1
   - qa4sm-preprocessing==0.2
   - rasterio==1.3.8
   - regex==2023.6.3
@@ -281,5 +295,5 @@ dependencies:
   - tqdm==4.65.0
   - trollsift==0.5.0
   - veranda==1.1.0
-  - zarr==2.15.0
+  - zarr==2.16.0
   - zope-interface==6.0
