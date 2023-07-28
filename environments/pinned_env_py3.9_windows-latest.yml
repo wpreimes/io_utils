@@ -197,7 +197,7 @@ dependencies:
   - dask==2023.7.1
   - datetime==5.2
   - entrypoints==0.4
-  - equi7grid==0.2.1
+  - equi7grid==0.2.2
   - exceptiongroup==1.1.2
   - fasteners==0.18
   - fsspec==2023.6.0
