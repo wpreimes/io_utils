@@ -53,7 +53,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.41.1
+- fonttools=4.42.0
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
@@ -159,7 +159,7 @@ dependencies:
 - nspr=4.35
 - nss=3.89
 - openjpeg=2.5.0
-- openssl=3.1.1
+- openssl=3.1.2
 - packaging=23.1
 - pandas=2.0.3
 - pcre2=10.40
@@ -195,7 +195,7 @@ dependencies:
 - scipy=1.11.1
 - setuptools=68.0.0
 - shapely=2.0.1
-- sip=6.7.10
+- sip=6.7.11
 - six=1.16.0
 - snappy=1.1.10
 - sqlite=3.42.0
