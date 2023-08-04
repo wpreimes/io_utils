@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from io_utils.read.geo_ts_readers.ts_reader import GeoTsReader
-from io_utils.read.geo_ts_readers import (
+from io_utils.data.read.geo_ts_readers.ts_reader import GeoTsReader
+from io_utils.data.read.geo_ts_readers import (
     GeoCCISMv6Ts,
     GeoGLDAS21Ts,
     GeoISMNTs,
@@ -92,8 +92,9 @@ def test_ascat_sat_data():
     grid_path = os.path.join(
         root_path.r,
         "Projects",
-        "H_SAF_CDOP3",
+        "H_SAF_CDOP4",
         "05_deliverables_products",
+        "cdop3",
         "auxiliary",
         "warp5_grid",
         "TUW_WARP5_grid_info_2_3.nc",

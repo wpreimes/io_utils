@@ -136,7 +136,7 @@ def cells_for_process(ref_grid, cells_identifier='global', n_proc=1) -> np.array
         Array of cells (split for the chosen number of processes).
 
     """
-    from io_utils.grid.grid_shp_adapter import GridShpAdapter
+    from io_utils.data.grid.grid_shp_adapter import GridShpAdapter
 
     if not isinstance(ref_grid, CellGrid):
         ref_grid = ref_grid.to_cell_grid(5.)

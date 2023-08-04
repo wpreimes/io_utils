@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from io_utils.read.path_config import PathConfig
-from io_utils.path_configs.gldas.paths_gldas21 import path_settings
+from io_utils.data.read.path_config import PathConfig
+from io_utils.data.path_configs.gldas.paths_gldas21 import path_settings
 import os
 
 def test_path_config():

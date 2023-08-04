@@ -7,7 +7,7 @@ readers will use the shared datapool.
 
 import pytest
 import io_utils.root_path as root_path
-from io_utils.read.geo_ts_readers import *
+from io_utils.data.read.geo_ts_readers import *
 test_loc = (15, 45)
 
 def print_test_config(dataset, path_group=None):
@@ -200,8 +200,8 @@ def test_amsr2ccids_ts_reader(verbose=False):
 def test_ascatssm_ts_reader(verbose=False):
     dataset = ('HSAF_ASCAT', 'SSM', 'H115+H116')
     grid_path = os.path.join(root_path.r, 'Projects',
-                        'H_SAF_CDOP3', '05_deliverables_products',
-                        'auxiliary','warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
+                        'H_SAF_CDOP4', '05_deliverables_products', 'cdop3',
+                        'auxiliary', 'warp5_grid', 'TUW_WARP5_grid_info_2_3.nc')
 
     reader = GeoHsafAscatSsmTs(dataset,
                                grid_path=grid_path,
@@ -213,7 +213,7 @@ def test_ascatssm_ts_reader(verbose=False):
     if verbose: print(ts)
     assert not ts.dropna(how='all').empty
 
-    cs = reader.read_cell_file(166)
+    cs = reader.read_cell(166)
     if verbose: print(cs)
     assert not cs.dropna(how='all').empty
 

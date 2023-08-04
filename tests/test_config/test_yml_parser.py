@@ -9,7 +9,7 @@ import numpy as np
 import sys
 
 this_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-yml_path = os.path.join(this_path, '00_testdata', 'yml', 'test_config.yml')
+yml_path = os.path.join(this_path, '..', '00_testdata', 'yml', 'test_config.yml')
 
 def test_read_yml():
     SPACES = spaceify(yml_path)

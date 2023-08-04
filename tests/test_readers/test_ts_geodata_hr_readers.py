@@ -10,8 +10,11 @@ Module description
 #   -
 
 import pytest
-import io_utils.root_path as root_path
-from io_utils.read.geo_ts_readers import *
+from io_utils.data.read.geo_ts_readers import GeoDirexTs, hr_available
+if hr_available:
+    from io_utils.data.read.geo_ts_readers import GeoCSarSsmTiffReader
+    from io_utils.data.read.geo_ts_readers import GeoCSarSwiTiffReader
+    from io_utils.data.read.geo_ts_readers.scatsar_swi import GeoScatSarCglsSwiReader
 test_loc = (15, 45)
 
 def print_test_config(dataset, path_group=None):

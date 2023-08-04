@@ -1,5 +1,5 @@
 import inspect
-import io_utils.plot.colormaps as mycmaps
+import io_utils.colormaps as mycmaps
 
 def test_all_colormaps():
     functions = inspect.getmembers(mycmaps, inspect.isfunction)
