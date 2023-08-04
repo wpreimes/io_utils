@@ -126,7 +126,7 @@ def convert_tag_path(key: str, value: str) -> (str, str):
 
     # Expand ~ to home directory (on linux)
     if path[0].startswith('~'):
-        path[0] = path[0].replace('~', f"/home/{os.environ['USER']}")
+        path[0] = path[0].replace('~', os.path.expanduser('~'))
     # Windows: Drive letters are followed up with \\
     elif path[0][-1] == ':':
         path[0] += '\\'
