@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from io_utils.write.regular_cube import NcRegGridStack
+from io_utils.data.write.regular_cube import NcRegGridStack
 import numpy as np
 from smecv_grid import SMECV_Grid_v052
 import pandas as pd

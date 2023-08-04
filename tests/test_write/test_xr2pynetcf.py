@@ -3,7 +3,7 @@ from smecv_grid.grid import SMECV_Grid_v052
 import numpy as np
 import xarray as xr
 import pandas as pd
-from io_utils.write.xr2pynetcf import datacube2orthomulti
+from io_utils.data.write.xr2pynetcf import datacube2orthomulti
 from pynetcf.time_series import GriddedNcOrthoMultiTs
 import os
 

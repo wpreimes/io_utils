@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from io_utils.grid.grid_functions import read_cells_for_continent
-from io_utils.grid.grid_shp_adapter import subgrid_for_shp
+from io_utils.data.grid.grid_functions import read_cells_for_continent
+from io_utils.data.grid.grid_shp_adapter import subgrid_for_shp
 from smecv_grid.grid import SMECV_Grid_v052
 import os
 import io_utils.root_path as root_path
 import numpy as np
 # deprecated:
-from io_utils.grid.grid_shp_adapter import CountryShpReader, GridShpAdapter
+from io_utils.data.grid.grid_shp_adapter import CountryShpReader, GridShpAdapter
 
 def test_subgrid_from_shapefile():
     subgrid = subgrid_for_shp(SMECV_Grid_v052('land'),
@@ -53,7 +53,7 @@ def test_cells_for_continent():
 
 def test_read_cells_for_continents():
     # deprecated
-    infile = os.path.join(root_path.src_root, 'grid', 'continents_grid_cells',
+    infile = os.path.join(root_path.src_root, 'data', 'grid', 'continents_grid_cells',
                           'SMECV_v052_land_cells')
 
     cells = read_cells_for_continent(['Europe', 'Oceania'], infile)

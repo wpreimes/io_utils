@@ -53,3 +53,4 @@ MANIFEST
 .conda*/
 
 .virtual_documents/*
+**/python_metadata/*

@@ -3,7 +3,15 @@
 """
 Test the readers for which there is test data in this package
 """
-from io_utils.read.geo_ts_readers import *
+import os
+from io_utils.data.read.geo_ts_readers import (
+    GeoCCISMv6Ts, GeoSMOSICTs, SelfMaskingAdapter, GeoCCISMv5Ts,
+    GeoSpl3smpTs, GeoCCISMv3Ts, GeoCCISMv4Ts, GeoEra5Ts, GeoEra5LandTs,
+    GeoC3Sv202012Ts, GeoC3Sv201912Ts, GeoC3Sv201812FullCDRTs, GeoC3Sv201812Ts,
+    GeoC3Sv201706Ts, GeoC3Sv201706FullCDRTs, GeoGLDAS21Ts, GeoGLDAS20Ts,
+    GeoMerra2Ts, GeoISMNTs, GeoCglsNcTs, GeoCCISMv7IntermedNcTs)
+import numpy as np
+import pandas as pd
 import pytest
 from smecv_grid.grid import SMECV_Grid_v052
 
@@ -353,7 +361,7 @@ def test_cci_intermed_v7_nc_reader():
     ts = reader.read(*test_loc)
     assert ts.dropna().empty
 
-    cs = reader.read_cell(165, 'sm')
+    cs = reader.read_cell(165, 'sm', fill_value=np.nan)
     gpi, _ = reader.grid.find_nearest_gpi(*test_loc)
     assert np.all(ts['sm'].values == cs[gpi].dropna().values)
 
