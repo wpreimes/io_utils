@@ -139,57 +139,57 @@ class GriddedNcContiguousRaggedTsCompatible(GriddedNcTs, ContiguousRaggedTsCellR
 
         return df
 
-    def read_cell(self, cell, var):
-        """
-        Read all the data in one cell file.
-        Keep in mind: the intermediate netcdf format uses indexed ragged
-        time series!
-
-        Parameters
-        ----------
-        cell: int
-            The number of the cell
-        var: str
-            the variable to be read
-
-        Returns
-        -------
-        df: pd.DataFrame
-            A data frame that hold all data for the cell / variable
-        """
-        file_path = os.path.join(self.path, f"{cell:04}.nc")
-
-        with nc.Dataset(file_path) as ncfile:
-            loc_id = ncfile.variables['location_id'][:]
-            loc_id = loc_id[~loc_id.mask].data.flatten()
-            row_size = ncfile.variables['row_size'][:]
-            row_size = row_size[~row_size.mask].data
-
-            time = ncfile.variables['time'][:].data
-            unit_time = ncfile.variables['time'].units
-            variable = ncfile.variables[var][:].filled(np.nan)
-
-        cutoff_points = np.cumsum(row_size)
-        index = np.sort(np.unique(time))
-        times = np.split(time, cutoff_points)[:-1]
-        datas = np.split(variable, cutoff_points)[:-1]
-
-        assert len(times) == len(datas)
-
-        filled = np.full((len(datas), len(index)), fill_value=np.nan)
-        idx = np.array([np.isin(index, t) for t in times])
-        filled[idx] = variable
-
-        delta = lambda t: timedelta(t)
-        vfunc = np.vectorize(delta)
-        since = pd.Timestamp(unit_time.split('since ')[1])
-        index = since + vfunc(index)
-
-        filled = np.transpose(np.array(filled))
-
-        df = pd.DataFrame(index=index, data=filled, columns=loc_id)
-
-        return df
+    # def read_cell(self, cell, var):
+    #     """
+    #     Read all the data in one cell file.
+    #     Keep in mind: the intermediate netcdf format uses indexed ragged
+    #     time series!
+    #
+    #     Parameters
+    #     ----------
+    #     cell: int
+    #         The number of the cell
+    #     var: str
+    #         the variable to be read
+    #
+    #     Returns
+    #     -------
+    #     df: pd.DataFrame
+    #         A data frame that hold all data for the cell / variable
+    #     """
+    #     file_path = os.path.join(self.path, f"{cell:04}.nc")
+    #
+    #     with nc.Dataset(file_path) as ncfile:
+    #         loc_id = ncfile.variables['location_id'][:]
+    #         loc_id = loc_id[~loc_id.mask].data.flatten()
+    #         row_size = ncfile.variables['row_size'][:]
+    #         row_size = row_size[~row_size.mask].data
+    #
+    #         time = ncfile.variables['time'][:].data
+    #         unit_time = ncfile.variables['time'].units
+    #         variable = ncfile.variables[var][:].filled(np.nan)
+    #
+    #     cutoff_points = np.cumsum(row_size)
+    #     index = np.sort(np.unique(time))
+    #     times = np.split(time, cutoff_points)[:-1]
+    #     datas = np.split(variable, cutoff_points)[:-1]
+    #
+    #     assert len(times) == len(datas)
+    #
+    #     filled = np.full((len(datas), len(index)), fill_value=np.nan)
+    #     idx = np.array([np.isin(index, t) for t in times])
+    #     filled[idx] = variable
+    #
+    #     delta = lambda t: timedelta(t)
+    #     vfunc = np.vectorize(delta)
+    #     since = pd.Timestamp(unit_time.split('since ')[1])
+    #     index = since + vfunc(index)
+    #
+    #     filled = np.transpose(np.array(filled))
+    #
+    #     df = pd.DataFrame(index=index, data=filled, columns=loc_id)
+    #
+    #     return df
 
 
 class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
@@ -555,22 +555,4 @@ class CCIDs(GriddedTsBase):
         self.fid.dat_fid.close()
 
         return self.fid.idx, cell_data
-
-if __name__ == '__main__':
-    # from io_utils.read.geo_ts_readers.c3s_sm.base_reader import GeoC3STs
-    # path = "/home/wpreimes/shares/radar/Datapool/C3S/02_processed/v202012/TCDR/063_images_to_ts/combined-daily/"
-    # ds = GeoC3STs(path)
-    # ts = ds.read_agg_cell_data(2244, ['sm', 'flag']
-    import matplotlib
-    matplotlib.use("Qt5Agg")
-    from smecv_grid.grid import SMECV_Grid_v052
-    grid = SMECV_Grid_v052('land')
-    path = "/home/wpreimes/shares/radar/Projects/CCIplus_Soil_Moisture/07_data/ESA_CCI_SM_v07.1/011_resampledTemporal/smos_a/"
-    reader = GriddedNcContiguousRaggedTsCompatible(path, grid=grid)
-
-    dat = reader.read_agg_cell_data(2244, param=['sm', 'flag'], to_replace={'sm': {1e20: -999999.}},
-                                    format='gpidict')
-    ts = reader.read(346859).sm
-    stack = dat[['sm']].loc[346859, :].replace({-999999: np.nan}).dropna()
-    df = pd.concat([ts, stack], axis=1)
 

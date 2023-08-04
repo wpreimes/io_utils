@@ -8,7 +8,7 @@ import os
 import io_utils.root_path as root_path
 from netCDF4 import Dataset
 from smecv_grid.grid import SMECV_Grid_v052
-from io_utils.plot.colormaps import cm_sm
+from io_utils.plot.colormaps import smecv_sm
 import cartopy.crs as ccrs
 import shutil
 from tempfile import TemporaryDirectory
@@ -76,7 +76,7 @@ def test_pretty_plot():
                      cb_ext_label_max='WET', cb_loc='right')
 
     f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.),
-                         cmap=cm_sm, projection=ccrs.Sinusoidal(),
+                         cmap=smecv_sm(), projection=ccrs.Sinusoidal(),
                          title='Overloaded Plot with too much Information',
                          ocean=True, land='grey', gridspace=(60,20), states=True,
                          borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),

@@ -185,7 +185,7 @@ class NcVarCombPlotter(object):
             cs1.loc[s2.loc[s2 != 1.].index] = np.nan
             return cs1
         else:
-            raise ValueError('Metric {} is not implemented'.format(metric))
+            return metric(s1, s2), metric.__name__
 
     def plot_comb_variable(self, vards1, vards2, time1=None, time2=None,
                            metric='-', interface=True, transparent=False,
@@ -206,9 +206,10 @@ class NcVarCombPlotter(object):
         time2 : datetime or str, optional (default: None)
             Date of the variable in the second file to use. If there are no
             dates, pass None
-        metric : str, optional (default: -)
+        metric : str or Callable, optional (default: -)
             Metric to combine the 2 variables
             Difference, AbsDiff, Ratio, Product, Sum, or Mask1
+            Or a function that takes 2 inputs, applied via `metric(x, y)`
         interface: bool, optional (default: True)
             Plot elements such as colorbar and title
         transparent: bool, optional (default: True)
@@ -237,12 +238,15 @@ class NcVarCombPlotter(object):
         # make sure the two have the same index names
         if self.ds1.index_name != self.ds2.index_name:
             s2.rename_axis(index=dict(zip(self.ds2.index_name, self.ds1.index_name)))
-        cds, smetric = self._usemetric(s1, s2, metric)
+        df = pd.concat([s1, s2], axis=1)
+        cds, smetric = self._usemetric(df.iloc[:, 0], df.iloc[:, 1], metric)
         name = '{}_between_{}_and_{}'.format(smetric, vards1, vards2)
 
         df = cds.to_frame(name)
         if not interface:
             plot_kwargs['show_cbar'] = False
+
+
 
         if not self.ds1.irregular and not self.ds2.irregular:
             f, imax, im = cp_map(df, name, resxy=self.resxy, **plot_kwargs)

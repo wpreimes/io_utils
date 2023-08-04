@@ -677,6 +677,9 @@ class ReadNcImg(object):
                 .reset_index(inplace=False) \
                 .set_index(self.index_name)
 
+        # round to 5 dec places
+        df_file = df_file.rename(index=lambda x: round(x, 5))
+
         if self.subgrid is not None:
             df_file = self._subset_with_grid(df_file)
 
@@ -717,13 +720,13 @@ class ReadNcImg(object):
             if time is None:
                 try: # load as datetime
                     time = pd.to_datetime(self.ds.time.values[0])
-                except AttributeError or ValueError:
+                except (AttributeError, ValueError, IndexError):
                     try: # load as anything
                         time = self.ds.time.values[0]
-                    except AttributeError:
+                    except (AttributeError, IndexError):
                         time = None
 
-            df_file = self._load(self.ds, time)
+            df_file = self._load(self.ds[vars] if vars else self.ds, time)
 
             if not df_file.index.is_unique:
                 warnings.warn('Duplicate locations found in the loaded data. Continue as irregular data.')

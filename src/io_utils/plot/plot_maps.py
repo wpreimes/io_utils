@@ -190,9 +190,9 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
     return imax
 
 def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, title_size=10,
-                   llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0,1),
+                   llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0, 1),
                    cmap=plt.get_cmap('RdYlBu'), coastline_size='110m', veg_mask=False,
-                   gridspace=(60,20), grid_label_loc='1001', style=None, markersize=None,
+                   gridspace=(60, 20), grid_label_loc='1001', style=None, markersize=None,
                    ocean=False, land='white', states=False, borders=False,
                    scale_factor=1., watermark=None, show_cbar=True, ax=None,
                    cb_kwargs=None, plot_kwargs=None):
@@ -467,8 +467,8 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
 
 def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
-           cbrange=(0,1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
-           gridspace=(60,20), grid_label_loc='0011', style=None,
+           cbrange=(0, 1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
+           gridspace=(60, 20), grid_label_loc='0011', style=None,
            ocean=False, land='grey', states=False, borders=False, scale_factor=1., watermark=None,
            show_cbar=True, ax=None, cb_kwargs=None, plot_kwargs=None):
 

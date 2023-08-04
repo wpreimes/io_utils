@@ -70,27 +70,3 @@ class GeoEra5LandTs(object):
         return pd.concat([r.read(*args, **kwargs) for r in self.readers],
                          axis=1)
 
-if __name__ == '__main__':
-    bbox = [-25, 34, 40, 72]
-    reader = GeoEra5LandTs(group_vars={
-                                       ('ERA5-Land', 'sm_precip_lai'): ['tp']},
-                           ioclass_kws={'read_bulk': True})
-    gpis = reader.grid.subgrid_from_gpis(reader.grid.get_bbox_grid_points(
-        bbox[1], bbox[2], bbox[0], bbox[3])).activegpis
-    tss = []
-    for i,gpi in enumerate(gpis):
-        print(f"{i} / {len(gpis)}")
-        ts = reader.read(gpi).loc['1991-01-01':].resample('D').sum()
-        ts = ts[['tp']].rename(columns={'tp': gpi})
-        tss.append(ts)
-    tss = pd.concat(tss, axis=1)
-    tss.to_csv("/data-read/USERS/wpreimes/temp/c3s_esotc_2021/era5land_precip_eu.csv")
-
-
-    # force_path_group = '__test'
-    # reader = GeoEra5LandTs(group_vars={('ERA5-Land', 'temperature'): ['stl1'],
-    #                                    ('ERA5-Land', 'sm_precip_lai'): ['swvl1']},
-    #                        ioclass_kws={'read_bulk': True},
-    #                        scale_factors={'swvl1': 1.},
-    #                        force_path_group=force_path_group)
-    # ts = reader.read(15,45)

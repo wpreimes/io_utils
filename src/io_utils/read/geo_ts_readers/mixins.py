@@ -17,7 +17,7 @@ class ContiguousRaggedTsCellReaderMixin:
     path: str
     grid: CellGrid
 
-    def read_cell_file(self, cell, param='sm', fill_value=None):
+    def read_cell(self, cell, param='sm', fill_value=None):
         """
         Reads a single variable for all points of a cell.
 
@@ -188,7 +188,7 @@ class OrthoMultiTsCellReaderMixin:
     path: str
     grid: CellGrid
 
-    def read_cell_file(self, cell, param='sm'):
+    def read_cell(self, cell, param='sm'):
         """
         Reads a single variable for all points of a cell.
 
