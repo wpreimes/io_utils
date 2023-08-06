@@ -171,7 +171,7 @@ dependencies:
 - vc=14.3
 - vc14_runtime=14.36.32532
 - vs2015_runtime=14.36.32532
-- wheel=0.41.0
+- wheel=0.41.1
 - win_inet_pton=1.1.0
 - xarray=2023.7.0
 - xerces-c=3.2.4

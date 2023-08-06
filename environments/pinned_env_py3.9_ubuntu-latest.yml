@@ -213,7 +213,7 @@ dependencies:
 - tzdata=2023c
 - unicodedata2=15.0.0
 - urllib3=2.0.4
-- wheel=0.41.0
+- wheel=0.41.1
 - xarray=2023.7.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
