@@ -15,11 +15,11 @@ dependencies:
 - aws-c-event-stream=0.3.1
 - aws-c-http=0.7.11
 - aws-c-io=0.13.28
-- aws-c-mqtt=0.8.14
+- aws-c-mqtt=0.9.0
 - aws-c-s3=0.3.13
 - aws-c-sdkutils=0.1.11
 - aws-checksums=0.1.16
-- aws-crt-cpp=0.20.3
+- aws-crt-cpp=0.21.0
 - aws-sdk-cpp=1.10.57
 - blosc=1.21.4
 - boost-cpp=1.78.0
@@ -74,8 +74,8 @@ dependencies:
 - icu=72.1
 - idna=3.4
 - importlib-metadata=6.8.0
-- importlib-resources=6.0.0
-- importlib_resources=6.0.0
+- importlib-resources=6.0.1
+- importlib_resources=6.0.1
 - jinja2=3.1.2
 - joblib=1.3.0
 - json-c=0.16
