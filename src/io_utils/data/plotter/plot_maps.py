@@ -9,7 +9,6 @@ import pandas as pd
 from smecv_grid.grid import SMECV_Grid_v042
 from warnings import warn
 
-
 from io_utils.plot.misc import map_add_grid, map_add_cbar
 from io_utils.utils import safe_arange
 
