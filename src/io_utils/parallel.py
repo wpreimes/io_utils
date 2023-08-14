@@ -13,6 +13,7 @@ import logging
 from multiprocessing import Pool
 from datetime import datetime
 import sys
+from warnings import warn
 
 # Note: Might not work under windows... Maybe with py 3.10?
 
@@ -55,6 +56,9 @@ def apply_to_elements(
     results: list
         List of return values from each function call
     """
+    warn("This function is deprecated and will be removed in the future. "
+         "Use the new function version from repurpose.proc instead.",
+         DeprecationWarning)
     logger = logging.getLogger()
     streamHandler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(

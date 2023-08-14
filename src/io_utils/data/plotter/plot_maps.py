@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap, Normalize
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import cartopy
 import cartopy.crs as ccrs
-import matplotlib.ticker as mticker
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import pandas as pd
-import matplotlib as mpl
 from smecv_grid.grid import SMECV_Grid_v042
-import matplotlib.ticker as ticker
-import warnings
-from io_utils.utils import safe_arange
-import io_utils.colormaps as my_colormaps
+from warnings import warn
 
+
+from io_utils.plot.misc import map_add_grid, map_add_cbar
+from io_utils.utils import safe_arange
 
 '''
 Create a cartopy map from gridded or from pointed values.
@@ -37,82 +34,7 @@ def set_style(style):
         sns.set_context("poster", font_scale=1.)
         plt.style.use('seaborn-talk')
     else:
-        warnings.warn('{} style is not supported.')
-
-def is_spherical(projection):
-    if projection in [ccrs.Robinson()]:
-        return True
-    else:
-        return False
-
-def add_grid_labels(ax, x0, x1, y0, y1, dx, dy,
-                    lft=True, rgt=True, top=True, bot=True, spherical=False,
-                    edgle_label_x=False, edge_label_y=True):
-    """
-    Add grid line labels manually for projections that aren't supported
-
-    Parameters
-    ----------
-    ax (geoaxes.GeoAxesSubplot)
-    x0 (scalar)
-    x1 (scalar)
-    y0 (scalar)
-    y1 (scalar)
-    dx (scalar)
-    dy (scalar)
-    lft (bool): whether to label the left side
-    rgt (bool): whether to label the right side
-    top (bool): whether to label the top side
-    bot (bool): whether to label the bottom side
-    spherical (bool): pad the labels better if a side of ax is spherical
-    edgle_label_x (bool): Plot the first and last Lon label
-    edge_label_y (bool): Plot the first and last Lat label
-    """
-    if dx <= 10:
-        dtype = float
-    else:
-        dtype = int
-
-    if dy <= 10:
-        dtype = float
-    else:
-        dtype = int
-
-    lons = np.arange(x0, x1 + dx / 2., dx, dtype=dtype)
-    for i, lon in enumerate(lons):
-        if not edgle_label_x:
-            if i==0 or i==lons.size-1:
-                continue
-        if top:
-            ax.text(lon, y1, '{0}$^\circ$\n\n'.format(lon),
-                    va='center', ha='center',
-                    transform=ccrs.PlateCarree(), fontsize=5)
-        if bot:
-            ax.text(lon, y0, '\n\n{0}$^\circ$'.format(lon),
-                    va='center', ha='center',
-                    transform=ccrs.PlateCarree(), fontsize=5)
-
-    lats = np.arange(y0, y1 + dy / 2., dy, dtype=dtype)
-    for i, lat in enumerate(lats):
-        if not edge_label_y:
-            if i==0 or i==lats.size-1:
-                continue
-        if spherical:
-            if lat == 0:
-                va = 'center'
-            elif lat > 0:
-                va = 'bottom'
-            else:
-                va = 'top'
-        else:
-            va = 'center'
-
-        ax.text(x0, lat, '{0}$^\circ$  '.format(lat), va=va, ha='right',
-                transform=ccrs.PlateCarree(), alpha=0. if not lft else 1.,
-                fontsize=5)
-        ax.text(x1, lat, '  {0}$^\circ$'.format(lat), va=va, ha='left',
-                transform=ccrs.PlateCarree(), alpha=0. if not rgt else 1.,
-                fontsize=5)
+        warn('{} style is not supported.')
 
 
 def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
@@ -148,46 +70,6 @@ def map_add_pointer(f, imax, im, tip_loc, text_loc, pointer_label,
 
     return f, imax, im
 
-def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace, draw_labels):
-    """
-    Add a grid to the map
-
-    Parameters
-    ----------
-    imax : plt.Axes
-    projection : ccrs.projection
-    grid_loc : str
-    llc : tuple
-    urc : tuple
-    gridspace : tuple
-    draw_labels : bool
-
-    Returns
-    -------
-    imax : plt.Axes
-    """
-    minx, maxx = np.round(llc[0]), np.round(urc[0])
-    miny, maxy = np.round(llc[1]), np.round(urc[1])
-    dx, dy = gridspace[0], gridspace[1]
-    gl = imax.gridlines(crs=ccrs.PlateCarree(), draw_labels=False,
-                        linewidth=0.5, color='black', alpha=0.15, linestyle='--')
-
-    xlocs = np.arange(minx, maxx + dx, dx)
-    ylocs = np.arange(miny, maxy + dy, dy)
-    gl.xlocator = mticker.FixedLocator(xlocs)
-    gl.ylocator = mticker.FixedLocator(ylocs)
-    gl.xformatter = LONGITUDE_FORMATTER
-    gl.yformatter = LATITUDE_FORMATTER
-
-    if draw_labels:
-        spher = is_spherical(projection)
-        grid_kwargs = {p: True if g == '1' else False for p, g in zip(['top', 'rgt', 'bot', 'lft'], grid_loc)}
-        add_grid_labels(imax, minx, maxx, miny, maxy, dx, dy,
-                        spherical=spher, edgle_label_x=False,
-                        edge_label_y=True if spher else False,
-                        **grid_kwargs)
-
-    return imax
 
 def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, title_size=10,
                    llc=(-179.9999, -60.), urc=(179.9999, 80), cbrange=(0, 1),
@@ -277,6 +159,9 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
     im : plt.axes
         The plotter ax
     '''
+    warn("`cp_scatter_map` is deprecated. Use io_utils.plot.map module instead",
+         DeprecationWarning)
+
     if plot_kwargs is None:
         plot_kwargs = {}
     if cb_kwargs is None:
@@ -364,108 +249,9 @@ def cp_scatter_map(lons, lats, values, projection=ccrs.Robinson(), title=None, t
 
     return f, imax, im
 
-def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
-                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None, cb_ext_label_min=None,
-                 cb_ext_label_max=None, cb_text=None):
-    """
-    Add a colorbar to the bottom of the map
 
-    Parameters
-    ----------
-    f : plt.Figure
-        The map figure
-    imax : plt.Axes
-        The cartopy axes
-    im : plt.Axes
-        The data Axes
-    cb_label : str, optional (default: None)
-        Label that is shown below the colorbar
-    cb_loc : str, optional (default: bottom)
-        Location of the colorbar (bottom , left, right, top)
-    cb_labelsize : int, optional (default: 7)
-        Size of the colorbar label in points.
-    cb_extend : str, optional (default: Both)
-        Which sides of the colorbar are shown as an arrow.
-        One of: neither, both, max, min
-        By default, both sides are arrows.
-    cb_n_ticks : int, optional (default: None)
-        Override the default number of colobar ticks and use this many ticks
-        instead. If None is passed, let matplotlib decide.
-    cb_ext_label_min : str, optional (default: None)
-        Additional label for the left side of the colorbar
-    cb_ext_label_max : str, optional (default: None)
-        Additional label for the right if the colorbar
-    cb_text : list, optional (default: None)
-        Strings that are put below, next to the cbar with equal space
-    """
-
-    if not cb_ext_label_min and not cb_ext_label_max:
-        exteme_labels = False
-    else:
-        exteme_labels = True
-
-    cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
-                                     aspect=35 if cb_loc in ['top', 'bottom'] else 20,
-                                     extend=cb_extend, shrink=0.7, use_gridspec=True,
-                                     pad=0.07 if not exteme_labels else 0.08)
-
-    if f:
-        cb = f.colorbar(im, cax=cax, **kw)
-    else:
-        cb = plt.colorbar(im, cax=cax, **kw)
-    cb.ax.tick_params(labelsize=cb_ticksize)
-    if cb_n_ticks is not None:
-        if cb_n_ticks == 0:
-            cb.set_ticks([])
-        else:
-            tick_locator = ticker.MaxNLocator(nbins=cb_n_ticks)
-            cb.locator = tick_locator
-            cb.update_ticks()
-
-    if exteme_labels:
-        if cb_ext_label_min:
-            if cb_loc in ['top', 'bottom']:
-                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5, rotation=0, ha='left',
-                           transform=cax.transAxes)
-            else:
-                cb.ax.text(0.5, -0.06, cb_ext_label_min, fontsize=5, rotation=0, va='bottom',
-                           ha='center', transform=cax.transAxes)
-        if cb_ext_label_max:
-            if cb_loc in ['top', 'bottom']:
-                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5, rotation=0, ha='right',
-                           transform=cax.transAxes)
-            else:
-                cb.ax.text(0.5, 1.05, cb_ext_label_max, fontsize=5, rotation=0, va='top',
-                           ha='center', transform=cax.transAxes)
-
-    if cb_text is not None:
-        hs = []
-        vs = []
-        if cb_loc in ['top', 'bottom']:
-            off = (1. / len(cb_text)) / 2.
-            for i, t in enumerate(cb_text):
-                hs.append(i * (1. / len(cb_text)) + off)
-            vs = [-0.8 if cb_loc == 'bottom' else 1.2] * len(cb_text)
-        else:
-            off = (1. / len(cb_text)) / 2.
-            for i, t in enumerate(cb_text):
-                vs.append(i * (1. / len(cb_text)) + off)
-            hs = [1.2 if cb_loc == 'right' else -0.2] * len(cb_text)
-        for i, (h,v) in enumerate(zip(hs, vs)):
-            if cb_loc in ['top', 'bottom']:
-                cb.ax.text(h, v, cb_text[i], fontsize=cb_ticksize, rotation=0,
-                           transform=cax.transAxes, ha='center',
-                           va='top' if cb_loc=='bottom' else 'bottom')
-            else:
-                cb.ax.text(h, v, cb_text[i], fontsize=cb_ticksize, rotation=0,
-                           transform=cax.transAxes, va='center',
-                           ha='left' if cb_loc == 'right' else 'right')
-
-
-    cb.set_label(cb_label if cb_label is not None else '', fontsize=cb_labelsize,
-                 labelpad=5, color='k')
-
-def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0.5), projection=ccrs.Robinson(),
+def cp_map(df, col=None, resxy=(0.25,0.25),
+           offset=(0.5,0.5), projection=ccrs.Robinson(),
            title=None, title_size=10, llc=(-179.9999, -90.), urc=(179.9999, 90.), flip_ud=False,
            cbrange=(0, 1), cmap=plt.get_cmap('RdYlBu'), coastline_size='110m',
            gridspace=(60, 20), grid_label_loc='0011', style=None,
@@ -485,8 +271,6 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
     col : str, optional (default: None)
         The column in df that contains the data to plotter, not necessary if a
         Series is passed.
-    mask_cols_colors : dict, Optional (default: None)
-        Dictionary with mask columns in df as keys and colors as values
     resxy : tuple, optional (default: (0.25,0.25))
         Resolution if the grid that the passed data is on
         First arg in lon direction, second one in lat direction.
@@ -574,8 +358,9 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
         The plotter ax
     '''
 
-    if mask_cols_colors is None:
-        mask_cols_colors = dict()
+    warn("`cp_map` is deprecated. Use io_utils.plot.map module instead",
+         DeprecationWarning)
+
     if plot_kwargs is None:
         plot_kwargs = {}
     if cb_kwargs is None:
@@ -610,28 +395,29 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
     glob_index = pd.MultiIndex.from_arrays(np.array([glob_lats.flatten(),
                                                      glob_lons.flatten()]),
                                            names=['lats', 'lons'])
-    glob_df = pd.DataFrame(index=glob_index, data={'gpi': np.arange(glob_index.size)})
+    glob_df = pd.DataFrame(index=glob_index,
+                           data={'gpi': np.arange(glob_index.size)})
 
     if isinstance(df.index, pd.MultiIndex):
         s_lats, s_lons = df.index.get_level_values(0), df.index.get_level_values(1)
 
         index = pd.MultiIndex.from_arrays(
             np.array([s_lats, s_lons]), names=['lats', 'lons'])
-        data = {mask: df[mask] for mask in mask_cols_colors.keys()}
-        data.update({col: df[col]})
+        data = {}
+        data[col] = df[col]
         df = pd.DataFrame(index=index, data=data)
         df['gpi'] = np.arange(df.index.size)
     else:
         glob_df = glob_df.set_index('gpi')
 
-    for c in [col] + list(mask_cols_colors.keys()):
+    for c in [col]:
         glob_df[c] = df[c]
 
     df = data = None # clear memory
 
     layers = {}
 
-    for layer_name in [col] + list(mask_cols_colors.keys()):
+    for layer_name in [col]:
 
         img = np.empty(glob_df.index.size, dtype='float32')
         img.fill(np.nan)
@@ -679,12 +465,12 @@ def cp_map(df, col=None, mask_cols_colors=None, resxy=(0.25,0.25), offset=(0.5,0
 
     for name, img_masked in layers.items():
         if name != col:
-            colors = [mask_cols_colors[name], (1., 1., 1.)]  # dark green
-            layer_cmap = LinearSegmentedColormap.from_list(name, colors, N=2)
+            pass
         else:
             layer_cmap = cmap
 
-        im = imax.pcolormesh(glob_lons, glob_lats, img_masked, cmap=layer_cmap, transform=data_crs,
+        im = imax.pcolormesh(glob_lons, glob_lats, img_masked,
+                             cmap=layer_cmap, transform=data_crs,
                              rasterized=True, **plot_kwargs)
 
     im.set_clim(vmin=cbrange[0], vmax=cbrange[1])
