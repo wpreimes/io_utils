@@ -12,6 +12,7 @@ from io_utils.colormaps import smecv_sm
 import cartopy.crs as ccrs
 import shutil
 from tempfile import TemporaryDirectory
+import xarray as xr
 
 def test_scatter_map():
     with TemporaryDirectory() as out_dir:
@@ -59,23 +60,27 @@ def test_area_gpi():
         assert os.path.isfile(os.path.join(out_dir, filename))
 
 def test_pretty_plot():
-
     image = os.path.join(root_path.test_root, '00_testdata', 'plot',
         'ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED-20100701000000-fv04.5.nc')
-    ds = Dataset(image)
-    dat = ds.variables['sm'][:]
-    dat = dat.filled(np.nan).flatten()
-    _, resampled_lons, resampled_lats, _  = SMECV_Grid_v052(None).get_grid_points()
+    ds = xr.open_dataset(image)
+    df = ds[['sm']].isel(time=0).to_dataframe().drop(columns='time')
 
-    index =pd.MultiIndex.from_arrays(np.array([resampled_lats, resampled_lons]),
-                                     names=['lats', 'lons'])
-    df = pd.DataFrame(index=index, data={'sm': dat}).dropna()
+    grid = SMECV_Grid_v052('rainforest')
+    index = pd.MultiIndex.from_arrays(
+        np.array([grid.activearrlat, grid.activearrlon]),
+        names=['lats', 'lons'])
+    df['rainforest'] = np.nan
+    df.loc[index, 'rainforest'] = True
+
+    df = df.dropna(how='all')
+    df['rainforest'].fillna(False, inplace=True)
 
     cb_kwargs = dict(cb_label='ESA CCI SM [$m^3/m^3$]', cb_labelsize=7,
                      cb_extend='both', cb_ext_label_min='DRY',
                      cb_ext_label_max='WET', cb_loc='right')
 
-    f, imax, im = cp_map(df, 'sm', resxy=(0.25,0.25), cbrange=(0,50.),
+    f, imax, im = cp_map(df, 'sm',
+                         resxy=(0.25, 0.25), cbrange=(0,50.),
                          cmap=smecv_sm(), projection=ccrs.Sinusoidal(),
                          title='Overloaded Plot with too much Information',
                          ocean=True, land='grey', gridspace=(60,20), states=True,
@@ -94,8 +99,9 @@ def test_pretty_plot():
 
 
 if __name__ == '__main__':
-    test_scatter_map()
     test_pretty_plot()
-    test_area_multiindex()
-    test_area_gpi()
+
+    # test_scatter_map()
+    # test_area_multiindex()
+    # test_area_gpi()
 
