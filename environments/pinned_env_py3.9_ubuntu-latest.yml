@@ -8,17 +8,17 @@ dependencies:
 - alsa-lib=1.2.9
 - attr=2.5.1
 - attrs=23.1.0
-- aws-c-auth=0.7.0
-- aws-c-cal=0.6.0
-- aws-c-common=0.8.23
+- aws-c-auth=0.7.3
+- aws-c-cal=0.6.1
+- aws-c-common=0.9.0
 - aws-c-compression=0.2.17
 - aws-c-event-stream=0.3.1
 - aws-c-http=0.7.11
-- aws-c-io=0.13.28
-- aws-c-mqtt=0.9.0
-- aws-c-s3=0.3.13
+- aws-c-io=0.13.32
+- aws-c-mqtt=0.9.3
+- aws-c-s3=0.3.14
 - aws-c-sdkutils=0.1.12
-- aws-checksums=0.1.16
+- aws-checksums=0.1.17
 - aws-crt-cpp=0.21.0
 - aws-sdk-cpp=1.10.57
 - blosc=1.21.4
@@ -31,7 +31,7 @@ dependencies:
 - c-ares=1.19.1
 - ca-certificates=2023.7.22
 - cairo=1.16.0
-- cartopy=0.21.1
+- cartopy=0.22.0
 - certifi=2023.7.22
 - cfitsio=4.2.0
 - cftime=1.6.2
@@ -77,12 +77,12 @@ dependencies:
 - importlib-resources=6.0.1
 - importlib_resources=6.0.1
 - jinja2=3.1.2
-- joblib=1.3.0
+- joblib=1.3.2
 - json-c=0.16
 - kealib=1.5.1
 - keyutils=1.6.1
 - kiwisolver=1.4.4
-- krb5=1.21.1
+- krb5=1.21.2
 - lame=3.100
 - lcms2=2.15
 - ld_impl_linux-64=2.40
@@ -126,9 +126,9 @@ dependencies:
 - libopenblas=0.3.23
 - libopus=1.3.1
 - libpng=1.6.39
-- libpq=15.3
+- libpq=15.4
 - librttopo=1.1.0
-- libsndfile=1.2.0
+- libsndfile=1.2.2
 - libspatialindex=1.9.3
 - libspatialite=5.0.1
 - libsqlite=3.42.0
@@ -141,7 +141,7 @@ dependencies:
 - libwebp-base=1.3.1
 - libxcb=1.15
 - libxkbcommon=1.5.0
-- libxml2=2.11.4
+- libxml2=2.11.5
 - libzip=1.9.2
 - libzlib=1.2.13
 - lz4-c=1.9.4
@@ -173,7 +173,7 @@ dependencies:
 - pooch=1.7.0
 - poppler=23.05.0
 - poppler-data=0.4.12
-- postgresql=15.3
+- postgresql=15.4
 - proj=9.2.1
 - pthread-stubs=0.4
 - pulseaudio-client=16.1
@@ -183,7 +183,7 @@ dependencies:
 - pyqt5-sip=12.12.2
 - pyshp=2.3.1
 - pysocks=1.7.1
-- python=3.9.16
+- python=3.9.17
 - python-dateutil=2.8.2
 - python-tzdata=2023.3
 - python_abi=3.9
@@ -192,7 +192,7 @@ dependencies:
 - readline=8.2
 - requests=2.31.0
 - rtree=1.0.1
-- s2n=1.3.46
+- s2n=1.3.48
 - scikit-learn=1.3.0
 - scipy=1.11.1
 - setuptools=68.0.0
@@ -249,13 +249,13 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.2.7
+  - coverage==7.3.0
   - cython==3.0.0
   - dask==2023.8.0
   - datetime==5.2
   - entrypoints==0.4
   - equi7grid==0.2.2
-  - exceptiongroup==1.1.2
+  - exceptiongroup==1.1.3
   - fasteners==0.18
   - fsspec==2023.6.0
   - geographiclib==2.0
@@ -289,12 +289,12 @@ dependencies:
   - rasterio==1.3.8
   - regex==2023.8.8
   - repurpose==0.9
-  - rioxarray==0.14.1
+  - rioxarray==0.15.0
   - setuptools-scm==7.1.0
   - smecv-grid==0.3
   - snuggs==1.4.7
   - toolz==0.12.0
-  - tqdm==4.65.2
+  - tqdm==4.66.1
   - trollsift==0.5.0
   - veranda==1.1.0
   - zarr==2.16.0
