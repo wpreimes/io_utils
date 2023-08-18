@@ -36,7 +36,7 @@ dependencies:
 - cfitsio=4.2.0
 - cftime=1.6.2
 - charset-normalizer=3.2.0
-- click=8.1.6
+- click=8.1.7
 - click-plugins=1.1.1
 - cligj=0.7.2
 - contourpy=1.1.0
@@ -206,7 +206,7 @@ dependencies:
 - tk=8.6.12
 - toml=0.10.2
 - tomli=2.0.1
-- tornado=6.3.2
+- tornado=6.3.3
 - typing-extensions=4.7.1
 - typing_extensions=4.7.1
 - tzcode=2023c
