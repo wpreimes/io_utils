@@ -1,11 +1,10 @@
-
 import numpy as np
 import pandas as pd
 import cartopy
 import cartopy.crs as ccrs
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from io_utils.plot.misc import map_add_grid, map_add_cbar, meshgrid
-
 
 def reshape_dat(ds) -> dict:
     """
@@ -14,8 +13,8 @@ def reshape_dat(ds) -> dict:
     Parameters
     ----------
     ds: pd.Series
-        The dataset to plot. The index must be a MultiIndex with the first level
-        being latitudes and the second level being longitudes.
+        The dataset to plot. The index must be a MultiIndex with the first
+        level being latitudes and the second level being longitudes.
         The data is in the values.
 
     Returns
@@ -66,6 +65,9 @@ class MapPlotter:
                               edgecolor='k')
         self.ax = plt.axes(projection=projection)
         self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
+
+    def __del__(self):
+        plt.close(self.fig)
 
     def add_gridlines(self, grid_loc='0110', gridspace=(60, 20), fontsize=5):
         """
@@ -128,7 +130,7 @@ class MapPlotter:
                 cartopy.feature.BORDERS, linewidth=0.1*linewidth_mult, zorder=5)
 
     def add_colormesh_layer(self, ds, cmap=plt.get_cmap('RdYlBu'),
-                            add_cbar=False, cbar_kwargs=None):
+                            clim=None, add_cbar=False, cbar_kwargs=None):
         """
         Draw a colormesh raster layer for the given dataset.
 
@@ -139,6 +141,10 @@ class MapPlotter:
             levels 'lat' and 'lon'. The values must be the data to plot.
         cmap: str or matplotlib.colors.Colormap, optional (default: RdYlBu)
             The colormap to use
+        clim: tuple, optional (default: None)
+            The range of the colorbar (min, max). When a colorbar is added,
+            it will show this range. If None, then matplotlib decides.
+            You can also set one of min or max to None.
         add_cbar: bool, optional
             Add colorbar based on this layer
         cbar_kwargs: dict, optional (default: None)
@@ -153,12 +159,15 @@ class MapPlotter:
                                zorder=3,
                                cmap=cmap, transform=ccrs.PlateCarree())
 
+        if clim is not None:
+            p.set_clim(vmin=clim[0], vmax=clim[1])
+
         if add_cbar:
             cbar_kwargs = cbar_kwargs or {}
             map_add_cbar(self.fig, self.ax, p, **cbar_kwargs)
 
     def add_scatter_layer(self, ds, marker='.', s=1, cmap=plt.get_cmap('RdYlBu'),
-                          add_cbar=False, cbar_kwargs=None):
+                          clim=None, add_cbar=False, cbar_kwargs=None):
         """
         Add a scatter layer to the map, where the points are colored based
         on the passed color map.
@@ -179,6 +188,10 @@ class MapPlotter:
             If a string is given, it must be valid color name.
             If a colormap is given the scatter points will be colored
             based on their value.
+        clim: tuple, optional (default: None)
+            The range of the colorbar (min, max). When a colorbar is added,
+            it will show this range. If None, then matplotlib decides.
+            You can also set one of min or max to None.
         add_cbar: bool, optional (default: False)
             Add colorbar based on this layer
         cbar_kwargs: dict, optional (default: None)
@@ -196,14 +209,17 @@ class MapPlotter:
             zorder=3,
         )
 
+        if clim is not None:
+            p.set_clim(vmin=clim[0], vmax=clim[1])
+
         if add_cbar:
             cbar_kwargs = cbar_kwargs or {}
             map_add_cbar(self.fig, self.ax, p, **cbar_kwargs)
 
-    def add_pattern_overlay(self, ds, density=3, pattern='/', colors='none'):
+    def add_hatch_overlay(self, ds, density=3, pattern='/', colors='none', lw=1):
         """
         Add a countour layer to the map. This is useful for overlayers and
-        only support simple shapes and no colors.
+        only support simple hatches and no color maps.
 
         Parameters
         ----------
@@ -212,14 +228,21 @@ class MapPlotter:
             levels 'lat' and 'lon'. The values are boolean values, where True
             means that the point should be marked.
         density: int, optional (default: 3)
-            Density of the pattern lines
+            Density of the hatch lines (>=0). Higher density means more
+            features. 0 means no features.
         pattern: str, optional (default: '/')
-            Pattern of the contour lines, see matplotlib documentation for
+            Hatch pattern, contour lines, see matplotlib documentation for
             details.
             e.g, /, ., o, +, -, etc
+        colors: str, optional (default: 'none')
+            Color of the contour lines. color string or sequence of colors.
+            Default is 'none'
+        lw: int, optional (default: 1)
+            Line width of the contour lines.
         """
         dat = reshape_dat(ds)
-
+        _lw = mpl.rcParams['hatch.linewidth']
+        mpl.rcParams['hatch.linewidth'] = lw
         self.ax.contourf(
             dat['lon2d'], dat['lat2d'], dat['data'],
             transform=ccrs.PlateCarree(),
@@ -228,6 +251,7 @@ class MapPlotter:
             zorder=3,
             hatches=[density * pattern, density * pattern],
         )
+        mpl.rcParams['hatch.linewidth'] = _lw
 
     def add_scatter_overlay(self, ds, marker='.', s=1, color='black'):
         """
@@ -288,10 +312,12 @@ if __name__ == '__main__':
     df = ds[['sm', 'gapmask']].isel(time=0).to_dataframe().drop(columns='time')
     plotter = MapPlotter(llc=(-30, 35), urc=(40, 70))
 
-    plotter.add_colormesh_layer(df['sm'].dropna(), add_cbar=True,
+    plotter.add_colormesh_layer(df['sm'].dropna(), add_cbar=True, clim=(0, 0.5),
                                 cbar_kwargs=dict(cb_label='SM (m3/m3)', cb_loc='left'))
-    plotter.add_pattern_overlay(~df['gapmask'].dropna().astype(bool), pattern='.',
-                            density=2)
+    plotter.add_hatch_overlay(~df['gapmask'].dropna().astype(bool), pattern='.',
+                              density=2)
+    plotter.add_basemap('white', ocean=True, states=True, borders=True,
+                        linewidth_mult=3)
 
     idx = np.random.choice(df.index, 1000)
     df = pd.Series(index=pd.MultiIndex.from_tuples(idx), data=True)
@@ -299,15 +325,13 @@ if __name__ == '__main__':
     plotter.add_scatter_layer(df, marker='.', s=50, cmap=plt.get_cmap('Greens'),
                               add_cbar=True, cbar_kwargs=dict(cb_label='SM (m3/m3)', cb_loc='right'))
 
-    plotter.add_basemap('white', ocean=True, states=True, borders=True,
-                    linewidth_mult=3)
 
     idx = np.random.choice(df.index, 1000)
     df = pd.Series(index=pd.MultiIndex.from_tuples(idx), data=True)
 
     plotter.add_scatter_overlay(df, marker='+', s=20)
 
-    plotter.add_gridlines('0110', (60,20))
+    plotter.add_gridlines('0110', (60, 20))
 
     plotter.ax.set_title('Test')
     plotter.fig.savefig('test.png', dpi=300, bbox_inches='tight')

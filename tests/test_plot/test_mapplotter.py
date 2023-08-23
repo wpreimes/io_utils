@@ -25,20 +25,19 @@ class TestMapPlotter(unittest.TestCase):
                                     cbar_kwargs=dict(cb_label='SM (m3/m3)',
                                                      cb_loc='left'))
         self.df['mask'] = self.df['flag'] == 0
-        self.plotter.add_pattern_overlay(
-            self.df['mask'].dropna().astype(bool), pattern='.', density=2)
+        self.plotter.add_hatch_overlay(
+            self.df['mask'].dropna().astype(bool), pattern='.', density=2, lw=2)
 
         idx = np.random.choice(self.df.index, 1000)
         df = pd.Series(index=pd.MultiIndex.from_tuples(idx), data=True)
 
-        self.plotter.add_scatter_layer(df, marker='.', s=50,
-                                  cmap=plt.get_cmap('Greens'),
-                                  add_cbar=True,
-                                  cbar_kwargs=dict(cb_label='SM (m3/m3)',
-                                                   cb_loc='right'))
+        self.plotter.add_scatter_layer(
+            df, marker='.', s=50, cmap=plt.get_cmap('Greens'),
+            add_cbar=True, clim=(0, 1),
+            cbar_kwargs=dict(cb_label='SM (m3/m3)',cb_loc='right'))
 
         self.plotter.add_basemap('white', ocean=True, states=True, borders=True,
-                            linewidth_mult=3)
+                                linewidth_mult=3)
 
         idx = np.random.choice(df.index, 1000)
         df = pd.Series(index=pd.MultiIndex.from_tuples(idx), data=True)
