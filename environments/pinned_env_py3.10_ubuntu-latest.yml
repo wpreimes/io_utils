@@ -15,7 +15,7 @@ dependencies:
 - aws-c-event-stream=0.3.1
 - aws-c-http=0.7.11
 - aws-c-io=0.13.32
-- aws-c-mqtt=0.9.3
+- aws-c-mqtt=0.9.4
 - aws-c-s3=0.3.14
 - aws-c-sdkutils=0.1.12
 - aws-checksums=0.1.17
@@ -216,7 +216,7 @@ dependencies:
 - tzdata=2023c
 - unicodedata2=15.0.0
 - urllib3=2.0.4
-- wheel=0.41.1
+- wheel=0.41.2
 - xarray=2023.8.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
