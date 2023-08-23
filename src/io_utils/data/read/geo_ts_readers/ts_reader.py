@@ -169,16 +169,17 @@ class GeoTsReader(object):
 
     def _resample(self, df):
         method = self.resample[1]
+        df = df.select_dtypes(np.number)
 
         if self.resample[0].lower() == 'ddekad':
             groups = df.groupby(ddek)
         else:
             groups = None
 
-        df = df.select_dtypes(np.number)
         if isinstance(method, str):
             a = groups if groups is not None else df.resample(self.resample[0])
-            df = eval('a.{}()'.format(method)) # todo: ?? better solution?
+            df = a.apply(method)
+            #df = eval('a.{}()'.format(method)) # todo: ?? better solution?
         else:
             warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
             if groups is None:
