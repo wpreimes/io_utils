@@ -12,10 +12,10 @@ dependencies:
 - aws-c-cal=0.6.1
 - aws-c-common=0.9.0
 - aws-c-compression=0.2.17
-- aws-c-event-stream=0.3.1
+- aws-c-event-stream=0.3.2
 - aws-c-http=0.7.11
 - aws-c-io=0.13.32
-- aws-c-mqtt=0.9.4
+- aws-c-mqtt=0.9.5
 - aws-c-s3=0.3.14
 - aws-c-sdkutils=0.1.12
 - aws-checksums=0.1.17
@@ -80,7 +80,7 @@ dependencies:
 - json-c=0.17
 - kealib=1.5.1
 - keyutils=1.6.1
-- kiwisolver=1.4.4
+- kiwisolver=1.4.5
 - krb5=1.21.2
 - lame=3.100
 - lcms2=2.15
@@ -135,7 +135,7 @@ dependencies:
 - libsndfile=1.2.2
 - libspatialindex=1.9.3
 - libspatialite=5.0.1
-- libsqlite=3.42.0
+- libsqlite=3.43.0
 - libssh2=1.11.0
 - libstdcxx-ng=13.1.0
 - libsystemd0=254
@@ -205,7 +205,7 @@ dependencies:
 - sip=6.7.11
 - six=1.16.0
 - snappy=1.1.10
-- sqlite=3.42.0
+- sqlite=3.43.0
 - threadpoolctl=3.2.0
 - tiledb=2.16.3
 - tk=8.6.12

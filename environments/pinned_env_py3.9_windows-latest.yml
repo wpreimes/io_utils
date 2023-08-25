@@ -59,7 +59,7 @@ dependencies:
 - jinja2=3.1.2
 - joblib=1.3.2
 - kealib=1.5.1
-- kiwisolver=1.4.4
+- kiwisolver=1.4.5
 - krb5=1.21.2
 - lcms2=2.15
 - lerc=4.0.0
@@ -95,7 +95,7 @@ dependencies:
 - librttopo=1.1.0
 - libspatialindex=1.9.3
 - libspatialite=5.0.1
-- libsqlite=3.42.0
+- libsqlite=3.43.0
 - libssh2=1.11.0
 - libtiff=4.5.1
 - libvorbis=1.3.7
@@ -160,7 +160,7 @@ dependencies:
 - sip=6.7.11
 - six=1.16.0
 - snappy=1.1.10
-- sqlite=3.42.0
+- sqlite=3.43.0
 - tbb=2021.10.0
 - threadpoolctl=3.2.0
 - tiledb=2.16.3
