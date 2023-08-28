@@ -243,7 +243,7 @@ dependencies:
 - xz=5.2.6
 - zipp=3.16.2
 - zlib=1.2.13
-- zstd=1.5.2
+- zstd=1.5.5
 - pip:
   - affine==2.4.0
   - ascat==2.1.1
@@ -255,7 +255,7 @@ dependencies:
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
   - coverage==7.3.0
-  - cython==3.0.1
+  - cython==3.0.2
   - dask==2023.8.1
   - datetime==5.2
   - entrypoints==0.4
