@@ -11,9 +11,9 @@ dependencies:
 - blosc=1.21.4
 - boost-cpp=1.78.0
 - branca=0.6.0
-- brotli=1.0.9
-- brotli-bin=1.0.9
-- brotli-python=1.0.9
+- brotli=1.1.0
+- brotli-bin=1.1.0
+- brotli-python=1.1.0
 - bzip2=1.0.8
 - c-ares=1.19.1
 - ca-certificates=2023.7.22
@@ -77,9 +77,9 @@ dependencies:
 - libaec=1.0.6
 - libarchive=3.6.2
 - libblas=3.9.0
-- libbrotlicommon=1.0.9
-- libbrotlidec=1.0.9
-- libbrotlienc=1.0.9
+- libbrotlicommon=1.1.0
+- libbrotlidec=1.1.0
+- libbrotlienc=1.1.0
 - libcap=2.69
 - libcblas=3.9.0
 - libclang=15.0.7
