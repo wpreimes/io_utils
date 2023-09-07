@@ -240,9 +240,9 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.3.0
+  - coverage==7.3.1
   - cython==3.0.2
-  - dask==2023.9.0
+  - dask==2023.9.1
   - datetime==5.2
   - entrypoints==0.4
   - equi7grid==0.2.2
