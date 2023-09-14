@@ -38,7 +38,7 @@ dependencies:
 - fonttools=4.42.1
 - freetype=2.12.1
 - freexl=1.0.6
-- gdal=3.7.1
+- gdal=3.7.2
 - geopandas=0.13.2
 - geopandas-base=0.13.2
 - geos=3.12.0
@@ -74,11 +74,11 @@ dependencies:
 - libclang=15.0.7
 - libclang13=15.0.7
 - libcrc32c=1.1.2
-- libcurl=8.2.1
+- libcurl=8.3.0
 - libdeflate=1.18
 - libexpat=2.5.0
 - libffi=3.4.2
-- libgdal=3.7.1
+- libgdal=3.7.2
 - libglib=2.78.0
 - libgoogle-cloud=2.12.0
 - libgrpc=1.57.0
@@ -129,9 +129,7 @@ dependencies:
 - pillow=10.0.0
 - pip=23.2.1
 - pixman=0.40.0
-- platformdirs=3.10.0
 - ply=3.11
-- pooch=1.7.0
 - poppler=23.08.0
 - poppler-data=0.4.12
 - postgresql=15.4
@@ -168,8 +166,6 @@ dependencies:
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.3
-- typing-extensions=4.7.1
-- typing_extensions=4.7.1
 - tzdata=2023c
 - ucrt=10.0.22621.0
 - unicodedata2=15.0.0
@@ -245,6 +241,7 @@ dependencies:
   - toolz==0.12.0
   - tqdm==4.66.1
   - trollsift==0.5.0
+  - typing-extensions==4.7.1
   - veranda==1.1.0
   - zarr==2.16.1
   - zope-interface==6.0
