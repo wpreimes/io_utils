@@ -26,7 +26,7 @@ dependencies:
 - click=8.1.7
 - click-plugins=1.1.1
 - cligj=0.7.2
-- contourpy=1.1.0
+- contourpy=1.1.1
 - curl=8.3.0
 - cycler=0.11.0
 - dbus=1.13.6

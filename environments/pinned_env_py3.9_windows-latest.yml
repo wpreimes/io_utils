@@ -23,7 +23,7 @@ dependencies:
 - click-plugins=1.1.1
 - cligj=0.7.2
 - colorama=0.4.6
-- contourpy=1.1.0
+- contourpy=1.1.1
 - cycler=0.11.0
 - expat=2.5.0
 - fiona=1.9.4
