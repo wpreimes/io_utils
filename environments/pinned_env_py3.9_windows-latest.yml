@@ -201,7 +201,7 @@ dependencies:
   - entrypoints==0.4
   - equi7grid==0.2.2
   - exceptiongroup==1.1.3
-  - fasteners==0.18
+  - fasteners==0.19
   - fsspec==2023.9.1
   - geographiclib==2.0
   - geopathfinder==0.1.4
