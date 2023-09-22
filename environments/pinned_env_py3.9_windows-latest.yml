@@ -37,7 +37,7 @@ dependencies:
 - fonts-conda-forge=1
 - fonttools=4.42.1
 - freetype=2.12.1
-- freexl=1.0.6
+- freexl=2.0.0
 - gdal=3.7.2
 - geopandas=0.14.0
 - geopandas-base=0.14.0
@@ -46,8 +46,8 @@ dependencies:
 - gettext=0.21.1
 - glib=2.78.0
 - glib-tools=2.78.0
-- gst-plugins-base=1.22.5
-- gstreamer=1.22.5
+- gst-plugins-base=1.22.6
+- gstreamer=1.22.6
 - hdf4=4.2.15
 - hdf5=1.14.2
 - icu=73.2
@@ -75,7 +75,7 @@ dependencies:
 - libclang13=15.0.7
 - libcrc32c=1.1.2
 - libcurl=8.3.0
-- libdeflate=1.18
+- libdeflate=1.19
 - libexpat=2.5.0
 - libffi=3.4.2
 - libgdal=3.7.2
@@ -94,10 +94,10 @@ dependencies:
 - libprotobuf=4.23.4
 - librttopo=1.1.0
 - libspatialindex=1.9.3
-- libspatialite=5.0.1
+- libspatialite=5.1.0
 - libsqlite=3.43.0
 - libssh2=1.11.0
-- libtiff=4.5.1
+- libtiff=4.6.0
 - libvorbis=1.3.7
 - libwebp-base=1.3.2
 - libxcb=1.15
@@ -115,6 +115,7 @@ dependencies:
 - markupsafe=2.1.3
 - matplotlib=3.8.0
 - matplotlib-base=3.8.0
+- minizip=4.0.1
 - mkl=2022.1.0
 - msys2-conda-epoch=20160418
 - munch=4.0.0
@@ -126,18 +127,18 @@ dependencies:
 - packaging=23.1
 - pandas=2.1.1
 - pcre2=10.40
-- pillow=10.0.0
+- pillow=10.0.1
 - pip=23.2.1
 - pixman=0.40.0
 - ply=3.11
 - poppler=23.08.0
 - poppler-data=0.4.12
 - postgresql=15.4
-- proj=9.2.1
+- proj=9.3.0
 - pthread-stubs=0.4
 - pthreads-win32=2.9.1
 - pyparsing=3.1.1
-- pyproj=3.6.0
+- pyproj=3.6.1
 - pyqt=5.15.9
 - pyqt5-sip=12.12.2
 - pyshp=2.3.1
@@ -151,7 +152,7 @@ dependencies:
 - re2=2023.03.02
 - requests=2.31.0
 - rtree=1.0.1
-- scikit-learn=1.3.0
+- scikit-learn=1.3.1
 - scipy=1.11.2
 - setuptools=68.2.2
 - shapely=2.0.1
@@ -210,13 +211,13 @@ dependencies:
   - iniconfig==2.0.0
   - ismn==1.3.4
   - iso3166==2.1.1
-  - llvmlite==0.40.1
+  - llvmlite==0.41.0
   - locket==1.0.0
   - lxml==4.9.3
   - more-itertools==10.1.0
-  - numba==0.57.1
+  - numba==0.58.0
   - numcodecs==0.11.0
-  - numpy==1.24.4
+  - numpy==1.25.2
   - parse==1.19.1
   - partd==1.4.0
   - pluggy==1.3.0
@@ -235,7 +236,7 @@ dependencies:
   - regex==2023.8.8
   - repurpose==0.9
   - rioxarray==0.15.0
-  - setuptools-scm==8.0.1
+  - setuptools-scm==8.0.2
   - smecv-grid==0.3
   - snuggs==1.4.7
   - toolz==0.12.0
