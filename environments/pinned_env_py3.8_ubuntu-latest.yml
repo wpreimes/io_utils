@@ -189,7 +189,7 @@ dependencies:
 - sqlite=3.43.0
 - threadpoolctl=3.2.0
 - tiledb=2.13.2
-- tk=8.6.12
+- tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.3
