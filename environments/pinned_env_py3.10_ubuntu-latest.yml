@@ -259,7 +259,7 @@ dependencies:
   - numcodecs==0.11.0
   - numpy==1.25.2
   - parse==1.19.1
-  - partd==1.4.0
+  - partd==1.4.1
   - pluggy==1.3.0
   - pygeobase==0.6.2
   - git+https://github.com/TUW-GEO/pygeogrids@a241064ac487c524bed2469170fb62b211cc0881
