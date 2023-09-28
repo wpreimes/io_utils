@@ -199,7 +199,7 @@ dependencies:
 - tornado=6.3.3
 - tzcode=2023c
 - tzdata=2023c
-- unicodedata2=15.0.0
+- unicodedata2=15.1.0
 - urllib3=2.0.5
 - wheel=0.41.2
 - xarray=2023.9.0

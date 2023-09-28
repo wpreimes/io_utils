@@ -169,7 +169,7 @@ dependencies:
 - tornado=6.3.3
 - tzdata=2023c
 - ucrt=10.0.22621.0
-- unicodedata2=15.0.0
+- unicodedata2=15.1.0
 - urllib3=2.0.5
 - vc=14.3
 - vc14_runtime=14.36.32532

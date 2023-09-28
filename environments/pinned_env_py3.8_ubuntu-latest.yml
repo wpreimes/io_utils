@@ -197,7 +197,7 @@ dependencies:
 - typing_extensions=4.8.0
 - tzcode=2023c
 - tzdata=2023c
-- unicodedata2=15.0.0
+- unicodedata2=15.1.0
 - urllib3=2.0.5
 - wheel=0.41.2
 - xarray=2023.1.0
