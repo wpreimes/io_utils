@@ -74,7 +74,7 @@ dependencies:
 - lcms2=2.15
 - ld_impl_linux-64=2.40
 - lerc=4.0.0
-- libaec=1.0.6
+- libaec=1.1.1
 - libarchive=3.6.2
 - libblas=3.9.0
 - libbrotlicommon=1.1.0
@@ -150,7 +150,7 @@ dependencies:
 - numpy=1.24.4
 - openjpeg=2.5.0
 - openssl=3.1.3
-- packaging=23.1
+- packaging=23.2
 - pandas=1.5.3
 - pcre2=10.40
 - pillow=10.0.0
