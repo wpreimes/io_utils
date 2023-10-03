@@ -195,7 +195,7 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.3.1
+  - coverage==7.3.2
   - cython==3.0.2
   - dask==2023.9.3
   - datetime==5.2
@@ -236,7 +236,7 @@ dependencies:
   - regex==2023.8.8
   - repurpose==0.9
   - rioxarray==0.15.0
-  - setuptools-scm==8.0.3
+  - setuptools-scm==8.0.4
   - smecv-grid==0.3
   - snuggs==1.4.7
   - toolz==0.12.0
