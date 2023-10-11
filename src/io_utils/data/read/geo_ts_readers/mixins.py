@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import netCDF4 as nc
 from pygeogrids.grids import CellGrid
 import xarray as xr
+from typing import Callable
 
 class ContiguousRaggedTsCellReaderMixin:
 
@@ -16,6 +17,8 @@ class ContiguousRaggedTsCellReaderMixin:
 
     path: str
     grid: CellGrid
+
+    read: Callable
 
     def read_cell(self, cell, param='sm', fill_value=None):
         """
@@ -66,7 +69,8 @@ class ContiguousRaggedTsCellReaderMixin:
         times = np.split(time, cutoff_points)[:-1]
         datas = np.split(variable, cutoff_points)[:-1]
 
-        assert len(times) == len(datas)
+        if not (len(times) == len(datas)):
+            raise ValueError("Time and data must have same length")
 
         filled = np.full((len(datas), len(index)), fill_value=fill_value)
         idx = np.array([np.isin(index, t) for t in times])
@@ -89,8 +93,8 @@ class ContiguousRaggedTsCellReaderMixin:
 
         return data
 
-    def read_agg_cell_data(self, cell, param, format='pd_multidx_df',
-                           to_replace=None) -> dict or pd.DataFrame:
+    def read_agg_cell_data(self, cell, param, format='pd_multicol_vargpi',
+                           swap_levels=False) -> dict or pd.DataFrame:
         """
         Read all time series for a single variable in the selected cell.
 
@@ -99,21 +103,24 @@ class ContiguousRaggedTsCellReaderMixin:
         cell: int
             Cell number as in the c3s grid
         param: list or str
-            Name of the variable(s) to read.
-        format : str, optional (default: 'multiindex')
-            * pd_multidx_df (default):
-                Returns one data frame with gpi as first, and time as
+            Name of the variable(s) to read. Or None to read all data variables.
+        format : str, optional (default: 'pd_multicol_vargpi')
+            * pd_multicol_vargpi:
+                Returns one data frame with gpi as first, and gpis as second
+                column level.
+            * pd_multidx_vartime:
+                Returns one data frame with variable name as first and
+                time as second index level.
+            * pd_multidx_timegpi:
+                Returns one data frame with time as first, and gpi as
                 second index level.
-            * gpidict : Returns a dictionary of dataframes, with gpis as keys
-                        and time series data as values.
-            * var_np_arrays : Returns 2d arrays for each variable and a variable
-                              'index' with time stamps.
-        to_replace : dict of dicts, optional (default: None)
-            Dict for parameters of values to replace.
-            e.g. {'sm': {-999999.0: -9999}}
-            see pandas.to_replace()
-
-        Additional kwargs are given to xarray to open the dataset.W
+            * gpidict
+                Returns a dictionary of dataframe where the keys are the gpis
+                and the values are the time series data.
+        swap_levels: bool, optional (default: False)
+            If True, the index levels are swapped. So e.g. instead of a
+            variable and gpi column level, you get a gpi and variable column
+            level. Only works for ``pd_multiXXX_XXX`` formats.
 
         Returns
         -------
@@ -125,58 +132,152 @@ class ContiguousRaggedTsCellReaderMixin:
             warnings.warn("Reading cell with exact index not yet supported. "
                           "Use read_cells()")
 
-        params = np.atleast_1d(param)
+        format = format.lower()
 
-        df = []
+        if format == "pd_multicol_vargpi":
+            dfs = []
+            for p in np.atleast_1d(param):
+                df = self.read_cell(cell, p)
+                df.columns = pd.MultiIndex.from_product([[p], df.columns])\
+                                          .set_names(['var', 'gpi'])
+                dfs.append(df)
 
-        for p in params:
-            _df = self.read_cell(cell, p)
+            dfs = pd.concat(dfs, axis=1)
 
-            idx = pd.MultiIndex.from_product([_df.columns.values, _df.index.values],
-                                             names=['locations', 'time'])
-            data = _df.transpose().values.flatten()
-            _df = pd.DataFrame(index=idx, data={p: data})
-            df.append(_df)
+            if swap_levels:
+                dfs = dfs.swaplevel(0, 1, axis=1)
 
-        df = pd.concat(df, axis=1)
+            return dfs.sort_index(level=[0, 1], axis=1)
 
-        locations = df.index.get_level_values('locations').values
-        gpis = np.unique(locations)
+        elif format == "pd_multidx_vartime":
+            dfs = []
+            for p in np.atleast_1d(param):
+                df = self.read_cell(cell, p)
+                df.index = pd.MultiIndex.from_product([[p], df.index])\
+                                        .set_names(['var', 'time'])
+                dfs.append(df)
+            dfs = pd.concat(dfs, axis=0)
 
-        df.index = df.index.set_levels(np.arange(len(gpis)), level=0)
+            if swap_levels:
+                dfs = dfs.swaplevel(0, 1, axis=0)
 
-        if hasattr(self, 'clip_dates') and self.clip_dates:
-            if hasattr(self, '_clip_dates'):
-                df = self._clip_dates(df)
-            else:
-                warnings.warn("No method `_clip_dates` found.")
+            return dfs.sort_index(level=[0, 1], axis=0)
 
-        if to_replace is not None:
-            df = df.replace(to_replace=to_replace)
+        elif format == "pd_multidx_timegpi":
+            dfs = []
+            for p in np.atleast_1d(param):
+                df = self.read_cell(cell, p)
+                df = df.stack().to_frame(p)
+                dfs.append(df)
+            dfs = pd.concat(dfs, axis=1)
+            dfs.index = dfs.index.set_names(['time', 'gpi'])
 
-        if format.lower() == 'pd_multidx_df':
-            index = df.index.set_levels(gpis, level=0) \
-                .set_names('gpi', level=0)
-            data = df.set_index(index)
+            if swap_levels:
+                dfs = dfs.swaplevel(0, 1)
 
-        elif format.lower() == 'gpidict':
-            if 'gpi' not in df.columns:
-                df['gpi'] = locations
-            df = df.set_index(df.index.droplevel(0))
-            data = dict(tuple(df.groupby(df.pop('gpi'))))
+            return dfs.sort_index(level=[0, 1])
 
-        elif format.lower() == 'var_np_arrays':
-            df = df.set_index(df.index.droplevel(0))
-            index = df.index.unique()
-            data = {'index': index}
-            for col in df.columns:
-                if col == 'gpi': continue
-                data[col] = df.groupby('gpi')[col].apply(np.array)
-
+        elif format == "gpidict":
+            dfs = []
+            for p in np.atleast_1d(param):
+                df = self.read_cell(cell, p)
+                df = df.stack().to_frame(p)
+                dfs.append(df)
+            dfs = pd.concat(dfs, axis=1).sort_index(level=[0, 1])
+            dfs['gpi'] = dfs.index.get_level_values(1)
+            dfs.index = dfs.index.droplevel(1)
+            data = dict(tuple(dfs.groupby(dfs.pop('gpi'))))
+            return data
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Format {format} not implemented")
 
-        return data
+
+    # def read_agg_cell_data(self, cell, param, format='pd_multicol_vargpi') \
+    #         -> dict or pd.DataFrame:
+    #     """
+    #     Read all time series for a single variable in the selected cell.
+    #
+    #     Parameters
+    #     ----------
+    #     cell: int
+    #         Cell number as in the c3s grid
+    #     param: list or str
+    #         Name of the variable(s) to read.
+    #     format : str, optional (default: 'pd_multicol_vargpi')
+    #         * pd_multicol_vargpi:
+    #             Returns one data frame with gpi as first, and gpis as second
+    #             column level.
+    #         * pd_multidx_vartime:
+    #             Returns one data frame with variable name as first and
+    #             time as second index level.
+    #         * pd_multidx_timegpi:
+    #             Returns one data frame with time as first, and gpi as
+    #             second index level.
+    #         * gpidict
+    #             Returns a dictionary of dataframe where the keys are the gpis
+    #             and the values are the time series data.
+    #
+    #     Additional kwargs are given to xarray to open the dataset.W
+    #
+    #     Returns
+    #     -------
+    #     data : dict or pd.DataFrame
+    #         A DataFrame if a single variable was passed, otherwise
+    #         a dict of DataFrames with parameter name as key.
+    #     """
+    #     if hasattr(self, 'exact_index') and self.exact_index:
+    #         warnings.warn("Reading cell with exact index not yet supported. "
+    #                       "Use read_cells()")
+    #
+    #     params = np.atleast_1d(param)
+    #
+    #     df = []
+    #
+    #     for p in params:
+    #         _df = self.read_cell(cell, p)
+    #
+    #         idx = pd.MultiIndex.from_product([_df.columns.values, _df.index.values],
+    #                                          names=['locations', 'time'])
+    #         data = _df.transpose().values.flatten()
+    #         _df = pd.DataFrame(index=idx, data={p: data})
+    #         df.append(_df)
+    #
+    #     df = pd.concat(df, axis=1)
+    #
+    #     locations = df.index.get_level_values('locations').values
+    #     gpis = np.unique(locations)
+    #
+    #     df.index = df.index.set_levels(np.arange(len(gpis)), level=0)
+    #
+    #     if hasattr(self, 'clip_dates') and self.clip_dates:
+    #         if hasattr(self, '_clip_dates'):
+    #             df = self._clip_dates(df)
+    #         else:
+    #             warnings.warn("No method `_clip_dates` found.")
+    #
+    #     if format.lower() == 'pd_multidx_df':
+    #         index = df.index.set_levels(gpis, level=0) \
+    #             .set_names('gpi', level=0)
+    #         data = df.set_index(index)
+    #
+    #     elif format.lower() == 'gpidict':
+    #         if 'gpi' not in df.columns:
+    #             df['gpi'] = locations
+    #         df = df.set_index(df.index.droplevel(0))
+    #         data = dict(tuple(df.groupby(df.pop('gpi'))))
+    #
+    #     elif format.lower() == 'var_np_arrays':
+    #         df = df.set_index(df.index.droplevel(0))
+    #         index = df.index.unique()
+    #         data = {'index': index}
+    #         for col in df.columns:
+    #             if col == 'gpi': continue
+    #             data[col] = df.groupby('gpi')[col].apply(np.array)
+    #
+    #     else:
+    #         raise NotImplementedError
+    #
+    #     return data
 
 
 class OrthoMultiTsCellReaderMixin:
@@ -185,8 +286,13 @@ class OrthoMultiTsCellReaderMixin:
     readers that use the cell file structure of pynetcf.
     """
 
+    # Relevant parent attributes:
     path: str
     grid: CellGrid
+    # Relevant parent methods:
+    read: Callable
+    # Methods from compatible Mixins:
+    read_agg_cell_data = ContiguousRaggedTsCellReaderMixin.read_agg_cell_data
 
     def read_cell(self, cell, param='sm'):
         """
@@ -270,95 +376,31 @@ class OrthoMultiTsCellReaderMixin:
 
             return pd.concat(cell_data, axis=axis)
 
-    def read_agg_cell_data(self, cell, param, format='pd_multidx_df',
-                           drop_coord_vars=True, to_replace=None,
-                           **kwargs) -> dict or pd.DataFrame:
-        """
-        Read all time series for a single variable in the selected cell.
 
-        Parameters
-        ----------
-        cell: int
-            Cell number as in the c3s grid
-        param: list or str
-            Name of the variable(s) to read.
-        format : str, optional (default: 'multiindex')
-            * pd_multidx_df (default):
-                Returns one data frame with gpi as first, and time as
-                second index level.
-            * gpidict : Returns a dictionary of dataframes, with gpis as keys
-                        and time series data as values.
-            * var_np_arrays : Returns 2d arrays for each variable and a variable
-                              'index' with time stamps.
-        to_replace : dict of dicts, optional (default: None)
-            Dict for parameters of values to replace.
-            e.g. {'sm': {-999999.0: -9999}}
-            see pandas.to_replace()
 
-        Additional kwargs are given to xarray to open the dataset.W
+if __name__ == '__main__':
+    from io_utils.data.read.geo_ts_readers import GriddedNcContiguousRaggedTsCompatible, SmecvTs
+    from smecv_grid.grid import SMECV_Grid_v052
 
-        Returns
-        -------
-        data : dict or pd.DataFrame
-            A DataFrame if a single variable was passed, otherwise
-            a dict of DataFrames with parameter name as key.
-        """
-        if hasattr(self, 'exact_index') and self.exact_index:
-            warnings.warn("Reading cell with exact index not yet supported. "
-                          "Use read_cells()")
 
-        try:
-            fnformat = getattr(self, 'fn_format') + '.nc'
-        except AttributeError:
-            fnformat = "{:04d}.nc"
+    ds = GriddedNcContiguousRaggedTsCompatible("/home/wpreimes/shares/climers/Projects/CCIplus_Soil_Moisture/07_data/ESA_CCI_SM_v08.1/042_combined_MergedProd/",
+                                               grid=SMECV_Grid_v052())
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multicol_vargpi')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multicol_vargpi',
+                               True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_vartime')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_vartime',
+                               True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_timegpi')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_timegpi',
+                               True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'gpidict')
 
-        file_path = os.path.join(self.path, fnformat.format(cell))
-
-        params = np.atleast_1d(param)
-
-        if 'location_id' not in params:
-            params = np.append(params, 'location_id')
-
-        with xr.open_dataset(file_path, **kwargs) as ds:
-            gpis = ds['location_id'].values
-            mask = (gpis >= 0)
-            gpis = gpis[mask]
-
-            df = ds[params].to_dataframe(dim_order=['locations', 'time'])
-            df = df.loc[ds['locations'].values[mask], :]
-            df.rename(columns={'location_id': 'gpi'}, inplace=True)
-
-            if drop_coord_vars:
-                df.drop(columns=['alt', 'lon', 'lat'], inplace=True)
-
-        if hasattr(self, 'clip_dates') and self.clip_dates:
-            if hasattr(self, '_clip_dates'):
-                df = self._clip_dates(df)
-            else:
-                warnings.warn("No method `_clip_dates` found.")
-
-        if to_replace is not None:
-            df = df.replace(to_replace=to_replace)
-
-        if format.lower() == 'pd_multidx_df':
-            index = df.index.set_levels(gpis, level=0) \
-                .set_names('gpi', level=0)
-            data = df.set_index(index)
-
-        elif format.lower() == 'gpidict':
-            df = df.set_index(df.index.droplevel(0))
-            data = dict(tuple(df.groupby(df.pop('gpi'))))
-
-        elif format.lower() == 'var_np_arrays':
-            df = df.set_index(df.index.droplevel(0))
-            index = df.index.unique()
-            data = {'index': index}
-            for col in df.columns:
-                if col == 'gpi': continue
-                data[col] = df.groupby('gpi')[col].apply(np.array)
-
-        else:
-            raise NotImplementedError
-
-        return data
-
+    ds = SmecvTs("/home/wpreimes/shares/climers/Datapool/ESA_CCI_SM/02_processed/ESA_CCI_SM_v08.1/timeseries/combined/")
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multicol_vargpi')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multicol_vargpi', True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_vartime')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_vartime', True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_timegpi')
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'pd_multidx_timegpi', True)
+    ts = ds.read_agg_cell_data(2244, ['sm', 'flag'], 'gpidict')

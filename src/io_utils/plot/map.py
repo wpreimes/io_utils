@@ -40,7 +40,7 @@ def reshape_dat(ds) -> dict:
 
 class MapPlotter:
     def __init__(self, figsize=(8, 4), llc=(-179.9999, -60.),
-                 urc=(179.9999, 80), projection=ccrs.Robinson()):
+                 urc=(179.9999, 80), projection=ccrs.Robinson(), ax=None):
         """
         Wrapper around cartopy, pandas and matplotlib to plot data on a map.
         Should handle most simple map cases. For more specific cases, use
@@ -61,9 +61,13 @@ class MapPlotter:
         """
         self.data_crs = ccrs.PlateCarree()
 
-        self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
-                              edgecolor='k')
-        self.ax = plt.axes(projection=projection)
+        if ax is None:
+            self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
+                                  edgecolor='k')
+            self.ax = plt.axes(projection=projection)
+        else:
+            self.fig = None
+            self.ax = ax
         self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
 
     def __del__(self):
@@ -129,7 +133,7 @@ class MapPlotter:
             self.ax.add_feature(
                 cartopy.feature.BORDERS, linewidth=0.1*linewidth_mult, zorder=5)
 
-    def add_colormesh_layer(self, ds, cmap=plt.get_cmap('RdYlBu'),
+    def add_colormesh_layer(self, ds, cmap=plt.get_cmap('RdYlBu'), scalef=1,
                             clim=None, add_cbar=False, cbar_kwargs=None):
         """
         Draw a colormesh raster layer for the given dataset.
@@ -148,14 +152,23 @@ class MapPlotter:
         add_cbar: bool, optional
             Add colorbar based on this layer
         cbar_kwargs: dict, optional (default: None)
-            Keyword arguments passed to the colorbar function
+            Keyword arguments passed to the colorbar function. For details see
+            :func:`io_utils.plot.misc.map_add_cbar`:
+                - cb_label : str, optional (default: None)
+                - cb_loc : str, optional (default: bottom)
+                - cb_labelsize : int, optional (default: 7)
+                - cb_extend : str, optional (default: Both)
+                - cb_n_ticks : int, optional (default: None)
+                - cb_ext_label_min : str, optional (default: None)
+                - cb_ext_label_max : str, optional (default: None)
+                - cb_text : list, optional (default: None)
         """
         dat = reshape_dat(ds)
 
         if isinstance(cmap, str):
             cmap = plt.get_cmap(cmap)
 
-        p = self.ax.pcolormesh(dat['lon2d'], dat['lat2d'], dat['data'],
+        p = self.ax.pcolormesh(dat['lon2d'], dat['lat2d'], dat['data']*scalef,
                                zorder=3,
                                cmap=cmap, transform=ccrs.PlateCarree())
 
@@ -195,7 +208,16 @@ class MapPlotter:
         add_cbar: bool, optional (default: False)
             Add colorbar based on this layer
         cbar_kwargs: dict, optional (default: None)
-            Keyword arguments passed to the colorbar function
+            Keyword arguments passed to the colorbar function. For details see
+            :func:`io_utils.plot.misc.map_add_cbar`:
+                - cb_label : str, optional (default: None)
+                - cb_loc : str, optional (default: bottom)
+                - cb_labelsize : int, optional (default: 7)
+                - cb_extend : str, optional (default: Both)
+                - cb_n_ticks : int, optional (default: None)
+                - cb_ext_label_min : str, optional (default: None)
+                - cb_ext_label_max : str, optional (default: None)
+                - cb_text : list, optional (default: None)
         """
 
         dat = reshape_dat(ds)
@@ -220,6 +242,7 @@ class MapPlotter:
         """
         Add a countour layer to the map. This is useful for overlayers and
         only support simple hatches and no color maps.
+        See also https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_style_reference.html
 
         Parameters
         ----------
@@ -229,7 +252,7 @@ class MapPlotter:
             means that the point should be marked.
         density: int, optional (default: 3)
             Density of the hatch lines (>=0). Higher density means more
-            features. 0 means no features.
+            (smaller) features. 0 means no features.
         pattern: str, optional (default: '/')
             Hatch pattern, contour lines, see matplotlib documentation for
             details.
