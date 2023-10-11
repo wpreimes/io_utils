@@ -40,7 +40,7 @@ def reshape_dat(ds) -> dict:
 
 class MapPlotter:
     def __init__(self, figsize=(8, 4), llc=(-179.9999, -60.),
-                 urc=(179.9999, 80), projection=ccrs.Robinson()):
+                 urc=(179.9999, 80), projection=ccrs.Robinson(), ax=None):
         """
         Wrapper around cartopy, pandas and matplotlib to plot data on a map.
         Should handle most simple map cases. For more specific cases, use
@@ -61,9 +61,13 @@ class MapPlotter:
         """
         self.data_crs = ccrs.PlateCarree()
 
-        self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
-                              edgecolor='k')
-        self.ax = plt.axes(projection=projection)
+        if ax is None:
+            self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
+                                  edgecolor='k')
+            self.ax = plt.axes(projection=projection)
+        else:
+            self.fig = None
+            self.ax = ax
         self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
 
     def __del__(self):
