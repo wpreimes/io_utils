@@ -205,7 +205,7 @@ dependencies:
 - uriparser=0.9.7
 - urllib3=2.0.7
 - wheel=0.41.2
-- xarray=2023.10.0
+- xarray=2023.10.1
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.0

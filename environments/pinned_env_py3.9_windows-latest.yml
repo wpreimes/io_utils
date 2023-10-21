@@ -179,7 +179,7 @@ dependencies:
 - vs2015_runtime=14.36.32532
 - wheel=0.41.2
 - win_inet_pton=1.1.0
-- xarray=2023.10.0
+- xarray=2023.10.1
 - xerces-c=3.2.4
 - xorg-libxau=1.0.11
 - xorg-libxdmcp=1.1.3
