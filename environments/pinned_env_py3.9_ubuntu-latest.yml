@@ -149,7 +149,7 @@ dependencies:
 - mysql-common=8.0.33
 - mysql-libs=8.0.33
 - ncurses=6.4
-- netcdf4=1.6.4
+- netcdf4=1.6.5
 - networkx=3.2
 - nspr=4.35
 - nss=3.94

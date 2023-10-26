@@ -121,7 +121,7 @@ dependencies:
 - msys2-conda-epoch=20160418
 - munch=4.0.0
 - munkres=1.1.4
-- netcdf4=1.6.4
+- netcdf4=1.6.5
 - networkx=3.2
 - numpy=1.26.0
 - openjpeg=2.5.0
