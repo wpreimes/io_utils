@@ -148,7 +148,7 @@ dependencies:
 - mysql-libs=8.0.33
 - ncurses=6.4
 - netcdf4=1.6.5
-- networkx=3.2
+- networkx=3.2.1
 - nspr=4.35
 - nss=3.94
 - numpy=1.26.0
