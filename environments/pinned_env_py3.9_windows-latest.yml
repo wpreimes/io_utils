@@ -81,7 +81,7 @@ dependencies:
 - libgdal=3.7.2
 - libglib=2.78.0
 - libgoogle-cloud=2.12.0
-- libgrpc=1.58.1
+- libgrpc=1.58.2
 - libhwloc=2.9.3
 - libiconv=1.17
 - libjpeg-turbo=3.0.0
@@ -199,7 +199,7 @@ dependencies:
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
   - coverage==7.3.2
-  - cython==3.0.4
+  - cython==3.0.5
   - dask==2023.10.1
   - datetime==5.2
   - equi7grid==0.2.2
