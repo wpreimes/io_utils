@@ -15,7 +15,7 @@ dependencies:
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
 - bzip2=1.0.8
-- c-ares=1.20.1
+- c-ares=1.21.0
 - ca-certificates=2023.7.22
 - cairo=1.16.0
 - cartopy=0.21.1
@@ -231,7 +231,7 @@ dependencies:
   - ascat==2.1.1
   - asciitree==0.3.3
   - cadati==0.0.4
-  - cf-xarray==0.8.4
+  - cf-xarray==0.8.6
   - cloudpickle==3.0.0
   - configobj==5.0.8
   - configparser==6.0.0
