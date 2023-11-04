@@ -25,7 +25,7 @@ dependencies:
 - click=8.1.7
 - click-plugins=1.1.1
 - cligj=0.7.2
-- contourpy=1.1.1
+- contourpy=1.2.0
 - cycler=0.12.1
 - dbus=1.13.6
 - expat=2.5.0
@@ -38,10 +38,10 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.43.1
+- fonttools=4.44.0
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.7.2
+- gdal=3.7.3
 - geopandas=0.14.0
 - geopandas-base=0.14.0
 - geos=3.12.0
@@ -94,7 +94,7 @@ dependencies:
 - libflac=1.4.3
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.1
-- libgdal=3.7.2
+- libgdal=3.7.3
 - libgfortran-ng=13.2.0
 - libgfortran5=13.2.0
 - libglib=2.78.0

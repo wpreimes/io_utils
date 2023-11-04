@@ -22,7 +22,7 @@ dependencies:
 - click-plugins=1.1.1
 - cligj=0.7.2
 - colorama=0.4.6
-- contourpy=1.1.1
+- contourpy=1.2.0
 - cycler=0.12.1
 - expat=2.5.0
 - fiona=1.9.5
@@ -34,10 +34,10 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.43.1
+- fonttools=4.44.0
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.7.2
+- gdal=3.7.3
 - geopandas=0.14.0
 - geopandas-base=0.14.0
 - geos=3.12.0
@@ -78,7 +78,7 @@ dependencies:
 - libdeflate=1.19
 - libexpat=2.5.0
 - libffi=3.4.2
-- libgdal=3.7.2
+- libgdal=3.7.3
 - libglib=2.78.0
 - libgoogle-cloud=2.12.0
 - libgrpc=1.59.2
