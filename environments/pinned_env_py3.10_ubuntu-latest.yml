@@ -41,7 +41,7 @@ dependencies:
 - fonttools=4.44.1
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.7.3
+- gdal=3.8.0
 - geopandas=0.14.1
 - geopandas-base=0.14.1
 - geos=3.12.0
@@ -94,7 +94,7 @@ dependencies:
 - libflac=1.4.3
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.2
-- libgdal=3.7.3
+- libgdal=3.8.0
 - libgfortran-ng=13.2.0
 - libgfortran5=13.2.0
 - libglib=2.78.1
@@ -161,7 +161,7 @@ dependencies:
 - pip=23.3.1
 - pixman=0.42.2
 - ply=3.11
-- poppler=23.10.0
+- poppler=23.11.0
 - poppler-data=0.4.12
 - postgresql=16.1
 - proj=9.3.0
