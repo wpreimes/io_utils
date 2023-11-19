@@ -11,10 +11,10 @@ dependencies:
 - brotli-python=1.1.0
 - bzip2=1.0.8
 - c-ares=1.21.0
-- ca-certificates=2023.7.22
+- ca-certificates=2023.11.17
 - cairo=1.18.0
 - cartopy=0.22.0
-- certifi=2023.7.22
+- certifi=2023.11.17
 - cfitsio=4.3.0
 - cftime=1.6.3
 - charset-normalizer=3.3.2
@@ -179,7 +179,7 @@ dependencies:
 - vs2015_runtime=14.36.32532
 - wheel=0.41.3
 - win_inet_pton=1.1.0
-- xarray=2023.10.1
+- xarray=2023.11.0
 - xerces-c=3.2.4
 - xorg-libxau=1.0.11
 - xorg-libxdmcp=1.1.3
