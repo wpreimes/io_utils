@@ -15,7 +15,7 @@ dependencies:
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
 - bzip2=1.0.8
-- c-ares=1.21.0
+- c-ares=1.22.1
 - ca-certificates=2023.11.17
 - cairo=1.16.0
 - cartopy=0.21.1
@@ -40,7 +40,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.44.3
+- fonttools=4.45.0
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
