@@ -121,7 +121,7 @@ dependencies:
 - libsndfile=1.2.2
 - libspatialindex=1.9.3
 - libspatialite=5.1.0
-- libsqlite=3.44.0
+- libsqlite=3.44.1
 - libssh2=1.11.0
 - libstdcxx-ng=13.2.0
 - libsystemd0=254
@@ -190,7 +190,7 @@ dependencies:
 - sip=6.7.12
 - six=1.16.0
 - snappy=1.1.10
-- sqlite=3.44.0
+- sqlite=3.44.1
 - threadpoolctl=3.2.0
 - tiledb=2.16.3
 - tk=8.6.13
