@@ -15,7 +15,7 @@ dependencies:
 - cairo=1.18.0
 - cartopy=0.22.0
 - certifi=2023.11.17
-- cfitsio=4.3.0
+- cfitsio=4.3.1
 - cftime=1.6.3
 - charset-normalizer=3.3.2
 - click=8.1.7
@@ -50,7 +50,7 @@ dependencies:
 - hdf4=4.2.15
 - hdf5=1.14.2
 - icu=73.2
-- idna=3.5
+- idna=3.6
 - importlib-metadata=6.8.0
 - importlib-resources=6.1.1
 - importlib_resources=6.1.1
@@ -177,7 +177,7 @@ dependencies:
 - vc=14.3
 - vc14_runtime=14.36.32532
 - vs2015_runtime=14.36.32532
-- wheel=0.41.3
+- wheel=0.42.0
 - win_inet_pton=1.1.0
 - xarray=2023.11.0
 - xerces-c=3.2.4
@@ -199,7 +199,7 @@ dependencies:
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
   - coverage==7.3.2
-  - cython==3.0.5
+  - cython==3.0.6
   - dask==2023.11.0
   - datetime==5.3
   - equi7grid==0.2.2

@@ -59,7 +59,7 @@ dependencies:
 - hdf4=4.2.15
 - hdf5=1.14.0
 - icu=72.1
-- idna=3.5
+- idna=3.6
 - importlib-metadata=6.8.0
 - importlib-resources=6.1.1
 - importlib_resources=6.1.1
@@ -199,7 +199,7 @@ dependencies:
 - unicodedata2=15.1.0
 - uriparser=0.9.7
 - urllib3=2.1.0
-- wheel=0.41.3
+- wheel=0.42.0
 - xarray=2023.1.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
@@ -236,7 +236,7 @@ dependencies:
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
   - coverage==7.3.2
-  - cython==3.0.5
+  - cython==3.0.6
   - dask==2023.5.0
   - datetime==5.3
   - equi7grid==0.2.2
