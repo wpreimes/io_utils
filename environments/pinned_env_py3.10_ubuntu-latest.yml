@@ -150,7 +150,7 @@ dependencies:
 - netcdf4=1.6.5
 - networkx=3.2.1
 - nspr=4.35
-- nss=3.94
+- nss=3.95
 - numpy=1.26.2
 - openjpeg=2.5.0
 - openssl=3.2.0
