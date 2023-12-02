@@ -60,7 +60,7 @@ dependencies:
 - hdf5=1.14.0
 - icu=72.1
 - idna=3.6
-- importlib-metadata=6.8.0
+- importlib-metadata=6.9.0
 - importlib-resources=6.1.1
 - importlib_resources=6.1.1
 - jinja2=3.1.2
