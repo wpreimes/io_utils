@@ -32,7 +32,7 @@ dependencies:
 - dbus=1.13.6
 - expat=2.5.0
 - fiona=1.9.4
-- folium=0.15.0
+- folium=0.15.1
 - font-ttf-dejavu-sans-mono=2.37
 - font-ttf-inconsolata=3.000
 - font-ttf-source-code-pro=2.038
@@ -156,7 +156,7 @@ dependencies:
 - pillow=10.0.0
 - pip=23.3.1
 - pixman=0.42.2
-- platformdirs=4.0.0
+- platformdirs=4.1.0
 - ply=3.11
 - pooch=1.8.0
 - poppler=23.05.0
@@ -193,7 +193,6 @@ dependencies:
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.3
-- typing_extensions=4.8.0
 - tzcode=2023c
 - tzdata=2023c
 - unicodedata2=15.1.0
@@ -280,6 +279,7 @@ dependencies:
   - toolz==0.12.0
   - tqdm==4.66.1
   - trollsift==0.5.1
+  - typing-extensions==4.8.0
   - veranda==1.1.0
   - zarr==2.16.1
   - zope-interface==6.1

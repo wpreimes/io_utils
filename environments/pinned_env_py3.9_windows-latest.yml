@@ -26,7 +26,7 @@ dependencies:
 - cycler=0.12.1
 - expat=2.5.0
 - fiona=1.9.5
-- folium=0.15.0
+- folium=0.15.1
 - font-ttf-dejavu-sans-mono=2.37
 - font-ttf-inconsolata=3.000
 - font-ttf-source-code-pro=2.038
