@@ -43,8 +43,8 @@ dependencies:
 - geos=3.12.1
 - geotiff=1.7.1
 - gettext=0.21.1
-- glib=2.78.1
-- glib-tools=2.78.1
+- glib=2.78.2
+- glib-tools=2.78.2
 - gst-plugins-base=1.22.7
 - gstreamer=1.22.7
 - hdf4=4.2.15
@@ -79,7 +79,7 @@ dependencies:
 - libexpat=2.5.0
 - libffi=3.4.2
 - libgdal=3.8.1
-- libglib=2.78.1
+- libglib=2.78.2
 - libgoogle-cloud=2.12.0
 - libgrpc=1.59.3
 - libhwloc=2.9.3
@@ -205,7 +205,7 @@ dependencies:
   - equi7grid==0.2.2
   - exceptiongroup==1.2.0
   - fasteners==0.19
-  - fsspec==2023.12.0
+  - fsspec==2023.12.1
   - geographiclib==2.0
   - geopathfinder==0.1.4
   - geospade==0.2.3
