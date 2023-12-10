@@ -19,7 +19,7 @@ dependencies:
 - cairo=1.18.0
 - cartopy=0.22.0
 - certifi=2023.11.17
-- cfitsio=4.3.0
+- cfitsio=4.3.1
 - cftime=1.6.3
 - charset-normalizer=3.3.2
 - click=8.1.7
@@ -41,7 +41,7 @@ dependencies:
 - fonttools=4.46.0
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.8.0
+- gdal=3.8.1
 - geopandas=0.14.1
 - geopandas-base=0.14.1
 - geos=3.12.1
@@ -55,7 +55,7 @@ dependencies:
 - gstreamer=1.22.7
 - harfbuzz=8.3.0
 - hdf4=4.2.15
-- hdf5=1.14.2
+- hdf5=1.14.3
 - icu=73.2
 - idna=3.6
 - jinja2=3.1.2
@@ -83,7 +83,7 @@ dependencies:
 - libclang13=15.0.7
 - libcrc32c=1.1.2
 - libcups=2.3.3
-- libcurl=8.4.0
+- libcurl=8.5.0
 - libdeflate=1.19
 - libedit=3.1.20191231
 - libev=4.33
@@ -93,7 +93,7 @@ dependencies:
 - libflac=1.4.3
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.3
-- libgdal=3.8.0
+- libgdal=3.8.1
 - libgfortran-ng=13.2.0
 - libgfortran5=13.2.0
 - libglib=2.78.3
@@ -151,7 +151,7 @@ dependencies:
 - nss=3.95
 - numpy=1.26.2
 - openjpeg=2.5.0
-- openssl=3.1.4
+- openssl=3.2.0
 - packaging=23.2
 - pandas=2.1.4
 - pcre2=10.42
@@ -159,7 +159,7 @@ dependencies:
 - pip=23.3.1
 - pixman=0.42.2
 - ply=3.11
-- poppler=23.11.0
+- poppler=23.12.0
 - poppler-data=0.4.12
 - postgresql=16.1
 - proj=9.3.0
