@@ -281,7 +281,7 @@ dependencies:
   - toolz==0.12.0
   - tqdm==4.66.1
   - trollsift==0.5.1
-  - typing-extensions==4.8.0
+  - typing-extensions==4.9.0
   - veranda==1.1.0
   - zarr==2.16.1
   - zipp==3.17.0
