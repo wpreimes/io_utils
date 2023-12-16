@@ -146,7 +146,7 @@ dependencies:
 - netcdf4=1.6.4
 - networkx=3.1
 - nspr=4.35
-- nss=3.95
+- nss=3.96
 - numpy=1.24.4
 - openjpeg=2.5.0
 - openssl=3.1.4
@@ -226,7 +226,7 @@ dependencies:
 - zstd=1.5.5
 - pip:
   - affine==2.4.0
-  - ascat==2.1.1
+  - ascat==2.2.0
   - asciitree==0.3.3
   - cadati==0.0.4
   - cf-xarray==0.8.6
@@ -237,7 +237,7 @@ dependencies:
   - coverage==7.3.3
   - cython==3.0.6
   - dask==2023.5.0
-  - datetime==5.3
+  - datetime==5.4
   - equi7grid==0.2.2
   - exceptiongroup==1.2.0
   - fasteners==0.19
