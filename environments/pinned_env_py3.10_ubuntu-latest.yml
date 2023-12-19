@@ -8,6 +8,9 @@ dependencies:
 - alsa-lib=1.2.10
 - attr=2.5.1
 - attrs=23.1.0
+- azure-core-cpp=1.10.3
+- azure-storage-blobs-cpp=12.10.0
+- azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
 - branca=0.7.0
 - brotli=1.1.0
@@ -38,7 +41,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.46.0
+- fonttools=4.47.0
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.8.1
@@ -73,7 +76,7 @@ dependencies:
 - libaec=1.1.2
 - libarchive=3.7.2
 - libblas=3.9.0
-- libboost-headers=1.83.0
+- libboost-headers=1.84.0
 - libbrotlicommon=1.1.0
 - libbrotlidec=1.1.0
 - libbrotlienc=1.1.0
