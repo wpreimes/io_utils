@@ -226,7 +226,7 @@ dependencies:
 - zstd=1.5.5
 - pip:
   - affine==2.4.0
-  - ascat==2.2.0
+  - ascat==2.3.0
   - asciitree==0.3.3
   - cadati==0.0.4
   - cf-xarray==0.8.6
@@ -234,7 +234,7 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.3.3
+  - coverage==7.3.4
   - cython==3.0.7
   - dask==2023.5.0
   - datetime==5.4
