@@ -61,7 +61,7 @@ dependencies:
 - hdf5=1.14.3
 - icu=73.2
 - idna=3.6
-- importlib-metadata=7.0.0
+- importlib-metadata=7.0.1
 - importlib-resources=6.1.1
 - importlib_resources=6.1.1
 - jinja2=3.1.2
@@ -201,8 +201,8 @@ dependencies:
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.3
-- tzcode=2023c
-- tzdata=2023c
+- tzcode=2023d
+- tzdata=2023d
 - unicodedata2=15.1.0
 - uriparser=0.9.7
 - urllib3=2.1.0
