@@ -7,7 +7,7 @@ dependencies:
 - _openmp_mutex=4.5
 - alsa-lib=1.2.9
 - attr=2.5.1
-- attrs=23.1.0
+- attrs=23.2.0
 - blosc=1.21.5
 - boost-cpp=1.78.0
 - branca=0.7.0
@@ -264,7 +264,7 @@ dependencies:
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.26.1
   - pytesmo==0.16.0
-  - pytest==7.4.3
+  - pytest==7.4.4
   - pytest-cov==4.1.0
   - pytileproj==0.0.17
   - pyyaml==6.0.1

@@ -3,7 +3,7 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- attrs=23.1.0
+- attrs=23.2.0
 - azure-core-cpp=1.10.3
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
@@ -228,7 +228,7 @@ dependencies:
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.27.1
   - pytesmo==0.16.0
-  - pytest==7.4.3
+  - pytest==7.4.4
   - pytest-cov==4.1.0
   - pytileproj==0.0.17
   - pyyaml==6.0.1
