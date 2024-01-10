@@ -17,7 +17,7 @@ dependencies:
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
 - bzip2=1.0.8
-- c-ares=1.24.0
+- c-ares=1.25.0
 - ca-certificates=2023.11.17
 - cairo=1.18.0
 - cartopy=0.22.0
@@ -44,7 +44,7 @@ dependencies:
 - fonttools=4.47.0
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.8.2
+- gdal=3.8.3
 - geopandas=0.14.2
 - geopandas-base=0.14.2
 - geos=3.12.1
@@ -99,7 +99,7 @@ dependencies:
 - libflac=1.4.3
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.3
-- libgdal=3.8.2
+- libgdal=3.8.3
 - libgfortran-ng=13.2.0
 - libgfortran5=13.2.0
 - libglib=2.78.3
