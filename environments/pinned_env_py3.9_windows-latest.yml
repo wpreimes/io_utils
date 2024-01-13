@@ -4,7 +4,7 @@ channels:
 - defaults
 dependencies:
 - attrs=23.2.0
-- azure-core-cpp=1.10.3
+- azure-core-cpp=1.11.0
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
@@ -200,7 +200,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.4.0
   - cython==3.0.8
-  - dask==2023.12.1
+  - dask==2024.1.0
   - datetime==5.4
   - equi7grid==0.2.2
   - exceptiongroup==1.2.0
