@@ -8,7 +8,7 @@ dependencies:
 - alsa-lib=1.2.10
 - attr=2.5.1
 - attrs=23.2.0
-- azure-core-cpp=1.11.0
+- azure-core-cpp=1.10.3
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
@@ -137,7 +137,7 @@ dependencies:
 - libxcb=1.15
 - libxcrypt=4.4.36
 - libxkbcommon=1.6.0
-- libxml2=2.12.3
+- libxml2=2.12.4
 - libzip=1.10.1
 - libzlib=1.2.13
 - lz4-c=1.9.4
