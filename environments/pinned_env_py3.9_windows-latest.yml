@@ -84,7 +84,7 @@ dependencies:
 - libgdal=3.8.3
 - libglib=2.78.3
 - libgoogle-cloud=2.12.0
-- libgrpc=1.59.3
+- libgrpc=1.60.0
 - libhwloc=2.9.3
 - libiconv=1.17
 - libjpeg-turbo=3.0.0
@@ -94,7 +94,7 @@ dependencies:
 - libogg=1.3.4
 - libpng=1.6.39
 - libpq=16.1
-- libprotobuf=4.24.4
+- libprotobuf=4.25.1
 - libre2-11=2023.06.02
 - librttopo=1.1.0
 - libspatialindex=1.9.3
@@ -181,7 +181,7 @@ dependencies:
 - vs2015_runtime=14.38.33130
 - wheel=0.42.0
 - win_inet_pton=1.1.0
-- xarray=2024.1.0
+- xarray=2024.1.1
 - xerces-c=3.2.5
 - xorg-libxau=1.0.11
 - xorg-libxdmcp=1.1.3
@@ -223,7 +223,7 @@ dependencies:
   - numcodecs==0.12.1
   - parse==1.20.0
   - partd==1.4.1
-  - pluggy==1.3.0
+  - pluggy==1.4.0
   - pygeobase==0.6.2
   - git+https://github.com/TUW-GEO/pygeogrids@a241064ac487c524bed2469170fb62b211cc0881
   - pykdtree==1.3.10
@@ -242,7 +242,7 @@ dependencies:
   - setuptools-scm==8.0.4
   - smecv-grid==0.3
   - snuggs==1.4.7
-  - toolz==0.12.0
+  - toolz==0.12.1
   - tqdm==4.66.1
   - trollsift==0.5.1
   - typing-extensions==4.9.0
