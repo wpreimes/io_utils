@@ -48,8 +48,8 @@ dependencies:
 - gettext=0.21.1
 - glib=2.78.3
 - glib-tools=2.78.3
-- gst-plugins-base=1.22.8
-- gstreamer=1.22.8
+- gst-plugins-base=1.22.9
+- gstreamer=1.22.9
 - hdf4=4.2.15
 - hdf5=1.14.3
 - icu=73.2
