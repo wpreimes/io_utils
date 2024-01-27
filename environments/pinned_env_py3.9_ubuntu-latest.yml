@@ -17,7 +17,7 @@ dependencies:
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
 - bzip2=1.0.8
-- c-ares=1.25.0
+- c-ares=1.26.0
 - ca-certificates=2023.11.17
 - cairo=1.18.0
 - cartopy=0.22.0
@@ -243,9 +243,9 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.4.0
+  - coverage==7.4.1
   - cython==3.0.8
-  - dask==2024.1.0
+  - dask==2024.1.1
   - datetime==5.4
   - equi7grid==0.2.2
   - exceptiongroup==1.2.0
