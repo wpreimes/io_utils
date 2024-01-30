@@ -164,7 +164,7 @@ dependencies:
 - pcre2=10.42
 - pillow=10.2.0
 - pip=23.3.2
-- pixman=0.43.0
+- pixman=0.43.2
 - ply=3.11
 - poppler=23.12.0
 - poppler-data=0.4.12
@@ -182,7 +182,7 @@ dependencies:
 - python-dateutil=2.8.2
 - python-tzdata=2023.4
 - python_abi=3.9
-- pytz=2023.3.post1
+- pytz=2023.4
 - qt-main=5.15.8
 - re2=2023.06.02
 - readline=8.2
@@ -197,7 +197,7 @@ dependencies:
 - snappy=1.1.10
 - sqlite=3.44.2
 - threadpoolctl=3.2.0
-- tiledb=2.19.0
+- tiledb=2.19.1
 - tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
