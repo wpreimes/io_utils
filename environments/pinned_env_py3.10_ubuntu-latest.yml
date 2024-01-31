@@ -8,7 +8,7 @@ dependencies:
 - alsa-lib=1.2.10
 - attr=2.5.1
 - attrs=23.2.0
-- azure-core-cpp=1.10.3
+- azure-core-cpp=1.11.0
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
@@ -155,7 +155,7 @@ dependencies:
 - nss=3.97
 - numpy=1.26.3
 - openjpeg=2.5.0
-- openssl=3.2.0
+- openssl=3.2.1
 - packaging=23.2
 - pandas=2.2.0
 - pcre2=10.42
@@ -203,7 +203,7 @@ dependencies:
 - tzdata=2023d
 - unicodedata2=15.1.0
 - uriparser=0.9.7
-- urllib3=2.1.0
+- urllib3=2.2.0
 - wheel=0.42.0
 - xarray=2024.1.1
 - xcb-util=0.4.0
