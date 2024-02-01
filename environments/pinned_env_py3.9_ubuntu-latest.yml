@@ -12,7 +12,7 @@ dependencies:
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
-- branca=0.7.0
+- branca=0.7.1
 - brotli=1.1.0
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
@@ -45,8 +45,8 @@ dependencies:
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.8.3
-- geopandas=0.14.2
-- geopandas-base=0.14.2
+- geopandas=0.14.3
+- geopandas-base=0.14.3
 - geos=3.12.1
 - geotiff=1.7.1
 - gettext=0.21.1
@@ -258,11 +258,11 @@ dependencies:
   - iniconfig==2.0.0
   - ismn==1.3.4
   - iso3166==2.1.1
-  - llvmlite==0.41.1
+  - llvmlite==0.42.0
   - locket==1.0.0
   - lxml==5.1.0
   - more-itertools==10.2.0
-  - numba==0.58.1
+  - numba==0.59.0
   - numcodecs==0.12.1
   - parse==1.20.1
   - partd==1.4.1
