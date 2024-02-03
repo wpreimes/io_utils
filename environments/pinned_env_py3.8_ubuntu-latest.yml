@@ -17,7 +17,7 @@ dependencies:
 - brotli-python=1.1.0
 - bzip2=1.0.8
 - c-ares=1.26.0
-- ca-certificates=2023.11.17
+- ca-certificates=2024.2.2
 - cairo=1.16.0
 - cartopy=0.21.1
 - certifi=2023.11.17
@@ -135,7 +135,7 @@ dependencies:
 - lz4-c=1.9.4
 - lzo=2.10
 - mapclassify=2.5.0
-- markupsafe=2.1.4
+- markupsafe=2.1.5
 - matplotlib=3.7.3
 - matplotlib-base=3.7.3
 - mpg123=1.32.4
@@ -176,7 +176,7 @@ dependencies:
 - python=3.8.18
 - python-dateutil=2.8.2
 - python_abi=3.8
-- pytz=2023.4
+- pytz=2024.1
 - qt-main=5.15.8
 - readline=8.2
 - requests=2.31.0
@@ -195,8 +195,8 @@ dependencies:
 - toml=0.10.2
 - tomli=2.0.1
 - tornado=6.3.3
-- tzcode=2023d
-- tzdata=2023d
+- tzcode=2024a
+- tzdata=2024a
 - unicodedata2=15.1.0
 - uriparser=0.9.7
 - urllib3=2.2.0
