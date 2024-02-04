@@ -160,7 +160,7 @@ dependencies:
 - pandas=2.2.0
 - pcre2=10.42
 - pillow=10.2.0
-- pip=23.3.2
+- pip=24.0
 - pixman=0.43.2
 - ply=3.11
 - poppler=23.12.0
