@@ -20,7 +20,7 @@ dependencies:
 - ca-certificates=2024.2.2
 - cairo=1.16.0
 - cartopy=0.21.1
-- certifi=2023.11.17
+- certifi=2024.2.2
 - cfitsio=4.2.0
 - cftime=1.6.3
 - charset-normalizer=3.3.2
