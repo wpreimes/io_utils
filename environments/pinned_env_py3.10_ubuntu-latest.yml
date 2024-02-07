@@ -41,7 +41,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.47.2
+- fonttools=4.48.1
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.8.3
@@ -153,7 +153,7 @@ dependencies:
 - networkx=3.2.1
 - nspr=4.35
 - nss=3.97
-- numpy=1.26.3
+- numpy=1.26.4
 - openjpeg=2.5.0
 - openssl=3.2.1
 - packaging=23.2
@@ -163,7 +163,7 @@ dependencies:
 - pip=24.0
 - pixman=0.43.2
 - ply=3.11
-- poppler=23.12.0
+- poppler=24.02.0
 - poppler-data=0.4.12
 - postgresql=16.1
 - proj=9.3.1
