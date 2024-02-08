@@ -195,7 +195,7 @@ dependencies:
   - ascat==2.3.1
   - asciitree==0.3.3
   - cadati==0.0.4
-  - cf-xarray==0.8.8
+  - cf-xarray==0.8.9
   - cloudpickle==3.0.0
   - configobj==5.0.8
   - configparser==6.0.0
