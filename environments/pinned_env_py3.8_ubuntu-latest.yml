@@ -41,7 +41,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.48.1
+- fonttools=4.49.0
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
@@ -147,7 +147,7 @@ dependencies:
 - netcdf4=1.6.4
 - networkx=3.1
 - nspr=4.35
-- nss=3.97
+- nss=3.98
 - numpy=1.24.4
 - openblas=0.3.26
 - openjpeg=2.5.0
@@ -266,7 +266,7 @@ dependencies:
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.26.1
   - pytesmo==0.16.0
-  - pytest==8.0.0
+  - pytest==8.0.1
   - pytest-cov==4.1.0
   - pytileproj==0.0.17
   - pyyaml==6.0.1
@@ -284,4 +284,4 @@ dependencies:
   - typing-extensions==4.9.0
   - veranda==1.1.0
   - zarr==2.16.1
-  - zope-interface==6.1
+  - zope-interface==6.2
