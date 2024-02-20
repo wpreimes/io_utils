@@ -194,7 +194,7 @@ dependencies:
 - tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
-- tornado=6.3.3
+- tornado=6.4
 - tzcode=2024a
 - tzdata=2024a
 - unicodedata2=15.1.0

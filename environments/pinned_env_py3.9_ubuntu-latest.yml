@@ -191,7 +191,7 @@ dependencies:
 - scikit-learn=1.4.1.post1
 - scipy=1.12.0
 - setuptools=69.1.0
-- shapely=2.0.2
+- shapely=2.0.3
 - sip=6.7.12
 - six=1.16.0
 - snappy=1.1.10
@@ -201,14 +201,14 @@ dependencies:
 - tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
-- tornado=6.3.3
+- tornado=6.4
 - tzcode=2024a
 - tzdata=2024a
 - unicodedata2=15.1.0
 - uriparser=0.9.7
 - urllib3=2.2.1
 - wheel=0.42.0
-- xarray=2024.1.1
+- xarray=2024.2.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.0
@@ -238,7 +238,7 @@ dependencies:
   - ascat==2.3.1
   - asciitree==0.3.3
   - cadati==0.0.4
-  - cf-xarray==0.8.9
+  - cf-xarray==0.9.0
   - cloudpickle==3.0.0
   - configobj==5.0.8
   - configparser==6.0.0
