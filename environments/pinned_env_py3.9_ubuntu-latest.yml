@@ -17,7 +17,7 @@ dependencies:
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
 - bzip2=1.0.8
-- c-ares=1.26.0
+- c-ares=1.27.0
 - ca-certificates=2024.2.2
 - cairo=1.18.0
 - cartopy=0.22.0
@@ -104,8 +104,9 @@ dependencies:
 - libgfortran5=13.2.0
 - libglib=2.78.4
 - libgomp=13.2.0
-- libgoogle-cloud=2.12.0
-- libgpg-error=1.47
+- libgoogle-cloud=2.17.0
+- libgoogle-cloud-storage=2.17.0
+- libgpg-error=1.48
 - libgrpc=1.60.1
 - libiconv=1.17
 - libjpeg-turbo=3.0.0
@@ -160,7 +161,7 @@ dependencies:
 - openjpeg=2.5.0
 - openssl=3.2.1
 - packaging=23.2
-- pandas=2.2.0
+- pandas=2.2.1
 - pcre2=10.42
 - pillow=10.2.0
 - pip=24.0
@@ -190,7 +191,7 @@ dependencies:
 - rtree=1.2.0
 - scikit-learn=1.4.1.post1
 - scipy=1.12.0
-- setuptools=69.1.0
+- setuptools=69.1.1
 - shapely=2.0.3
 - sip=6.7.12
 - six=1.16.0
@@ -243,9 +244,9 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.0
   - country-bounding-boxes==0.2.3
-  - coverage==7.4.2
+  - coverage==7.4.3
   - cython==3.0.8
-  - dask==2024.2.0
+  - dask==2024.2.1
   - datetime==5.4
   - donfig==0.8.1.post0
   - equi7grid==0.2.2
