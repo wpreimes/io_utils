@@ -119,7 +119,7 @@ dependencies:
 - libpng=1.6.43
 - libpq=16.2
 - libprotobuf=4.25.1
-- libre2-11=2023.06.02
+- libre2-11=2023.09.01
 - librttopo=1.1.0
 - libsndfile=1.2.2
 - libspatialindex=1.9.3
@@ -155,7 +155,7 @@ dependencies:
 - nspr=4.35
 - nss=3.98
 - numpy=1.26.4
-- openjpeg=2.5.0
+- openjpeg=2.5.1
 - openssl=3.2.1
 - packaging=23.2
 - pandas=2.2.1
@@ -182,7 +182,7 @@ dependencies:
 - python_abi=3.10
 - pytz=2024.1
 - qt-main=5.15.8
-- re2=2023.06.02
+- re2=2023.09.01
 - readline=8.2
 - requests=2.31.0
 - rtree=1.2.0
