@@ -117,8 +117,8 @@ dependencies:
 - libgfortran5=13.2.0
 - libglib=2.78.4
 - libgomp=13.2.0
-- libgoogle-cloud=2.17.0
-- libgoogle-cloud-storage=2.17.0
+- libgoogle-cloud=2.21.0
+- libgoogle-cloud-storage=2.21.0
 - libgpg-error=1.48
 - libgrpc=1.60.1
 - libiconv=1.17
@@ -171,7 +171,7 @@ dependencies:
 - nspr=4.35
 - nss=3.98
 - numpy=1.26.4
-- openjpeg=2.5.1
+- openjpeg=2.5.2
 - openssl=3.2.1
 - packaging=23.2
 - pandas=2.2.1
@@ -212,7 +212,7 @@ dependencies:
 - snappy=1.1.10
 - sqlite=3.45.1
 - threadpoolctl=3.3.0
-- tiledb=2.20.0
+- tiledb=2.20.1
 - tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
