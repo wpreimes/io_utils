@@ -5,7 +5,7 @@ channels:
 dependencies:
 - _libgcc_mutex=0.1
 - _openmp_mutex=4.5
-- alsa-lib=1.2.10
+- alsa-lib=1.2.11
 - attr=2.5.1
 - attrs=23.2.0
 - aws-c-auth=0.7.16
