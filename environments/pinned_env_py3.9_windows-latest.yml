@@ -215,7 +215,7 @@ dependencies:
   - configparser==6.0.1
   - country-bounding-boxes==0.2.3
   - coverage==7.4.3
-  - cython==3.0.8
+  - cython==3.0.9
   - dask==2024.2.1
   - datetime==5.4
   - donfig==0.8.1.post0
