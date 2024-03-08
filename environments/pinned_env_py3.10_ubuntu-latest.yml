@@ -172,7 +172,7 @@ dependencies:
 - openssl=3.2.1
 - packaging=23.2
 - pandas=2.2.1
-- pcre2=10.42
+- pcre2=10.43
 - pillow=10.2.0
 - pip=24.0
 - pixman=0.43.2
@@ -267,7 +267,7 @@ dependencies:
   - geopathfinder==0.1.4
   - geospade==0.2.3
   - h5py==3.10.0
-  - importlib-metadata==7.0.1
+  - importlib-metadata==7.0.2
   - iniconfig==2.0.0
   - ismn==1.4.0
   - iso3166==2.1.1
