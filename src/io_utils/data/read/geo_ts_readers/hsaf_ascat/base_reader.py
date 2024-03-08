@@ -67,3 +67,10 @@ class HSAFAscatSMDASTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
         grid = load_grid(grid_path)
         super(HSAFAscatSMDASTs, self).__init__(ts_path, grid, **kwargs)
+
+if __name__ == '__main__':
+    from ascat.h_saf import AscatGriddedNcTs
+    grid = "/home/wpreimes/shares/radar/Projects/H_SAF_CDOP4/05_deliverables_products/auxiliary/warp5_grid/TUW_WARP5_grid_info_2_3.nc"
+    path = "/home/wpreimes/shares/radar/Projects/H_SAF_CDOP4/05_deliverables_products/H120/H119_H120r14"
+    ds = AscatGriddedNcTs(path, fn_format="H119_H120_{:04d}", grid_filename=grid)
+    ts = ds.read(15, 45)

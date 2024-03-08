@@ -179,7 +179,11 @@ def spaceify(settings, sections=None):
     else:
         sections = np.atleast_1d(sections)
 
-    nspacs = [Namespace(**sets[sec]) for sec in sections]
+    nspacs = []
+    for sec in sections:
+        s = Namespace(**sets[sec])
+        s.__SectionName = sec
+        nspacs.append(s)
 
     if len(nspacs) == 1:
         return nspacs[0]

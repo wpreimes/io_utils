@@ -124,9 +124,9 @@ def test_ascat_sat_data():
             },
             "05-ColumnCombineAdapter":
             {
-                "func": pd.DataFrame.mean,
+                "func": np.nanmean,
                 "columns": ["sm", "proc_flag"],
-                "func_kwargs": {"skipna": True},
+                "func_kwargs": {},
                 "new_name": "mean_sm_procflag",
             }
     }

@@ -4,9 +4,10 @@ import cartopy
 import cartopy.crs as ccrs
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import cartopy.mpl.geoaxes as geoaxes
 from io_utils.plot.misc import map_add_grid, map_add_cbar, meshgrid
 
-def reshape_dat(ds) -> dict:
+def reshape_dat(ds, ndims=2) -> dict:
     """
     Bring data into 2d array shape that contourf and pcolormesh expect.
 
@@ -20,21 +21,40 @@ def reshape_dat(ds) -> dict:
     Returns
     -------
     data: dict
-        Dictionary with keys 'lon2d', 'lat2d', 'data'
+        Dictionary with keys 'lon', 'lat', 'data'
     """
-    lats = ds.index.get_level_values(0).values
-    lons = ds.index.get_level_values(1).values
+    names = list(ds.index.names)
 
-    raster = meshgrid(lons, lats)
-    lons2d = np.reshape(raster.activearrlon, raster.shape)
-    lats2d = np.reshape(raster.activearrlat, raster.shape)
+    lat_names = ['lat', 'latitude', 'y']
+    lon_names = ['lon', 'longitude', 'x']
+    ilat = 0
+    for n in lat_names:
+        if n in names:
+            ilat = names.index(n)
+    ilon = 1
+    for n in lon_names:
+        if n in names:
+            ilon = names.index(n)
 
-    gpis, _ = raster.find_nearest_gpi(lons, lats)
+    lats = ds.index.get_level_values(ilat).values
+    lons = ds.index.get_level_values(ilon).values
 
-    dat = np.full(raster.shape, np.nan).flatten()
-    dat[gpis] = ds.values
-    dat = dat.reshape(raster.shape)
-    data = {'lon2d': lons2d, 'lat2d': lats2d, 'data': dat}
+    if ndims == 1:
+        data = {'lon': lons, 'lat': lats, 'data': ds.values}
+        return data
+    if ndims == 2:
+        raster = meshgrid(lons, lats)
+        lons2d = np.reshape(raster.activearrlon, raster.shape)
+        lats2d = np.reshape(raster.activearrlat, raster.shape)
+
+        gpis, _ = raster.find_nearest_gpi(lons, lats)
+
+        dat = np.full(raster.shape, np.nan).flatten()
+        dat[gpis] = ds.values
+        dat = dat.reshape(raster.shape)
+        data = {'lon': lons2d, 'lat': lats2d, 'data': dat}
+    else:
+        raise NotImplementedError('ndims must be 1 or 2')
 
     return data
 
@@ -66,8 +86,11 @@ class MapPlotter:
                                   edgecolor='k')
             self.ax = plt.axes(projection=projection)
         else:
+            if not isinstance(ax, geoaxes.GeoAxes):
+                raise ValueError('ax must be a cartopy GeoAxes')
             self.fig = None
             self.ax = ax
+
         self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
 
     def __del__(self):
@@ -106,8 +129,10 @@ class MapPlotter:
         ----------
         land_color: str or None, optional (default: 'white')
             Color of the land on the map
-        ocean: bool, optional (default: False)
-            Draw ocean in lightskyblue color
+        ocean: bool or str, optional (default: False)
+            False: White / transparent ocean color
+            True: Draw ocean in lightskyblue color
+            string: Draw ocean in the given color
         coastline_size: str, optional (default: '110m')
             Resolution of the coastlines. See cartopy documentation for
             details.
@@ -117,8 +142,9 @@ class MapPlotter:
             Whether to add country borders to the map.
         """
         if ocean:
+            facecolor = 'lightskyblue' if ocean is True else ocean
             self.ax.add_feature(
-                cartopy.feature.OCEAN, zorder=0, facecolor='lightskyblue')
+                cartopy.feature.OCEAN, zorder=0, facecolor=facecolor)
         self.ax.add_feature(
             cartopy.feature.LAND, zorder=0, facecolor=land_color)
 
@@ -156,6 +182,7 @@ class MapPlotter:
             :func:`io_utils.plot.misc.map_add_cbar`:
                 - cb_label : str, optional (default: None)
                 - cb_loc : str, optional (default: bottom)
+                - cb_ticksize: int, optional (default: 5)
                 - cb_labelsize : int, optional (default: 7)
                 - cb_extend : str, optional (default: Both)
                 - cb_n_ticks : int, optional (default: None)
@@ -163,12 +190,12 @@ class MapPlotter:
                 - cb_ext_label_max : str, optional (default: None)
                 - cb_text : list, optional (default: None)
         """
-        dat = reshape_dat(ds)
+        dat = reshape_dat(ds, ndims=2)
 
         if isinstance(cmap, str):
             cmap = plt.get_cmap(cmap)
 
-        p = self.ax.pcolormesh(dat['lon2d'], dat['lat2d'], dat['data']*scalef,
+        p = self.ax.pcolormesh(dat['lon'], dat['lat'], dat['data']*scalef,
                                zorder=3,
                                cmap=cmap, transform=ccrs.PlateCarree())
 
@@ -212,6 +239,7 @@ class MapPlotter:
             :func:`io_utils.plot.misc.map_add_cbar`:
                 - cb_label : str, optional (default: None)
                 - cb_loc : str, optional (default: bottom)
+                - cb_ticksize: int, optional (default: 5)
                 - cb_labelsize : int, optional (default: 7)
                 - cb_extend : str, optional (default: Both)
                 - cb_n_ticks : int, optional (default: None)
@@ -220,10 +248,10 @@ class MapPlotter:
                 - cb_text : list, optional (default: None)
         """
 
-        dat = reshape_dat(ds)
+        dat = reshape_dat(ds, ndims=1)
 
         p = self.ax.scatter(
-            dat['lon2d'], dat['lat2d'], c=dat['data'],
+            dat['lon'], dat['lat'], c=dat['data'],
             transform=ccrs.PlateCarree(),
             marker=marker,
             cmap=cmap,
@@ -263,11 +291,11 @@ class MapPlotter:
         lw: int, optional (default: 1)
             Line width of the contour lines.
         """
-        dat = reshape_dat(ds)
+        dat = reshape_dat(ds, ndims=2)
         _lw = mpl.rcParams['hatch.linewidth']
         mpl.rcParams['hatch.linewidth'] = lw
         self.ax.contourf(
-            dat['lon2d'], dat['lat2d'], dat['data'],
+            dat['lon'], dat['lat'], dat['data'],
             transform=ccrs.PlateCarree(),
             colors=colors,
             levels=[.5, 1.5],
@@ -300,11 +328,10 @@ class MapPlotter:
         ds[ds == False] = np.nan
         ds = ds.dropna()
 
-        lats = ds.index.get_level_values(0)
-        lons = ds.index.get_level_values(1)
+        data = reshape_dat(ds, ndims=1)
 
         self.ax.scatter(
-            lons, lats, c=color,
+            data['lon'], data['lat'], c=color,
             transform=ccrs.PlateCarree(),
             marker=marker,
             s=s,

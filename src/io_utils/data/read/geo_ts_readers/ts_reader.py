@@ -20,7 +20,7 @@ def load_settings(setts_file):
     return settings
 
 
-class GeoTsReader(object):
+class GeoTsReader:
 
     def __init__(self,
                  cls,
@@ -183,7 +183,7 @@ class GeoTsReader(object):
         else:
             warnings.warn('Appling a resampling method is slow, use a string that pandas can use, e.g. mean!')
             if groups is None:
-                groups = df.resample(self.resample[0])
+                groups = df.resample(self.resample[0], origin='epoch')
             df = groups.apply(method, axis=0)
 
         df.freq = self.resample[0]
