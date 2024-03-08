@@ -351,9 +351,7 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
                     warnings.warn(f"{p} : Value is scaled but not replaced, are you sure?")
         try:
             data_df = self.read_agg_cell_data(cell,
-                                              param=params,
-                                              format='var_np_arrays',
-                                              to_replace=to_replace)
+                                              param=params)
         except FileNotFoundError:
             data_df = None
 
@@ -372,8 +370,8 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
                                        cell_gpi.flatten(),
                                        fill_value=fill_value,
                                        dtype=dtype)
-
-        timestamps = data_df.pop('index')
+        if 'index' in data_df.columns:
+            timestamps = data_df.pop('index')
 
         sel = np.isin(timestamps, dt_index)
 

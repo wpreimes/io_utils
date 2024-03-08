@@ -67,6 +67,7 @@ class GeoEra5LandTs(object):
         assert all([self.grid == reader.grid for reader in self.readers])
 
     def read(self, *args, **kwargs):
-        return pd.concat([r.read(*args, **kwargs) for r in self.readers],
-                         axis=1)
+        df = pd.concat([r.read(*args, **kwargs) for r in self.readers],
+                         axis=1).sort_index()
+        return df
 

@@ -181,10 +181,13 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
     else:
         exteme_labels = True
 
-    cax, kw = mpl.colorbar.make_axes(imax, location=cb_loc,
-                                     aspect=35 if cb_loc in ['top', 'bottom'] else 20,
-                                     extend=cb_extend, shrink=0.7, use_gridspec=True,
-                                     pad=0.07 if not exteme_labels else 0.08)
+    cax, kw = mpl.colorbar.make_axes(
+        imax, location=cb_loc,
+        aspect=35 if cb_loc in ['top', 'bottom'] else 20,
+        extend=cb_extend,
+        shrink=0.7 if cb_loc in ['top', 'bottom'] else 0.5,
+        use_gridspec=True,
+        pad=0.07 if not exteme_labels else 0.08)
 
     if f:
         cb = f.colorbar(im, cax=cax, **kw)

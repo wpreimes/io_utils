@@ -58,8 +58,3 @@ class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible,
             ts = ts.replace(self._fillval, np.nan)
         return ts
 
-if __name__ == '__main__':
-    from smecv_grid.grid import SMECV_Grid_v052
-    path = '/home/wpreimes/shares/radar/Projects/CCIplus_Soil_Moisture/07_data/LPRM/v7.0/011_resampledTemporal/amsr2_a/'
-    ds = GeoCCISMv7IntermedNcTs(path, exact_index=True)
-    ts = ds.read(15,45)
