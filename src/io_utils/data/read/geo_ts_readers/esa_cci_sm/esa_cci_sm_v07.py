@@ -58,8 +58,3 @@ class GeoCCISMv7IntermedNcTs(GriddedNcContiguousRaggedTsCompatible,
             ts = ts.replace(self._fillval, np.nan)
         return ts
 
-if __name__ == '__main__':
-    from smecv_grid.grid import SMECV_Grid_v052
-    path = '/tmp/c3s_ts'
-    ds = GeoCCISMv7IntermedNcTs(path, exact_index=False, grid=SMECV_Grid_v052())
-    ts = ds.read(746235)
