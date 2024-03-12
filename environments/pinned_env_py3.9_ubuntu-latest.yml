@@ -46,6 +46,7 @@ dependencies:
 - dbus=1.13.6
 - expat=2.6.1
 - fiona=1.9.6
+- fmt=10.2.1
 - folium=0.16.0
 - font-ttf-dejavu-sans-mono=2.37
 - font-ttf-inconsolata=3.000
@@ -210,6 +211,7 @@ dependencies:
 - sip=6.7.12
 - six=1.16.0
 - snappy=1.1.10
+- spdlog=1.12.0
 - sqlite=3.45.1
 - threadpoolctl=3.3.0
 - tiledb=2.20.1
