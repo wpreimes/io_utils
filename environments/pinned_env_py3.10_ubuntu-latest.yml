@@ -256,7 +256,7 @@ dependencies:
   - configobj==5.0.8
   - configparser==6.0.1
   - country-bounding-boxes==0.2.3
-  - coverage==7.4.3
+  - coverage==7.4.4
   - cython==3.0.9
   - dask==2024.3.0
   - datetime==5.4
@@ -307,5 +307,5 @@ dependencies:
   - typing-extensions==4.10.0
   - veranda==1.1.0
   - zarr==2.17.1
-  - zipp==3.18.0
+  - zipp==3.18.1
   - zope-interface==6.2
