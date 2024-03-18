@@ -149,7 +149,7 @@ dependencies:
 - libxcb=1.15
 - libxcrypt=4.4.36
 - libxkbcommon=1.6.0
-- libxml2=2.12.5
+- libxml2=2.12.6
 - libzip=1.10.1
 - libzlib=1.2.13
 - lz4-c=1.9.4
