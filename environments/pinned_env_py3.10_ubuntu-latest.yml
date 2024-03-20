@@ -55,7 +55,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.49.0
+- fonttools=4.50.0
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.8.4
@@ -163,7 +163,7 @@ dependencies:
 - munkres=1.1.4
 - mysql-common=8.0.33
 - mysql-libs=8.0.33
-- ncurses=6.4
+- ncurses=6.4.20240210
 - netcdf4=1.6.5
 - networkx=3.2.1
 - nspr=4.35
@@ -277,7 +277,7 @@ dependencies:
   - locket==1.0.0
   - lxml==5.1.0
   - more-itertools==10.2.0
-  - numba==0.59.0
+  - numba==0.59.1
   - numcodecs==0.12.1
   - parse==1.20.1
   - partd==1.4.1
