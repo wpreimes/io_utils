@@ -12,10 +12,10 @@ dependencies:
 - aws-c-http=0.8.1
 - aws-c-io=0.14.6
 - aws-c-mqtt=0.10.3
-- aws-c-s3=0.5.2
+- aws-c-s3=0.5.3
 - aws-c-sdkutils=0.1.15
 - aws-checksums=0.1.18
-- aws-crt-cpp=0.26.3
+- aws-crt-cpp=0.26.4
 - aws-sdk-cpp=1.11.267
 - azure-core-cpp=1.11.1
 - azure-storage-blobs-cpp=12.10.0
@@ -88,11 +88,10 @@ dependencies:
 - libbrotlidec=1.1.0
 - libbrotlienc=1.1.0
 - libcblas=3.9.0
-- libclang=15.0.7
-- libclang13=15.0.7
+- libclang13=18.1.2
 - libcrc32c=1.1.2
 - libcurl=8.6.0
-- libdeflate=1.19
+- libdeflate=1.20
 - libexpat=2.6.2
 - libffi=3.4.2
 - libgdal=3.8.4
@@ -249,7 +248,7 @@ dependencies:
   - pyresample==1.28.2
   - pytesmo==0.16.0
   - pytest==8.1.1
-  - pytest-cov==4.1.0
+  - pytest-cov==5.0.0
   - pytileproj==0.0.17
   - pyyaml==6.0.1
   - qa4sm-preprocessing==0.2
