@@ -12,7 +12,7 @@ dependencies:
 - aws-c-http=0.8.1
 - aws-c-io=0.14.6
 - aws-c-mqtt=0.10.3
-- aws-c-s3=0.5.3
+- aws-c-s3=0.5.4
 - aws-c-sdkutils=0.1.15
 - aws-checksums=0.1.18
 - aws-crt-cpp=0.26.4
