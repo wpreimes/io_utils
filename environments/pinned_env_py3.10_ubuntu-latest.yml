@@ -100,7 +100,7 @@ dependencies:
 - libclang13=18.1.2
 - libcrc32c=1.1.2
 - libcups=2.3.3
-- libcurl=8.6.0
+- libcurl=8.7.1
 - libdeflate=1.20
 - libedit=3.1.20191231
 - libev=4.33

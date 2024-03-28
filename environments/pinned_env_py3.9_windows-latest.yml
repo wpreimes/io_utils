@@ -90,7 +90,7 @@ dependencies:
 - libcblas=3.9.0
 - libclang13=18.1.2
 - libcrc32c=1.1.2
-- libcurl=8.6.0
+- libcurl=8.7.1
 - libdeflate=1.20
 - libexpat=2.6.2
 - libffi=3.4.2
