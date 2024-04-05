@@ -246,7 +246,7 @@ dependencies:
 - xorg-xextproto=7.3.0
 - xorg-xf86vidmodeproto=2.3.1
 - xorg-xproto=7.0.31
-- xyzservices=2023.10.1
+- xyzservices=2024.4.0
 - xz=5.2.6
 - zipp=3.17.0
 - zlib=1.2.13
@@ -263,7 +263,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.4.4
   - cython==3.0.10
-  - dask==2024.4.0
+  - dask==2024.4.1
   - datetime==5.5
   - donfig==0.8.1.post0
   - equi7grid==0.2.2
