@@ -41,7 +41,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.50.0
+- fonttools=4.51.0
 - freetype=2.12.1
 - freexl=1.0.6
 - gdal=3.7.0
@@ -138,7 +138,7 @@ dependencies:
 - markupsafe=2.1.5
 - matplotlib=3.7.3
 - matplotlib-base=3.7.3
-- mpg123=1.32.4
+- mpg123=1.32.6
 - munch=4.0.0
 - munkres=1.1.4
 - mysql-common=8.0.33
@@ -281,7 +281,7 @@ dependencies:
   - toolz==0.12.1
   - tqdm==4.66.2
   - trollsift==0.5.1
-  - typing-extensions==4.10.0
+  - typing-extensions==4.11.0
   - veranda==1.1.0
   - zarr==2.16.1
   - zope-interface==6.2
