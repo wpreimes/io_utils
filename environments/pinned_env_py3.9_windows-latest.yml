@@ -38,7 +38,7 @@ dependencies:
 - click-plugins=1.1.1
 - cligj=0.7.2
 - colorama=0.4.6
-- contourpy=1.2.0
+- contourpy=1.2.1
 - cycler=0.12.1
 - expat=2.6.2
 - fiona=1.9.6
@@ -138,7 +138,7 @@ dependencies:
 - msys2-conda-epoch=20160418
 - munkres=1.1.4
 - netcdf4=1.6.5
-- networkx=3.2.1
+- networkx=3.3
 - numpy=1.26.4
 - openjpeg=2.5.2
 - openssl=3.2.1
