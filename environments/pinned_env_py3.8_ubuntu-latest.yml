@@ -49,7 +49,8 @@ dependencies:
 - geopandas-base=0.13.2
 - geos=3.11.2
 - geotiff=1.7.1
-- gettext=0.21.1
+- gettext=0.22.5
+- gettext-tools=0.22.5
 - giflib=5.2.1
 - glib=2.78.1
 - glib-tools=2.78.1
@@ -77,6 +78,8 @@ dependencies:
 - lerc=4.0.0
 - libaec=1.1.3
 - libarchive=3.6.2
+- libasprintf=0.22.5
+- libasprintf-devel=0.22.5
 - libblas=3.9.0
 - libbrotlicommon=1.1.0
 - libbrotlidec=1.1.0
@@ -97,6 +100,8 @@ dependencies:
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.3
 - libgdal=3.7.0
+- libgettextpo=0.22.5
+- libgettextpo-devel=0.22.5
 - libgfortran-ng=13.2.0
 - libgfortran5=13.2.0
 - libglib=2.78.1
@@ -187,7 +192,7 @@ dependencies:
 - shapely=2.0.1
 - sip=6.7.12
 - six=1.16.0
-- snappy=1.1.10
+- snappy=1.2.0
 - sqlite=3.45.2
 - threadpoolctl=3.4.0
 - tiledb=2.13.2
