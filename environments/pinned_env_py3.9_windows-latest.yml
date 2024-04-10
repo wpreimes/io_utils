@@ -12,10 +12,10 @@ dependencies:
 - aws-c-http=0.8.1
 - aws-c-io=0.14.6
 - aws-c-mqtt=0.10.3
-- aws-c-s3=0.5.5
+- aws-c-s3=0.5.6
 - aws-c-sdkutils=0.1.15
 - aws-checksums=0.1.18
-- aws-crt-cpp=0.26.4
+- aws-crt-cpp=0.26.6
 - aws-sdk-cpp=1.11.267
 - azure-core-cpp=1.11.1
 - azure-storage-blobs-cpp=12.10.0
@@ -183,7 +183,7 @@ dependencies:
 - shapely=2.0.3
 - sip=6.7.12
 - six=1.16.0
-- snappy=1.1.10
+- snappy=1.2.0
 - spdlog=1.12.0
 - sqlite=3.45.2
 - tbb=2021.11.0
