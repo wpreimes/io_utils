@@ -4,15 +4,15 @@ channels:
 - defaults
 dependencies:
 - attrs=23.2.0
-- aws-c-auth=0.7.16
-- aws-c-cal=0.6.10
-- aws-c-common=0.9.14
+- aws-c-auth=0.7.17
+- aws-c-cal=0.6.11
+- aws-c-common=0.9.15
 - aws-c-compression=0.2.18
 - aws-c-event-stream=0.4.2
 - aws-c-http=0.8.1
-- aws-c-io=0.14.6
+- aws-c-io=0.14.7
 - aws-c-mqtt=0.10.3
-- aws-c-s3=0.5.6
+- aws-c-s3=0.5.7
 - aws-c-sdkutils=0.1.15
 - aws-checksums=0.1.18
 - aws-crt-cpp=0.26.6
@@ -234,7 +234,7 @@ dependencies:
   - geographiclib==2.0
   - geopathfinder==0.1.4
   - geospade==0.2.3
-  - h5py==3.10.0
+  - h5py==3.11.0
   - iniconfig==2.0.0
   - ismn==1.4.0
   - iso3166==2.1.1
