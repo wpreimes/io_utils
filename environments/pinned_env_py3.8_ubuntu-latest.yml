@@ -246,7 +246,7 @@ dependencies:
   - dask==2023.5.0
   - datetime==5.5
   - equi7grid==0.2.2
-  - exceptiongroup==1.2.0
+  - exceptiongroup==1.2.1
   - fasteners==0.19
   - fsspec==2024.3.1
   - geographiclib==2.0

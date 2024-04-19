@@ -272,7 +272,7 @@ dependencies:
   - datetime==5.5
   - donfig==0.8.1.post0
   - equi7grid==0.2.2
-  - exceptiongroup==1.2.0
+  - exceptiongroup==1.2.1
   - fasteners==0.19
   - fsspec==2024.3.1
   - geographiclib==2.0
@@ -294,7 +294,7 @@ dependencies:
   - pluggy==1.4.0
   - pygeobase==0.6.2
   - git+https://github.com/TUW-GEO/pygeogrids@a241064ac487c524bed2469170fb62b211cc0881
-  - pykdtree==1.3.11
+  - pykdtree==1.3.12
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.28.3
   - pytesmo==0.16.0
