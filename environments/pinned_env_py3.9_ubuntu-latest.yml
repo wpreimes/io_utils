@@ -8,7 +8,7 @@ dependencies:
 - alsa-lib=1.2.11
 - attr=2.5.1
 - attrs=23.2.0
-- aws-c-auth=0.7.17
+- aws-c-auth=0.7.18
 - aws-c-cal=0.6.11
 - aws-c-common=0.9.15
 - aws-c-compression=0.2.18
@@ -19,13 +19,13 @@ dependencies:
 - aws-c-s3=0.5.7
 - aws-c-sdkutils=0.1.15
 - aws-checksums=0.1.18
-- aws-crt-cpp=0.26.6
+- aws-crt-cpp=0.26.8
 - aws-sdk-cpp=1.11.267
 - azure-core-cpp=1.11.1
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
-- branca=0.7.1
+- branca=0.7.2
 - brotli=1.1.0
 - brotli-bin=1.1.0
 - brotli-python=1.1.0
@@ -217,7 +217,7 @@ dependencies:
 - sip=6.7.12
 - six=1.16.0
 - snappy=1.2.0
-- spdlog=1.12.0
+- spdlog=1.13.0
 - sqlite=3.45.3
 - threadpoolctl=3.4.0
 - tiledb=2.21.2
