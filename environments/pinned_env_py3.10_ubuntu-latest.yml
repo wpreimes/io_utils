@@ -295,7 +295,7 @@ dependencies:
   - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
   - pyresample==1.28.3
   - pytesmo==0.16.0
-  - pytest==8.1.2
+  - pytest==8.2.0
   - pytest-cov==5.0.0
   - pytileproj==0.0.17
   - pyyaml==6.0.1
