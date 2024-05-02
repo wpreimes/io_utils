@@ -22,6 +22,7 @@ dependencies:
 - aws-crt-cpp=0.26.8
 - aws-sdk-cpp=1.11.267
 - azure-core-cpp=1.11.1
+- azure-identity-cpp=1.6.0
 - azure-storage-blobs-cpp=12.10.0
 - azure-storage-common-cpp=12.5.0
 - blosc=1.21.5
@@ -58,7 +59,7 @@ dependencies:
 - fonttools=4.51.0
 - freetype=2.12.1
 - freexl=2.0.0
-- gdal=3.8.4
+- gdal=3.8.5
 - geopandas=0.14.4
 - geopandas-base=0.14.4
 - geos=3.12.1
@@ -116,7 +117,7 @@ dependencies:
 - libflac=1.4.3
 - libgcc-ng=13.2.0
 - libgcrypt=1.10.3
-- libgdal=3.8.4
+- libgdal=3.8.5
 - libgettextpo=0.22.5
 - libgettextpo-devel=0.22.5
 - libgfortran-ng=13.2.0
@@ -187,10 +188,10 @@ dependencies:
 - pip=24.0
 - pixman=0.43.2
 - ply=3.11
-- poppler=24.03.0
+- poppler=24.04.0
 - poppler-data=0.4.12
 - postgresql=16.2
-- proj=9.3.1
+- proj=9.4.0
 - pthread-stubs=0.4
 - pulseaudio-client=17.0
 - pyparsing=3.1.2
@@ -220,7 +221,7 @@ dependencies:
 - spdlog=1.13.0
 - sqlite=3.45.3
 - threadpoolctl=3.5.0
-- tiledb=2.21.2
+- tiledb=2.22.0
 - tk=8.6.13
 - toml=0.10.2
 - tomli=2.0.1
