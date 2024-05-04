@@ -206,7 +206,7 @@ dependencies:
 - xz=5.2.6
 - zipp=3.17.0
 - zlib=1.2.13
-- zstd=1.5.5
+- zstd=1.5.6
 - pip:
   - affine==2.4.0
   - ascat==2.3.1
@@ -219,7 +219,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.5.0
   - cython==3.0.10
-  - dask==2024.4.2
+  - dask==2024.5.0
   - datetime==5.5
   - donfig==0.8.1.post0
   - equi7grid==0.2.2
