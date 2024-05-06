@@ -88,7 +88,7 @@ dependencies:
 - libbrotlidec=1.1.0
 - libbrotlienc=1.1.0
 - libcblas=3.9.0
-- libclang13=18.1.4
+- libclang13=18.1.5
 - libcrc32c=1.1.2
 - libcurl=8.7.1
 - libdeflate=1.20

@@ -101,7 +101,7 @@ dependencies:
 - libcap=2.69
 - libcblas=3.9.0
 - libclang-cpp15=15.0.7
-- libclang13=18.1.4
+- libclang13=18.1.5
 - libcrc32c=1.1.2
 - libcups=2.3.3
 - libcurl=8.7.1
