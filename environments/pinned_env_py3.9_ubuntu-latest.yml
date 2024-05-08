@@ -229,7 +229,7 @@ dependencies:
 - tzcode=2024a
 - tzdata=2024a
 - unicodedata2=15.1.0
-- uriparser=0.9.7
+- uriparser=0.9.8
 - urllib3=2.2.1
 - wheel=0.43.0
 - xarray=2024.3.0
@@ -290,7 +290,7 @@ dependencies:
   - numba==0.59.1
   - numcodecs==0.12.1
   - parse==1.20.1
-  - partd==1.4.1
+  - partd==1.4.2
   - platformdirs==4.2.1
   - pluggy==1.5.0
   - pygeobase==0.6.2
@@ -308,7 +308,7 @@ dependencies:
   - regex==2024.4.28
   - repurpose==0.9
   - rioxarray==0.15.0
-  - setuptools-scm==8.0.4
+  - setuptools-scm==8.1.0
   - smecv-grid==0.3
   - snuggs==1.4.7
   - toolz==0.12.1
@@ -316,5 +316,5 @@ dependencies:
   - trollsift==0.5.1
   - typing-extensions==4.11.0
   - veranda==1.1.0
-  - zarr==2.17.2
+  - zarr==2.18.0
   - zope-interface==6.3
