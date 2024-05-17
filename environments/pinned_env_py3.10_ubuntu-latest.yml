@@ -313,5 +313,5 @@ dependencies:
   - trollsift==0.5.1
   - veranda==1.1.0
   - zarr==2.18.0
-  - zipp==3.18.1
+  - zipp==3.18.2
   - zope-interface==6.4

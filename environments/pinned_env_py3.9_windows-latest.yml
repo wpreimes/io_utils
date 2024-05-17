@@ -266,5 +266,5 @@ dependencies:
   - trollsift==0.5.1
   - typing-extensions==4.11.0
   - veranda==1.1.0
-  - zarr==2.18.0
+  - zarr==2.18.1
   - zope-interface==6.4
