@@ -59,7 +59,7 @@ dependencies:
 - geopandas=0.14.4
 - geopandas-base=0.14.4
 - geos=3.12.1
-- geotiff=1.7.1
+- geotiff=1.7.3
 - glib=2.80.2
 - glib-tools=2.80.2
 - gst-plugins-base=1.24.3
@@ -212,7 +212,7 @@ dependencies:
   - ascat==2.4.0
   - asciitree==0.3.3
   - cadati==0.0.4
-  - cf-xarray==0.9.0
+  - cf-xarray==0.9.1
   - cloudpickle==3.0.0
   - configobj==5.0.8
   - configparser==7.0.0
@@ -267,4 +267,4 @@ dependencies:
   - typing-extensions==4.12.0
   - veranda==1.1.0
   - zarr==2.18.1
-  - zope-interface==6.4.post1
+  - zope-interface==6.4.post2
