@@ -56,7 +56,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.51.0
+- fonttools=4.52.1
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.9.0
@@ -130,7 +130,7 @@ dependencies:
 - libkml=1.3.0
 - liblapack=3.9.0
 - libllvm15=15.0.7
-- libllvm18=18.1.5
+- libllvm18=18.1.6
 - libnetcdf=4.9.2
 - libnghttp2=1.58.0
 - libnsl=2.0.1
