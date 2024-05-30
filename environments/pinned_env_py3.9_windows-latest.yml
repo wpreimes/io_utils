@@ -62,8 +62,8 @@ dependencies:
 - geotiff=1.7.3
 - glib=2.80.2
 - glib-tools=2.80.2
-- gst-plugins-base=1.24.3
-- gstreamer=1.24.3
+- gst-plugins-base=1.24.4
+- gstreamer=1.24.4
 - hdf4=4.2.15
 - hdf5=1.14.3
 - icu=73.2
