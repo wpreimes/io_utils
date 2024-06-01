@@ -233,7 +233,7 @@ dependencies:
 - zstd=1.5.6
 - pip:
   - affine==2.4.0
-  - ascat==2.4.1
+  - ascat==2.4.2
   - asciitree==0.3.3
   - cadati==0.0.4
   - cf-xarray==0.8.6

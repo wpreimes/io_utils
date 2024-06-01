@@ -255,7 +255,7 @@ dependencies:
 - zstd=1.5.6
 - pip:
   - affine==2.4.0
-  - ascat==2.4.1
+  - ascat==2.4.2
   - asciitree==0.3.3
   - cadati==0.0.4
   - cf-xarray==0.9.1
@@ -265,7 +265,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.5.3
   - cython==3.0.10
-  - dask==2024.5.1
+  - dask==2024.5.2
   - datetime==5.5
   - donfig==0.8.1.post1
   - equi7grid==0.2.2
@@ -313,5 +313,5 @@ dependencies:
   - trollsift==0.5.1
   - veranda==1.1.0
   - zarr==2.18.2
-  - zipp==3.19.0
+  - zipp==3.19.1
   - zope-interface==6.4.post2
