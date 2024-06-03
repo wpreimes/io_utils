@@ -28,7 +28,7 @@ dependencies:
 - brotli-python=1.1.0
 - bzip2=1.0.8
 - c-ares=1.28.1
-- ca-certificates=2024.2.2
+- ca-certificates=2024.6.2
 - cairo=1.18.0
 - cartopy=0.23.0
 - certifi=2024.2.2
@@ -52,7 +52,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.52.4
+- fonttools=4.53.0
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.9.0
@@ -135,7 +135,7 @@ dependencies:
 - markupsafe=2.1.5
 - matplotlib=3.8.4
 - matplotlib-base=3.8.4
-- minizip=4.0.5
+- minizip=4.0.6
 - mkl=2024.1.0
 - msys2-conda-epoch=20160418
 - munkres=1.1.4
@@ -264,7 +264,7 @@ dependencies:
   - toolz==0.12.1
   - tqdm==4.66.4
   - trollsift==0.5.1
-  - typing-extensions==4.12.0
+  - typing-extensions==4.12.1
   - veranda==1.1.0
   - zarr==2.18.2
   - zope-interface==6.4.post2
