@@ -248,7 +248,7 @@ dependencies:
   - equi7grid==0.2.2
   - exceptiongroup==1.2.1
   - fasteners==0.19
-  - fsspec==2024.5.0
+  - fsspec==2024.6.0
   - geographiclib==2.0
   - geopathfinder==0.1.4
   - geospade==0.2.3
