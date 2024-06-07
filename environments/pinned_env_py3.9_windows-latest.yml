@@ -143,7 +143,7 @@ dependencies:
 - networkx=3.2.1
 - numpy=1.26.4
 - openjpeg=2.5.2
-- openssl=3.3.0
+- openssl=3.3.1
 - packaging=24.0
 - pandas=2.2.2
 - pcre2=10.43
@@ -194,8 +194,8 @@ dependencies:
 - uriparser=0.9.8
 - urllib3=2.2.1
 - vc=14.3
-- vc14_runtime=14.38.33135
-- vs2015_runtime=14.38.33135
+- vc14_runtime=14.40.33810
+- vs2015_runtime=14.40.33810
 - wheel=0.43.0
 - win_inet_pton=1.1.0
 - xarray=2024.5.0
