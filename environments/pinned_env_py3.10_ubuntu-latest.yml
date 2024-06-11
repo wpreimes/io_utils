@@ -35,7 +35,7 @@ dependencies:
 - ca-certificates=2024.6.2
 - cairo=1.18.0
 - cartopy=0.23.0
-- certifi=2024.2.2
+- certifi=2024.6.2
 - cfitsio=4.4.0
 - cftime=1.6.3
 - charset-normalizer=3.3.2
@@ -145,7 +145,7 @@ dependencies:
 - libsndfile=1.2.2
 - libspatialindex=1.9.3
 - libspatialite=5.1.0
-- libsqlite=3.45.3
+- libsqlite=3.46.0
 - libssh2=1.11.0
 - libstdcxx-ng=13.2.0
 - libsystemd0=255
@@ -216,7 +216,7 @@ dependencies:
 - six=1.16.0
 - snappy=1.2.0
 - spdlog=1.13.0
-- sqlite=3.45.3
+- sqlite=3.46.0
 - threadpoolctl=3.5.0
 - tiledb=2.24.0
 - tk=8.6.13
@@ -283,7 +283,7 @@ dependencies:
   - llvmlite==0.42.0
   - locket==1.0.0
   - lxml==5.2.2
-  - more-itertools==10.2.0
+  - more-itertools==10.3.0
   - numba==0.59.1
   - numcodecs==0.12.1
   - parse==1.20.1
