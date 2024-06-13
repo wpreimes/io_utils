@@ -157,7 +157,7 @@ dependencies:
 - openblas=0.3.27
 - openjpeg=2.5.0
 - openssl=3.1.6
-- packaging=24.0
+- packaging=24.1
 - pandas=1.5.3
 - pcre2=10.40
 - pillow=10.0.0

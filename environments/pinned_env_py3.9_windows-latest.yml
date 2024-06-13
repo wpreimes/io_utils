@@ -96,8 +96,8 @@ dependencies:
 - libffi=3.4.2
 - libgdal=3.9.0
 - libglib=2.80.2
-- libgoogle-cloud=2.24.0
-- libgoogle-cloud-storage=2.24.0
+- libgoogle-cloud=2.25.0
+- libgoogle-cloud-storage=2.25.0
 - libgrpc=1.62.2
 - libhwloc=2.10.0
 - libiconv=1.17
@@ -144,7 +144,7 @@ dependencies:
 - numpy=1.26.4
 - openjpeg=2.5.2
 - openssl=3.3.1
-- packaging=24.0
+- packaging=24.1
 - pandas=2.2.2
 - pcre2=10.43
 - pillow=10.3.0
