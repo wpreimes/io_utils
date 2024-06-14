@@ -191,7 +191,7 @@ dependencies:
 - poppler=24.04.0
 - poppler-data=0.4.12
 - postgresql=16.3
-- proj=9.4.0
+- proj=9.4.1
 - pthread-stubs=0.4
 - pulseaudio-client=17.0
 - pyparsing=3.1.2
@@ -232,7 +232,7 @@ dependencies:
 - uriparser=0.9.8
 - urllib3=2.2.1
 - wheel=0.43.0
-- xarray=2024.5.0
+- xarray=2024.6.0
 - xcb-util=0.4.0
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.0
@@ -283,11 +283,11 @@ dependencies:
   - iniconfig==2.0.0
   - ismn==1.4.0
   - iso3166==2.1.1
-  - llvmlite==0.42.0
+  - llvmlite==0.43.0
   - locket==1.0.0
   - lxml==5.2.2
   - more-itertools==10.3.0
-  - numba==0.59.1
+  - numba==0.60.0
   - numcodecs==0.12.1
   - parse==1.20.2
   - partd==1.4.2
