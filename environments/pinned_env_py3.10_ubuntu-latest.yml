@@ -19,7 +19,7 @@ dependencies:
 - aws-c-s3=0.5.10
 - aws-c-sdkutils=0.1.16
 - aws-checksums=0.1.18
-- aws-crt-cpp=0.26.10
+- aws-crt-cpp=0.26.12
 - aws-sdk-cpp=1.11.329
 - azure-core-cpp=1.11.1
 - azure-identity-cpp=1.6.0
@@ -265,7 +265,7 @@ dependencies:
   - country-bounding-boxes==0.2.3
   - coverage==7.5.3
   - cython==3.0.10
-  - dask==2024.5.2
+  - dask==2024.6.0
   - datetime==5.5
   - donfig==0.8.1.post1
   - equi7grid==0.2.2
