@@ -110,6 +110,12 @@ class GeoTsReader:
         setattr(self, read_func_name, self._read)
 
 
+    @property
+    def parameters(self):
+        params = self.base_reader.parameters or []
+        return [self.params_rename[p] if (p in self.params_rename or {}) else p
+                for p in params ]
+
     def __str__(self):
         reader_class_str = self.reader.__class__.__name__
 

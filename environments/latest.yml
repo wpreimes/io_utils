@@ -5,6 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - numpy<2
   - geopandas   # let geopandas install gdal, pyproj etc.
   - netCDF4
   - matplotlib
@@ -23,11 +24,12 @@ dependencies:
       - country-bounding-boxes
       - ismn
       - ascat
+      - repurpose
       - lxml
       - smecv_grid
       - qa4sm-preprocessing
-      - git+https://github.com/TUW-GEO/pygeogrids@a241064ac487c524bed2469170fb62b211cc0881
-      - git+https://github.com/TUW-GEO/pynetcf@5bf538c9e91176b631ed3004fba273ca282ebcfc
+      - pygeogrids
+      - pynetcf
       - pytesmo
       - pytest
       - pytest-cov
