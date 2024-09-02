@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.9']  # main python version(s) to runs sdist for
+        python-version: ['3.10']  # main python version(s) to runs sdist for
         os: [ "ubuntu-latest", "windows-latest" ]
         package: [true]  # run setup.py sdist
         include:
@@ -29,7 +29,7 @@ jobs:
             python-version: '3.8'
             package: false
           - os: "ubuntu-latest"
-            python-version: '3.10'
+            python-version: '3.12'
             package: false
     steps:
       - name: Checkout repository

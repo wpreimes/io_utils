@@ -292,7 +292,6 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         param_fill_val:dict=None,
         param_scalf:dict=None,
         param_dtype:dict=None,
-        to_replace=None,
         as_xr=False):
         """
         Read aggregated data for a cell.
@@ -324,11 +323,18 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
         """
 
-        def _template(name, gpis, fill_value=np.nan, dtype='float64'):
-            ser = pd.Series(index=np.sort(gpis),
-                            data=[np.full(len(dt_index), fill_value, dtype=dtype)] * len(gpis))
-            ser.name = name
-            return ser
+        def _template(gpis, timestamps, name=None, fill_value=np.nan, dtype='float64'):
+            if name is None:
+                columns = gpis
+            else:
+                columns = pd.MultiIndex.from_product([[name], gpis], names=['var', 'gpi'])
+
+            df = pd.DataFrame(index=timestamps, columns=columns,
+                              data=fill_value, dtype=dtype)
+            # ser = pd.Series(index=np.sort(gpis),
+            #                 data=[np.full(len(dt_index), fill_value, dtype=dtype)] * len(gpis))
+            # ser.name = name
+            return df
 
         cell_gpi = self.grid.gpis[self.grid.arrcell == cell]
         cell_lons, cell_lats = self.grid.gpi2lonlat(cell_gpi)
@@ -361,40 +367,61 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
             if p not in param_dtype.keys():
                 param_dtype[p] = 'float64'
 
-        if data_df is None: # file not found
-            data_df = {'index': dt_index}
+        if data_df is None:  # file not found
+            _dfs = []
+            # data_df = pd.DataFrame(index=dt_index,
+            #                        columns=pd.MultiIndex.from_product([params, cell_gpi.flatten()]))
+            #data_df = {'index': dt_index}
             for p in params:
                 fill_value = param_fill_val[p]
-                dtype= param_dtype[p]
-                data_df[p] = _template(p,
-                                       cell_gpi.flatten(),
-                                       fill_value=fill_value,
-                                       dtype=dtype)
+                dtype = param_dtype[p]
+                df = _template(name=p,
+                               gpis=np.sort(cell_gpi.flatten()),
+                               timestamps=dt_index,
+                               fill_value=fill_value,
+                               dtype=dtype)
+                _dfs.append(df)
+            data_df = pd.concat(_dfs, axis=1)
+
         if 'index' in data_df.columns:
             timestamps = data_df.pop('index')
+        else:
+            timestamps = data_df.index.values
 
         sel = np.isin(timestamps, dt_index)
 
+        names = np.unique(data_df.columns.get_level_values('var').values)
         data_arr = {}
-        for name, ds in data_df.items():
+        for name in names:
+            ds = data_df[name]
             if ds.index.size != cell_gpi.size:
-                missing_gpis = np.setdiff1d(cell_gpi, ds.index.values)
+                missing_gpis = np.setdiff1d(cell_gpi, ds.columns.values)
                 fill_val = param_fill_val[name]
+                if len(missing_gpis) > 0:
+                    ds_missing_gpis = _template(
+                        name=name,
+                        timestamps=timestamps,
+                              gpis=missing_gpis,
+                              fill_value=fill_val)
+                    # ds_missing_gpis = pd.Series(
+                    #     index=missing_gpis,
+                    #     data=[np.repeat(fill_val, len(timestamps))] * len(missing_gpis))
 
-                ds_missing_gpis = pd.Series(
-                    index=missing_gpis,
-                    data=[np.repeat(fill_val, len(timestamps))] * len(missing_gpis))
+                    data_df = pd.concat([data_df, ds_missing_gpis], axis=1)
+                    data_df = data_df[data_df.columns.sortlevel(1)[0]]
+                    #data_df = data_df.sort_values(data_df.columns.sortlevel('gpi'), axis=1)
+                    #data_df[name, tuple(missing_gpis)] = ds_missing_gpis
+                    #data_df.insert((name, 0), ds_missing_gpis)
+                    #data_df[name, missing_gpis] = pd.concat([ds, ds_missing_gpis], axis=1, sort=True)
+                    assert len(data_df[name].columns) == cell_gpi.size, "Unexpected number of gpis"
 
-                data_df[name] = pd.concat([ds, ds_missing_gpis], axis=0, sort=True)
-                assert len(data_df[name]) == cell_gpi.size, "Unexpected number of gpis"
-
-            data_df[name] = data_df[name].sort_index(ascending=True)
+            #data_df[name] = data_df[name, np.sort(data_df[name].columns)]
 
             # from (time, gpi) to (gpi, time)
-            arr = np.ndarray.view(np.transpose(np.vstack(data_df[name]))) # transpose?
+            #arr = np.ndarray.view(np.transpose(np.vstack(data_df[name].values))) # transpose?
 
             newshape = (len(timestamps), *cell_gpi_shape)
-            arr = np.reshape(arr, newshape)[sel, :, :] #flip?
+            arr = np.reshape(data_df[name].values, newshape)[sel, :, :] #flip?
 
             data_arr[name] = np.ma.masked_equal(arr.astype(param_dtype[name]),
                                                 param_fill_val[name],
@@ -407,7 +434,7 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
         timestamps = timestamps[sel]
 
-        timestamps.name = 'time'
+        #timestamps.name = 'time'
         if as_xr:
             data_vars = {}
             for name in data_arr.keys():
@@ -420,7 +447,7 @@ class SmecvTs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
 
             cube = xr.Dataset(
                 data_vars=data_vars,
-                coords={'time': timestamps.values.astype('datetime64[s]'),
+                coords={'time': timestamps.astype('datetime64[s]'),
                         'lon': np.array(np.unique(cell_lons.flatten()), np.float32),
                         'lat': np.array(np.unique(cell_lats.flatten()), np.float32)})
 
@@ -554,3 +581,7 @@ class CCIDs(GriddedTsBase):
 
         return self.fid.idx, cell_data
 
+if __name__ == '__main__':
+    ds = GriddedNcContiguousRaggedTsCompatible("/home/wpreimes/shares/climers/Projects/C3S2_312a/07_data/C3S_v202312/CDR_EODC/043_combined_BreakAdjusted/time_series",
+                                               grid=SMECV_Grid_v052())
+    ds.read_cell(1394)

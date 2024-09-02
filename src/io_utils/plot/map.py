@@ -50,7 +50,7 @@ def reshape_dat(ds, ndims=2) -> dict:
         gpis, _ = raster.find_nearest_gpi(lons, lats)
 
         dat = np.full(raster.shape, np.nan).flatten()
-        dat[gpis] = ds.values
+        np.put(dat, gpis, ds.values)
         dat = dat.reshape(raster.shape)
         data = {'lon': lons2d, 'lat': lats2d, 'data': dat}
     else:
@@ -118,8 +118,9 @@ class MapPlotter:
                      urc=urc, gridspace=gridspace, draw_labels=draw_labels,
                      fontsize=fontsize)
 
-    def add_basemap(self, land_color='white', ocean=False,
-                    coastline_size='110m', states=False, borders=False,
+    def add_basemap(self, land_color='white', ocean=False, lakes=False,
+                    rivers=False, coastline_size='110m',
+                    states=False, borders=False,
                     linewidth_mult=1):
         """
         Add a basemap and basemap features to the map. Note for more advanced
@@ -147,6 +148,13 @@ class MapPlotter:
                 cartopy.feature.OCEAN, zorder=0, facecolor=facecolor)
         self.ax.add_feature(
             cartopy.feature.LAND, zorder=0, facecolor=land_color)
+        if rivers:
+            self.ax.add_feature(cartopy.feature.RIVERS, zorder=5,
+                                facecolor="lightskyblue")
+        if lakes:
+            self.ax.add_feature(
+                cartopy.feature.LAKES, zorder=5, facecolor="lightskyblue"
+            )
 
         self.ax.coastlines(
             resolution=coastline_size, color='black', zorder=5,
@@ -189,6 +197,10 @@ class MapPlotter:
                 - cb_ext_label_min : str, optional (default: None)
                 - cb_ext_label_max : str, optional (default: None)
                 - cb_text : list, optional (default: None)
+
+        Returns
+        -------
+        p: plt.Colormesh
         """
         dat = reshape_dat(ds, ndims=2)
 
@@ -205,6 +217,8 @@ class MapPlotter:
         if add_cbar:
             cbar_kwargs = cbar_kwargs or {}
             map_add_cbar(self.fig, self.ax, p, **cbar_kwargs)
+
+        return p
 
     def add_scatter_layer(self, ds, marker='.', s=1, cmap=plt.get_cmap('RdYlBu'),
                           clim=None, add_cbar=False, cbar_kwargs=None):
@@ -356,8 +370,8 @@ class MapPlotter:
 
 
 if __name__ == '__main__':
-    import xarray as xr
 
+    """
     ds = xr.open_dataset("/home/wpreimes/shares/climers/Projects/CCIplus_Soil_Moisture/07_data/ESA_CCI_SM_v08.1_GAPFILLED/07_ts2img/2022/ESACCI-SOILMOISTURE-L3S-SSMV-COMBINED_GAPFILLED-20220122000000-fv08.1.nc")
     df = ds[['sm', 'gapmask']].isel(time=0).to_dataframe().drop(columns='time')
     plotter = MapPlotter(llc=(-30, 35), urc=(40, 70))
@@ -385,5 +399,6 @@ if __name__ == '__main__':
 
     plotter.ax.set_title('Test')
     plotter.fig.savefig('test.png', dpi=300, bbox_inches='tight')
+    """
 
 

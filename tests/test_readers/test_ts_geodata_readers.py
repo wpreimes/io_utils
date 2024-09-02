@@ -147,14 +147,20 @@ def test_C3S201912_single_daily_readers(verbose=False):
     assert not ts.dropna(how='all').empty
 
 @pytest.mark.geo_test_data
-def test_SMAP_spl3_v6_reader(verbose=False):
-    dataset = ('SMAP', 'SP3SMPv6', 'ASC')
-    if verbose: print_test_config(dataset)
+def test_SMAP_spl3_v8_reader(verbose=False):
 
-    smap_reader = GeoSpl3smpTs(dataset_or_path=dataset,
-                         ioclass_kws={'read_bulk': True}, exact_index=True,
-                         parameters=['soil_moisture', 'retrieval_qual_flag'],
-                         scale_factors={'soil_moisture': 1.})
+    dataset = os.path.join(os.path.join(root_path.m, "Datapool", "SMAP", "02_processed", "SPL3SMP_v8", "AM_descending"))
+
+    if verbose:
+        print_test_config(dataset)
+
+    smap_reader = GeoSpl3smpTs(
+        dataset_or_path=dataset,
+        ioclass_kws={'read_bulk': True}, exact_index=True,
+        parameters=['soil_moisture', 'retrieval_qual_flag'],
+        scale_factors={'soil_moisture': 1.}
+    )
+
     celldata = smap_reader.read_cells([166])
     assert any([not data.empty for gpi, data in celldata.items()])
     smap_reader = SelfMaskingAdapter(smap_reader, '!=', 999, 'retrieval_qual_flag')

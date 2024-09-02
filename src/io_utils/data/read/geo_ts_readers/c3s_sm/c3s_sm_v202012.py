@@ -18,7 +18,7 @@ class GeoC3Sv202012Ts(base_reader.GeoC3STs):
 
     _sm_cols = ['sm', 'original', 'filled', 'gapfilled', 'anomaly', 'climatology',
                 'rzsm_1', 'rzsm_2', 'rzsm_3', 'rzsm_4',
-                'uncertainty', 'sm_uncertainty' 'uncertainty_1', 'uncertainty_2',
+                'uncertainty', 'sm_uncertainty', 'uncertainty_1', 'uncertainty_2',
                 'uncertainty_3', 'uncertainty_4']
 
     _col_fillvalues = {_t0_ref[0]: [-3440586.5]}

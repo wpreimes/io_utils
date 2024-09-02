@@ -31,7 +31,7 @@ def test_smap_sat_data():
     """
 
     reader_kwargs = {
-        "dataset_or_path": ('SMAP', 'SP3SMPv6', 'ASC'),
+        "dataset_or_path": os.path.join(root_path.m, "Datapool", "SMAP", "02_processed", "SPL3SMP_v8", "AM_descending"),
         "force_path_group": "climers",
         'parameters': ['surface_temperature', 'retrieval_qual_flag', 'soil_moisture'],
         'exact_index': True,
@@ -410,6 +410,7 @@ def test_other_function_than_read():
 
 
 if __name__ == "__main__":
+    test_smap_sat_data()
     test_other_function_than_read()
     test_ascat_sat_data()
     test_cci_sat_data()
