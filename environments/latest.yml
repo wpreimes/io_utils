@@ -5,6 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - numpy<2
   - geopandas   # let geopandas install gdal, pyproj etc.
   - netCDF4
   - matplotlib
