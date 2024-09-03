@@ -106,6 +106,7 @@ jobs:
         with:
           name: Artifacts-py${{ matrix.python-version }}-${{ matrix.os }}
           path: .artifacts/*
+          include-hidden-files: true
   coveralls:
     name: Submit Coveralls 👚
     needs: build
