@@ -100,9 +100,9 @@ jobs:
           fi
           ls .artifacts/dist
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: Artifacts-py${{ matrix.python-version }}-${{ matrix.os }}
           path: .artifacts/*
   coveralls:
     name: Submit Coveralls 👚
@@ -126,13 +126,15 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-      - name: Download all artifacts
-        uses: actions/download-artifact@v2
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: .artifacts
+          path: Artifacts
+          pattern: Artifacts-*
+          merge-multiple: true
       - name: commit and push new files to branch
         run: |
-          cp .artifacts/Artifacts/pinned_*.yml ./environments
+          cp Artifacts/pinned_*.yml ./environments
           ls ./environments
           echo "GITHUB_REF = $GITHUB_REF"
           echo "GITHUB_REPOSITORY = $GITHUB_REPOSITORY"
