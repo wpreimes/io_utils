@@ -193,10 +193,10 @@ dependencies:
 - pyshp=2.3.1
 - pyside6=6.7.2
 - pysocks=1.7.1
-- python=3.10.14
+- python=3.11.9
 - python-dateutil=2.9.0
 - python-tzdata=2024.1
-- python_abi=3.10
+- python_abi=3.11
 - pytz=2024.1
 - qhull=2020.2
 - qt6-main=6.7.2
@@ -218,7 +218,6 @@ dependencies:
 - tornado=6.4.1
 - tzcode=2024a
 - tzdata=2024a
-- unicodedata2=15.1.0
 - uriparser=0.9.8
 - urllib3=2.2.2
 - wayland=1.23.1
@@ -275,7 +274,6 @@ dependencies:
   - datetime==5.5
   - donfig==0.8.1.post1
   - equi7grid==0.2.2
-  - exceptiongroup==1.2.2
   - fasteners==0.19
   - fsspec==2024.6.1
   - geographiclib==2.0
