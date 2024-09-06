@@ -32,7 +32,7 @@ dependencies:
 - curl=8.4.0
 - cycler=0.12.1
 - dbus=1.13.6
-- expat=2.6.2
+- expat=2.6.3
 - fiona=1.9.4
 - folium=0.17.0
 - font-ttf-dejavu-sans-mono=2.37
@@ -98,7 +98,7 @@ dependencies:
 - libedit=3.1.20191231
 - libev=4.33
 - libevent=2.1.12
-- libexpat=2.6.2
+- libexpat=2.6.3
 - libffi=3.4.2
 - libflac=1.4.3
 - libgcc=14.1.0
@@ -268,7 +268,7 @@ dependencies:
   - llvmlite==0.41.1
   - locket==1.0.0
   - lxml==5.3.0
-  - more-itertools==10.4.0
+  - more-itertools==10.5.0
   - numba==0.58.1
   - numcodecs==0.12.1
   - parse==1.20.2

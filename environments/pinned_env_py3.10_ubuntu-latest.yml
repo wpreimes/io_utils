@@ -14,7 +14,7 @@ dependencies:
 - aws-c-http=0.8.8
 - aws-c-io=0.14.18
 - aws-c-mqtt=0.10.4
-- aws-c-s3=0.6.4
+- aws-c-s3=0.6.5
 - aws-c-sdkutils=0.1.19
 - aws-checksums=0.1.18
 - aws-crt-cpp=0.28.2
@@ -34,7 +34,7 @@ dependencies:
 - cairo=1.18.0
 - cartopy=0.23.0
 - certifi=2024.8.30
-- cffi=1.17.0
+- cffi=1.17.1
 - cfitsio=4.4.1
 - cftime=1.6.4
 - charset-normalizer=3.3.2
@@ -42,7 +42,7 @@ dependencies:
 - cycler=0.12.1
 - dbus=1.13.6
 - double-conversion=3.3.0
-- expat=2.6.2
+- expat=2.6.3
 - fmt=11.0.2
 - folium=0.17.0
 - font-ttf-dejavu-sans-mono=2.37
@@ -98,7 +98,7 @@ dependencies:
 - libedit=3.1.20191231
 - libegl=1.7.0
 - libev=4.33
-- libexpat=2.6.2
+- libexpat=2.6.3
 - libffi=3.4.2
 - libgcc=14.1.0
 - libgcc-ng=14.1.0
@@ -289,7 +289,7 @@ dependencies:
   - llvmlite==0.43.0
   - locket==1.0.0
   - lxml==5.3.0
-  - more-itertools==10.4.0
+  - more-itertools==10.5.0
   - numba==0.60.0
   - numcodecs==0.13.0
   - parse==1.20.2
