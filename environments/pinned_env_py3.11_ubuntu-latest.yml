@@ -216,7 +216,7 @@ dependencies:
 - tiledb=2.25.0
 - tk=8.6.13
 - tornado=6.4.1
-- tzcode=2024a
+- tzcode=2024b
 - tzdata=2024a
 - uriparser=0.9.8
 - urllib3=2.2.2
