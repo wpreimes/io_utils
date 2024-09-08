@@ -294,7 +294,7 @@ dependencies:
   - numcodecs==0.13.0
   - parse==1.20.2
   - partd==1.4.2
-  - platformdirs==4.2.2
+  - platformdirs==4.3.1
   - pluggy==1.5.0
   - pygeobase==0.6.3
   - pygeogrids==0.5.1
