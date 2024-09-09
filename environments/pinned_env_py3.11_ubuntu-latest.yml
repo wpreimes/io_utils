@@ -6,7 +6,7 @@ dependencies:
 - _libgcc_mutex=0.1
 - _openmp_mutex=4.5
 - alsa-lib=1.2.12
-- aws-c-auth=0.7.27
+- aws-c-auth=0.7.29
 - aws-c-cal=0.7.4
 - aws-c-common=0.9.27
 - aws-c-compression=0.2.19
@@ -203,7 +203,7 @@ dependencies:
 - re2=2023.09.01
 - readline=8.2
 - requests=2.32.3
-- s2n=1.5.1
+- s2n=1.5.2
 - scikit-learn=1.5.1
 - scipy=1.14.1
 - setuptools=73.0.1
@@ -292,7 +292,7 @@ dependencies:
   - numcodecs==0.13.0
   - parse==1.20.2
   - partd==1.4.2
-  - platformdirs==4.3.1
+  - platformdirs==4.3.2
   - pluggy==1.5.0
   - pygeobase==0.6.3
   - pygeogrids==0.5.1
