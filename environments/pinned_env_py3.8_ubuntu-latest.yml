@@ -67,8 +67,8 @@ dependencies:
 - icu=72.1
 - idna=3.8
 - importlib-metadata=8.4.0
-- importlib-resources=6.4.4
-- importlib_resources=6.4.4
+- importlib-resources=6.4.5
+- importlib_resources=6.4.5
 - jinja2=3.1.4
 - joblib=1.4.2
 - json-c=0.16
