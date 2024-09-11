@@ -8,7 +8,7 @@ dependencies:
 - alsa-lib=1.2.12
 - aws-c-auth=0.7.29
 - aws-c-cal=0.7.4
-- aws-c-common=0.9.27
+- aws-c-common=0.9.28
 - aws-c-compression=0.2.19
 - aws-c-event-stream=0.4.3
 - aws-c-http=0.8.8
@@ -302,7 +302,7 @@ dependencies:
   - pynetcf==0.5.0
   - pyresample==1.30.0
   - pytesmo==0.16.0
-  - pytest==8.3.2
+  - pytest==8.3.3
   - pytest-cov==5.0.0
   - pytileproj==0.0.17
   - pyyaml==6.0.2
