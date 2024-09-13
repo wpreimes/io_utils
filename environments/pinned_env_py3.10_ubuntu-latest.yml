@@ -223,9 +223,9 @@ dependencies:
 - urllib3=2.2.2
 - wayland=1.23.1
 - wheel=0.44.0
-- xarray=2024.7.0
+- xarray=2024.9.0
 - xcb-util=0.4.1
-- xcb-util-cursor=0.1.4
+- xcb-util-cursor=0.1.5
 - xcb-util-image=0.4.0
 - xcb-util-keysyms=0.4.1
 - xcb-util-renderutil=0.3.10
