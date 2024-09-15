@@ -64,7 +64,7 @@ dependencies:
 - hpack=4.0.0
 - hyperframe=6.0.1
 - icu=72.1
-- idna=3.8
+- idna=3.9
 - importlib-metadata=8.5.0
 - importlib-resources=6.4.5
 - importlib_resources=6.4.5
@@ -168,7 +168,7 @@ dependencies:
 - pillow=10.0.0
 - pip=24.2
 - pixman=0.43.2
-- platformdirs=4.3.2
+- platformdirs=4.3.3
 - ply=3.11
 - pooch=1.8.2
 - poppler=23.05.0
