@@ -3,17 +3,17 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- aws-c-auth=0.7.29
+- aws-c-auth=0.7.30
 - aws-c-cal=0.7.4
 - aws-c-common=0.9.28
 - aws-c-compression=0.2.19
 - aws-c-event-stream=0.4.3
-- aws-c-http=0.8.8
+- aws-c-http=0.8.9
 - aws-c-io=0.14.18
-- aws-c-mqtt=0.10.4
+- aws-c-mqtt=0.10.5
 - aws-c-s3=0.6.5
 - aws-c-sdkutils=0.1.19
-- aws-checksums=0.1.18
+- aws-checksums=0.1.20
 - aws-crt-cpp=0.28.2
 - aws-sdk-cpp=1.11.379
 - azure-core-cpp=1.13.0
@@ -64,7 +64,7 @@ dependencies:
 - hpack=4.0.0
 - hyperframe=6.0.1
 - icu=75.1
-- idna=3.9
+- idna=3.10
 - intel-openmp=2024.2.1
 - jinja2=3.1.4
 - joblib=1.4.2
@@ -192,7 +192,7 @@ dependencies:
 - ucrt=10.0.22621.0
 - unicodedata2=15.1.0
 - uriparser=0.9.8
-- urllib3=2.2.2
+- urllib3=2.2.3
 - vc=14.3
 - vc14_runtime=14.40.33810
 - vs2015_runtime=14.40.33810

@@ -64,7 +64,7 @@ dependencies:
 - hpack=4.0.0
 - hyperframe=6.0.1
 - icu=72.1
-- idna=3.9
+- idna=3.10
 - importlib-metadata=8.5.0
 - importlib-resources=6.4.5
 - importlib_resources=6.4.5
@@ -210,7 +210,7 @@ dependencies:
 - tzdata=2024a
 - unicodedata2=15.1.0
 - uriparser=0.9.8
-- urllib3=2.2.2
+- urllib3=2.2.3
 - wheel=0.44.0
 - xarray=2023.1.0
 - xcb-util=0.4.0
