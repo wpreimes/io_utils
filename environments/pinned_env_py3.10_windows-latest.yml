@@ -3,18 +3,18 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- aws-c-auth=0.7.30
+- aws-c-auth=0.7.31
 - aws-c-cal=0.7.4
 - aws-c-common=0.9.28
 - aws-c-compression=0.2.19
 - aws-c-event-stream=0.4.3
-- aws-c-http=0.8.9
+- aws-c-http=0.8.10
 - aws-c-io=0.14.18
 - aws-c-mqtt=0.10.5
 - aws-c-s3=0.6.5
 - aws-c-sdkutils=0.1.19
 - aws-checksums=0.1.20
-- aws-crt-cpp=0.28.2
+- aws-crt-cpp=0.28.3
 - aws-sdk-cpp=1.11.379
 - azure-core-cpp=1.13.0
 - azure-identity-cpp=1.8.0
@@ -185,7 +185,7 @@ dependencies:
 - sqlite=3.46.1
 - tbb=2021.13.0
 - threadpoolctl=3.5.0
-- tiledb=2.26.0
+- tiledb=2.26.1
 - tk=8.6.13
 - tornado=6.4.1
 - tzdata=2024a
@@ -247,7 +247,7 @@ dependencies:
   - numcodecs==0.13.0
   - parse==1.20.2
   - partd==1.4.2
-  - platformdirs==4.3.3
+  - platformdirs==4.3.6
   - pluggy==1.5.0
   - pygeobase==0.6.3
   - pygeogrids==0.5.2
