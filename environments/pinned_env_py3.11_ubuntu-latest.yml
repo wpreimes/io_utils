@@ -92,7 +92,7 @@ dependencies:
 - libclang13=18.1.8
 - libcrc32c=1.1.2
 - libcups=2.3.3
-- libcurl=8.10.0
+- libcurl=8.10.1
 - libdeflate=1.21
 - libdrm=2.4.123
 - libedit=3.1.20191231
@@ -184,7 +184,7 @@ dependencies:
 - poppler=24.08.0
 - poppler-data=0.4.12
 - postgresql=16.4
-- proj=9.4.1
+- proj=9.5.0
 - pthread-stubs=0.4
 - pycparser=2.22
 - pyogrio=0.9.0
