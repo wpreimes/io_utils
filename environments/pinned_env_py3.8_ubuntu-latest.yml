@@ -247,7 +247,7 @@ dependencies:
   - cadati==0.0.6
   - cf-xarray==0.8.6
   - cloudpickle==3.0.0
-  - configobj==5.0.8
+  - configobj==5.0.9
   - configparser==7.1.0
   - country-bounding-boxes==0.2.3
   - coverage==7.6.1

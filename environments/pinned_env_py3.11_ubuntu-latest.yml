@@ -204,7 +204,7 @@ dependencies:
 - re2=2023.09.01
 - readline=8.2
 - requests=2.32.3
-- s2n=1.5.2
+- s2n=1.5.3
 - scikit-learn=1.5.2
 - scipy=1.14.1
 - setuptools=74.1.2
@@ -266,7 +266,7 @@ dependencies:
   - click-plugins==1.1.1
   - cligj==0.7.2
   - cloudpickle==3.0.0
-  - configobj==5.0.8
+  - configobj==5.0.9
   - configparser==7.1.0
   - country-bounding-boxes==0.2.3
   - coverage==7.6.1
