@@ -48,7 +48,7 @@ dependencies:
 - fontconfig=2.14.2
 - fonts-conda-ecosystem=1
 - fonts-conda-forge=1
-- fonttools=4.54.0
+- fonttools=4.54.1
 - freetype=2.12.1
 - freexl=2.0.0
 - gdal=3.9.2
@@ -134,7 +134,7 @@ dependencies:
 - m2w64-gcc-libs-core=5.3.0
 - m2w64-gmp=6.1.0
 - m2w64-libwinpthread-git=5.0.0.4634.697f757
-- mapclassify=2.8.0
+- mapclassify=2.8.1
 - markupsafe=2.1.5
 - matplotlib=3.9.2
 - matplotlib-base=3.9.2
@@ -168,7 +168,7 @@ dependencies:
 - pysocks=1.7.1
 - python=3.10.15
 - python-dateutil=2.9.0
-- python-tzdata=2024.1
+- python-tzdata=2024.2
 - python_abi=3.10
 - pytz=2024.1
 - qhull=2020.2
