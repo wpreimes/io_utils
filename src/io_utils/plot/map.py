@@ -220,6 +220,70 @@ class MapPlotter:
 
         return p
 
+    def add_contour_layer(self, ds, cmap=plt.get_cmap('RdYlBu', 13),
+                          scalef=1, clim=None, add_cbar=False, cbar_kwargs=None):
+        """
+        Draw a contour layer for the given dataset.
+
+        Parameters
+        ----------
+        ds: pd.Series
+            The dataset to plot. The index must be a MultiIndex with the
+            levels 'lat' and 'lon'. The values must be the data to plot.
+        cmap: str or matplotlib.colors.Colormap, optional (default: RdYlBu)
+            The colormap to use, should not have too many levels.
+        clim: tuple, optional (default: None)
+            The range of the colorbar (min, max). When a colorbar is added,
+            it will show this range. If None, then matplotlib decides.
+            You can also set one of min or max to None.
+        add_cbar: bool, optional
+            Add colorbar based on this layer
+        cbar_kwargs: dict, optional (default: None)
+            Keyword arguments passed to the colorbar function. For details see
+            :func:`io_utils.plot.misc.map_add_cbar`:
+                - cb_label : str, optional (default: None)
+                - cb_loc : str, optional (default: bottom)
+                - cb_ticksize: int, optional (default: 5)
+                - cb_labelsize : int, optional (default: 7)
+                - cb_extend : str, optional (default: Both)
+                - cb_n_ticks : int, optional (default: None)
+                - cb_ext_label_min : str, optional (default: None)
+                - cb_ext_label_max : str, optional (default: None)
+                - cb_text : list, optional (default: None)
+
+        Returns
+        -------
+        p: plt.Colormesh
+        """
+        dat = reshape_dat(ds, ndims=2)
+
+        c = dat['data'] * scalef
+        if clim is None:
+            clim = (np.nanquantile(c.values, 0.01),
+                    np.nanquantile(c.values, 0.99))
+
+        n_steps = cmap.N
+        step_size = (clim[1] - clim[0]) / n_steps
+        levels = np.arange(clim[0], clim[1] + step_size, step_size)
+
+        if 'cb_extend' in cbar_kwargs:
+            extend = cbar_kwargs['cb_extend']
+        else:
+            extend = 'both'
+
+        p = self.ax.contourf(dat['lon'], dat['lat'], c,
+                             transform=ccrs.PlateCarree(),
+                             vmin=clim[0], vmax=clim[1],
+                             levels=levels, extend=extend,
+                             cmap=cmap)
+
+        if add_cbar:
+            cbar_kwargs = cbar_kwargs or {}
+            map_add_cbar(self.fig, self.ax, p, **cbar_kwargs)
+
+        return p
+
+
     def add_scatter_layer(self, ds, marker='.', s=1, cmap=plt.get_cmap('RdYlBu'),
                           clim=None, add_cbar=False, cbar_kwargs=None):
         """
