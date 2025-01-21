@@ -93,7 +93,6 @@ class PreprocessingAdapter(BasicAdapter):
         data[self.column] = self.func(data[self.column], **self.kwargs)
         return data
 
-
 class AnomalyClimAdapter(BasicAdapter):
     """
     Takes the pandas DataFrame that reader returns and calculates the
