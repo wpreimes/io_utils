@@ -11,6 +11,8 @@ dependencies:
   - matplotlib
   - cartopy>=0.21
   - xarray
+  - geos
+  - gdal
   - pip
   - pip:
       - setuptools_scm
