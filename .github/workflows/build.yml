@@ -17,35 +17,28 @@ jobs:
   build:
     name: Build py${{ matrix.python-version }} @ ${{ matrix.os }} 🐍
     runs-on: ${{ matrix.os }}
-
+    env:
+      PIP_USE_PEP517: 1
     strategy:
       matrix:
-        python-version: ['3.10']  # main python version(s) to runs sdist for
+        python-version: ['3.12']  # main python version(s) to runs sdist for
         os: [ "ubuntu-latest", "windows-latest" ]
         package: [true]  # run setup.py sdist
-        include:
-          # Other runs where sdist is not called
-          - os: "ubuntu-latest"
-            python-version: '3.8'
-            package: false
-          - os: "ubuntu-latest"
-            python-version: '3.11'
-            package: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
+          lfs: true
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: io_utils
           environment-file: environments/latest.yml
-          mamba-version: "*"
           auto-activate-base: false
       - name: Print environment infos
         shell: bash -l {0}
@@ -80,7 +73,7 @@ jobs:
       - name: Upload Coverage
         shell: bash -l {0}
         run: |
-          pip install coveralls && coveralls --service=github
+          pip install coveralls && coveralls --service=github-actions
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
@@ -114,7 +107,8 @@ jobs:
     steps:
       - name: Finished
         run: |
-          pip3 install --upgrade coveralls && coveralls --service=github --finish
+          pip3 install --upgrade coveralls
+          coveralls --finish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   env_update:
