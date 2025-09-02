@@ -381,6 +381,13 @@ class OrthoMultiTsCellReaderMixin:
 if __name__ == '__main__':
     from io_utils.data.read.geo_ts_readers import GriddedNcContiguousRaggedTsCompatible, SmecvTs
     from smecv_grid.grid import SMECV_Grid_v052
+    from pygeogrids.netcdf import load_grid
+
+    grid = load_grid("/data-read/USERS/wpreimes/temp/fibgrid_wgs84_n1650000.nc")
+
+    ds = GriddedNcContiguousRaggedTsCompatible(
+        "/home/wpreimes/shares/climers/Projects/C3S2_313c/07_data/ASCAT_H121/swath2ts",
+              grid=grid)
 
 
     ds = GriddedNcContiguousRaggedTsCompatible("/home/wpreimes/shares/climers/Projects/CCIplus_Soil_Moisture/07_data/ESA_CCI_SM_v08.1/042_combined_MergedProd/",

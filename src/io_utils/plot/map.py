@@ -59,8 +59,8 @@ def reshape_dat(ds, ndims=2) -> dict:
     return data
 
 class MapPlotter:
-    def __init__(self, figsize=(8, 4), llc=(-179.9999, -60.),
-                 urc=(179.9999, 80), projection=ccrs.Robinson(), ax=None):
+    def __init__(self, figsize=(8, 4), llc=(-179.9999, -90.),
+                 urc=(179.9999, 90), projection=ccrs.Robinson(), ax=None):
         """
         Wrapper around cartopy, pandas and matplotlib to plot data on a map.
         Should handle most simple map cases. For more specific cases, use
@@ -197,6 +197,8 @@ class MapPlotter:
                 - cb_ext_label_min : str, optional (default: None)
                 - cb_ext_label_max : str, optional (default: None)
                 - cb_text : list, optional (default: None)
+                - cb_scalef_x: float, (default: 1)
+                - cb_scalef_y: float, (default: 1)
 
         Returns
         -------
@@ -208,8 +210,7 @@ class MapPlotter:
             cmap = plt.get_cmap(cmap)
 
         p = self.ax.pcolormesh(dat['lon'], dat['lat'], dat['data']*scalef,
-                               zorder=3,
-                               cmap=cmap, transform=ccrs.PlateCarree())
+                               zorder=3, cmap=cmap, transform=ccrs.PlateCarree())
 
         if clim is not None:
             p.set_clim(vmin=clim[0], vmax=clim[1])
@@ -259,12 +260,18 @@ class MapPlotter:
 
         c = dat['data'] * scalef
         if clim is None:
-            clim = (np.nanquantile(c.values, 0.01),
-                    np.nanquantile(c.values, 0.99))
+            if isinstance(c, np.ndarray):
+                pass
+            else:
+                c = c.values
+            clim = (np.nanquantile(c, 0.01),
+                    np.nanquantile(c, 0.99))
 
         n_steps = cmap.N
         step_size = (clim[1] - clim[0]) / n_steps
         levels = np.arange(clim[0], clim[1] + step_size, step_size)
+
+        cbar_kwargs = cbar_kwargs or {}
 
         if 'cb_extend' in cbar_kwargs:
             extend = cbar_kwargs['cb_extend']
