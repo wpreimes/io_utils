@@ -272,7 +272,6 @@ class MapPlotter:
         levels = np.arange(clim[0], clim[1] + step_size, step_size)
 
         cbar_kwargs = cbar_kwargs or {}
-
         if 'cb_extend' in cbar_kwargs:
             extend = cbar_kwargs['cb_extend']
         else:
