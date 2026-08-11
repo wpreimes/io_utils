@@ -19,9 +19,10 @@ def print_test_config(dataset, path_group=None):
 def test_smecv_rzsm_v1_reader(verbose=False):
     if verbose: print('Test reading RZSM from storage.')
     reader = GeoSmecSwiRzsmnv0Ts(
-        dataset_or_path=os.path.join(root_path.m, 'Projects', 'G3P', '07_data',
-                                     'D3.4_C3S_RZSM', 'RZSM_1.5_gap_free',
-                                     '_reshuffled'),
+        dataset_or_path=os.path.join(root_path.m, 'Datapool', 'ESA_CCI_SM',
+                                     '02_processed',
+                                     'ESA_CCI_SM_v09.2', 'timeseries',
+                                     'rzsm'),
                           ioclass_kws={'read_bulk': True},
                           parameters=['rzsm_1', 'rzsm_2', 'rzsm_3'],
                           scale_factors={'rzsm_1': 1.})

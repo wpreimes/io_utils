@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import matplotlib.pyplot as plt
 
-from io_utils.data.plotter.plot_maps import cp_map, cp_scatter_map
+from io_utils.plot.map import MapPlotter
 import numpy as np
 import pandas as pd
 import tempfile
@@ -19,12 +20,15 @@ def test_scatter_map():
         lons = np.linspace(-160, 160, 160)
         lats = np.linspace(90, -90, 160)
         values = np.random.rand(160)
-
-        f, imax, im = cp_scatter_map(lons, lats, values)
-
+        ds = pd.Series(
+            index=pd.MultiIndex.from_arrays([lats, lons], names=['lat', 'lon']),
+            data=values
+        )
+        plotter = MapPlotter()
+        plotter.add_basemap()
+        plotter.add_scatter_layer(ds)
         filename = 'plot_scatter.png'
-
-        f.savefig(os.path.join(out_dir, filename))
+        plotter.savefig(os.path.join(out_dir, filename))
         print('Stored plotter in {}')
         assert os.path.isfile(os.path.join(out_dir, filename))
 
@@ -40,23 +44,12 @@ def test_area_multiindex():
                                          names=['lats', 'lons'])
         df = pd.DataFrame(index=index)
         df['data'] = np.random.rand(df.index.size)
-        f, imax, im = cp_map(df, 'data', resxy=(1,1), offset=(0,0))
-
+        plotter = MapPlotter()
+        plotter.add_basemap()
+        plotter.add_colormesh_layer(df["data"])
         filename = 'plot_area_multiindex.png'
-        f.savefig(os.path.join(out_dir, filename))
+        plotter.savefig(os.path.join(out_dir, filename))
         print('Stored plotter in {}')
-        assert os.path.isfile(os.path.join(out_dir, filename))
-
-def test_area_gpi():
-    with TemporaryDirectory() as out_dir:
-        gpis = np.arange(346859, 374200)
-
-        df = pd.DataFrame(index=gpis)
-        df['data'] = np.random.rand(df.index.size)
-        f, imax, im = cp_map(df, 'data', resxy=(0.25,0.25))
-        filename = 'plot_area_gpi.png'
-        f.savefig(os.path.join(out_dir, filename))
-
         assert os.path.isfile(os.path.join(out_dir, filename))
 
 def test_pretty_plot():
@@ -68,34 +61,27 @@ def test_pretty_plot():
     grid = SMECV_Grid_v052('rainforest')
     index = pd.MultiIndex.from_arrays(
         np.array([grid.activearrlat, grid.activearrlon]),
-        names=['lats', 'lons'])
+        names=['lat', 'lon'])
     df['rainforest'] = np.nan
-    df.loc[index, 'rainforest'] = True
-
-    df = df.dropna(how='all')
-    df['rainforest'].fillna(False, inplace=True)
+    df.loc[index, 'rainforest'] = 1
 
     cb_kwargs = dict(cb_label='ESA CCI SM [$m^3/m^3$]', cb_labelsize=7,
                      cb_extend='both', cb_ext_label_min='DRY',
                      cb_ext_label_max='WET', cb_loc='right')
 
-    f, imax, im = cp_map(df, 'sm',
-                         resxy=(0.25, 0.25), cbrange=(0,50.),
-                         cmap=smecv_sm(), projection=ccrs.Sinusoidal(),
-                         title='Overloaded Plot with too much Information',
-                         ocean=True, land='grey', gridspace=(60,20), states=True,
-                         borders=True,  llc=(-179.9999, -90.), urc=(179.9999, 90),
-                         scale_factor=100,
-                         grid_label_loc='0111', coastline_size='110m',
-                         cb_kwargs=cb_kwargs)
+    plotter = MapPlotter(projection=ccrs.Sinusoidal(),
+                         llc=(-179.9999, -90.), urc=(179.9999, 90))
+    plotter.add_basemap(ocean=True, borders=True, states=True)
+    plotter.add_colormesh_layer(df['sm'].dropna(), cmap=smecv_sm(),
+                                add_cbar=True, cbar_kwargs=cb_kwargs)
+    plotter.add_colormesh_layer(df['rainforest'].dropna(),
+                                cmap=plt.get_cmap("Greens"))
+    plotter.add_gridlines()
 
-    out_dir = tempfile.mkdtemp()
-    try:
+    with tempfile.TemporaryDirectory() as out_dir:
         filename = 'pretty_plot.png'
-        f.savefig(os.path.join(out_dir, 'pretty_plot.png'), dpi=200)
+        plotter.savefig(os.path.join(out_dir, 'pretty_plot.png'), dpi=200)
         assert os.path.isfile(os.path.join(out_dir, filename))
-    finally:
-        shutil.rmtree(out_dir)
 
 
 if __name__ == '__main__':

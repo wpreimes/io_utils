@@ -17,43 +17,44 @@ import warnings
 import numpy as np
 
 _cci_lc_lut_orig_to_short =     \
-     {0: 'Other',
-      10: 'Cropland',
-      11: 'Cropland',
-      12: 'Cropland',
-      20: 'Cropland',
-      30: 'Cropland',
-      40: 'TreeCover',
-      50: 'TreeCover',
-      60: 'TreeCover',
-      61: 'TreeCover',
-      62: 'TreeCover',
-      70: 'TreeCover',
-      71: 'TreeCover',
-      72: 'TreeCover',
-      80: 'TreeCover',
-      81: 'TreeCover',
-      82: 'TreeCover',
-      90: 'TreeCover',
-      100: 'TreeCover',
-      110: 'TreeCover',
-      120: 'Grassland',
-      121: 'Grassland',
-      122: 'Grassland',
-      130: 'Grassland',
-      140: 'Other',
-      150: 'Other',
-      152: 'Other',
-      153: 'Other',
-      160: 'TreeCover',
-      170: 'TreeCover',
-      180: 'Grassland',
-      190: 'UrbanAreas',
-      200: 'Other',
-      201: 'Other',
-      202: 'Other',
-      210: 'Other',
-      220: 'Other'}
+     {0: 'Other',       # no_data
+      10: 'Cropland',   # cropland_rainfed
+      11: 'Cropland',   # cropland_rainfed_herbaceous_cover
+      12: 'Cropland',   # cropland_rainfed_tree_or_shrub_cover
+      20: 'Cropland',   # cropland_irrigated
+      30: 'Cropland',   # mosaic_cropland
+      40: 'TreeCover',  # mosaic_natural_vegetation
+      50: 'TreeCover',  # tree_broadleaved_evergreen_closed_to_open
+      60: 'TreeCover',  # tree_broadleaved_deciduous_closed_to_open
+      61: 'TreeCover',  # tree_broadleaved_deciduous_closed
+      62: 'TreeCover',  # tree_broadleaved_deciduous_open
+      70: 'TreeCover',  # tree_needleleaved_evergreen_closed_to_open
+      71: 'TreeCover',  # tree_needleleaved_evergreen_closed
+      72: 'TreeCover',  # tree_needleleaved_evergreen_open
+      80: 'TreeCover',  # tree_needleleaved_deciduous_closed_to_open
+      81: 'TreeCover',  # tree_needleleaved_deciduous_closed
+      82: 'TreeCover',  # tree_needleleaved_deciduous_open
+      90: 'TreeCover',  # tree_mixed
+      100: 'TreeCover', # mosaic_tree_and_shrub
+      110: 'TreeCover', # mosaic_herbaceous
+      120: 'Grassland', # shrubland
+      121: 'Grassland', # shrubland_evergreen
+      122: 'Grassland', # shrubland_deciduous
+      130: 'Grassland', # grassland
+      140: 'Other',     # lichens_and_mosses
+      150: 'Other',     # sparse_vegetation
+      152: 'Other',     # sparse_shrub
+      153: 'Other',     # sparse_herbaceous
+      160: 'TreeCover', # tree_cover_flooded_fresh_or_brakish_water
+      170: 'TreeCover', # tree_cover_flooded_saline_water
+      180: 'Grassland', # shrub_or_herbaceous_cover_flooded
+      190: 'UrbanAreas',# urban
+      200: 'Other',     # bare_areas
+      201: 'Other',     # bare_areas_consolidated
+      202: 'Other',     # bare_areas_unconsolidated
+      210: 'Other',     # water
+      220: 'Other',     # snow_and_ice
+      }
 
 _ismn_sensor_types = {
     'CS616-1': 'TDR',

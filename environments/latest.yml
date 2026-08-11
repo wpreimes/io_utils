@@ -5,12 +5,14 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - numpy<2
+  - numpy
   - geopandas   # let geopandas install gdal, pyproj etc.
   - netCDF4
   - matplotlib
   - cartopy>=0.21
   - xarray
+  - geos
+  - gdal
   - pip
   - pip:
       - setuptools_scm
@@ -18,7 +20,7 @@ dependencies:
       - pyyaml
       - configparser
       - more_itertools
-      - Equi7Grid==0.2.2
+      - Equi7Grid
       - pytileproj
       - cadati
       - country-bounding-boxes

@@ -59,8 +59,8 @@ def reshape_dat(ds, ndims=2) -> dict:
     return data
 
 class MapPlotter:
-    def __init__(self, figsize=(8, 4), llc=(-179.9999, -60.),
-                 urc=(179.9999, 80), projection=ccrs.Robinson(), ax=None):
+    def __init__(self, figsize=(8, 4), llc=(-179.9999, -90.),
+                 urc=(179.9999, 90), projection=ccrs.Robinson(), ax=None):
         """
         Wrapper around cartopy, pandas and matplotlib to plot data on a map.
         Should handle most simple map cases. For more specific cases, use
@@ -79,7 +79,6 @@ class MapPlotter:
         ax: matplotlib.axes.Axes, optional (default: None)
             If given, the map will be plotted into this axis.
         """
-        self.data_crs = ccrs.PlateCarree()
 
         if ax is None:
             self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
@@ -91,7 +90,7 @@ class MapPlotter:
             self.fig = None
             self.ax = ax
 
-        self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
+        self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]])
 
     def __del__(self):
         plt.close(self.fig)
@@ -111,7 +110,7 @@ class MapPlotter:
         fontsize: int, optional (default: 5)
             Fontsize of the grid labels (if they are drawn)
         """
-        bounds = self.ax.get_extent(crs=self.data_crs)
+        bounds = self.ax.get_extent(ccrs.PlateCarree())
         llc, urc = (bounds[0], bounds[2]), (bounds[1], bounds[3])
         draw_labels = True if '1' in grid_loc else False
         map_add_grid(self.ax, self.ax.projection, grid_loc=grid_loc, llc=llc,
@@ -197,6 +196,8 @@ class MapPlotter:
                 - cb_ext_label_min : str, optional (default: None)
                 - cb_ext_label_max : str, optional (default: None)
                 - cb_text : list, optional (default: None)
+                - cb_scalef_x: float, (default: 1)
+                - cb_scalef_y: float, (default: 1)
 
         Returns
         -------
@@ -208,8 +209,7 @@ class MapPlotter:
             cmap = plt.get_cmap(cmap)
 
         p = self.ax.pcolormesh(dat['lon'], dat['lat'], dat['data']*scalef,
-                               zorder=3,
-                               cmap=cmap, transform=ccrs.PlateCarree())
+                               zorder=3, cmap=cmap, transform=ccrs.PlateCarree())
 
         if clim is not None:
             p.set_clim(vmin=clim[0], vmax=clim[1])
@@ -259,13 +259,18 @@ class MapPlotter:
 
         c = dat['data'] * scalef
         if clim is None:
-            clim = (np.nanquantile(c.values, 0.01),
-                    np.nanquantile(c.values, 0.99))
+            if isinstance(c, np.ndarray):
+                pass
+            else:
+                c = c.values
+            clim = (np.nanquantile(c, 0.01),
+                    np.nanquantile(c, 0.99))
 
         n_steps = cmap.N
         step_size = (clim[1] - clim[0]) / n_steps
         levels = np.arange(clim[0], clim[1] + step_size, step_size)
 
+        cbar_kwargs = cbar_kwargs or {}
         if 'cb_extend' in cbar_kwargs:
             extend = cbar_kwargs['cb_extend']
         else:

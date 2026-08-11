@@ -142,8 +142,9 @@ def map_add_grid(imax, projection, grid_loc, llc, urc, gridspace,
 
 
 def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
-                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None, cb_ext_label_min=None,
-                 cb_ext_label_max=None, cb_text=None):
+                 cb_labelsize=7, cb_extend='both', cb_n_ticks=None,
+                 cb_ext_label_min=None, cb_ext_label_max=None, cb_text=None,
+                 cb_scalef=1):
     """
     Add a colorbar to the bottom of the map
 
@@ -174,6 +175,8 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
         Additional label for the right if the colorbar
     cb_text : list, optional (default: None)
         Strings that are put below, next to the cbar with equal space
+    cb_scalef: float, optional (default: 1)
+        Scale factor for the color bar
     """
 
     if not cb_ext_label_min and not cb_ext_label_max:
@@ -185,9 +188,10 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
         imax, location=cb_loc,
         aspect=35 if cb_loc in ['top', 'bottom'] else 20,
         extend=cb_extend,
-        shrink=0.7 if cb_loc in ['top', 'bottom'] else 0.5,
+        shrink=0.7*cb_scalef if cb_loc in ['top', 'bottom'] else 0.5*cb_scalef,
         use_gridspec=True,
-        pad=0.07 if not exteme_labels else 0.08)
+        pad= 0.08 if cb_loc in ['top', 'bottom'] else 0.04
+    )
 
     if f:
         cb = f.colorbar(im, cax=cax, **kw)
@@ -205,17 +209,20 @@ def map_add_cbar(f, imax, im, cb_label=None, cb_loc='bottom', cb_ticksize=5,
     if exteme_labels:
         if cb_ext_label_min:
             if cb_loc in ['top', 'bottom']:
-                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5, rotation=0, ha='left',
-                           transform=cax.transAxes)
+                cb.ax.text(0, 1.1, cb_ext_label_min, fontsize=5,
+                           rotation=0, ha='left', transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, -0.06, cb_ext_label_min, fontsize=5, rotation=0, va='bottom',
-                           ha='center', transform=cax.transAxes)
+                cb.ax.text(0.5, -0.1, cb_ext_label_min, fontsize=5,
+                           rotation=0, va='bottom', ha='center',
+                           transform=cax.transAxes)
         if cb_ext_label_max:
             if cb_loc in ['top', 'bottom']:
-                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5, rotation=0, ha='right',
+                cb.ax.text(1, 1.1, cb_ext_label_max, fontsize=5,
+                           rotation=0, ha='right',
                            transform=cax.transAxes)
             else:
-                cb.ax.text(0.5, 1.05, cb_ext_label_max, fontsize=5, rotation=0, va='top',
+                cb.ax.text(0.5, 1.1, cb_ext_label_max, fontsize=5,
+                           rotation=0, va='top',
                            ha='center', transform=cax.transAxes)
 
     if cb_text is not None:

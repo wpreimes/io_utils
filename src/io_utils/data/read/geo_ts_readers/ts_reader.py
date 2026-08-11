@@ -109,6 +109,9 @@ class GeoTsReader:
 
         setattr(self, read_func_name, self._read)
 
+    @property
+    def cls(self):
+        return self.base_reader
 
     @property
     def parameters(self):

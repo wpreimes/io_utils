@@ -91,36 +91,36 @@ def test_write_points():
 
 def test_write_ts():
 
-    out_root = tempfile.mkdtemp()
-    stack_out = os.path.join(out_root, 'stack')
-    imgs_out = os.path.join(out_root, 'imgs')
+    with tempfile.TemporaryDirectory() as out_root:
+        stack_out = os.path.join(out_root, 'stack')
+        imgs_out = os.path.join(out_root, 'imgs')
 
-    index = pd.date_range('2000-01-01', '2000-01-10', freq='D')
-    z = pd.to_datetime(index).to_pydatetime()
+        index = pd.date_range('2000-01-01', '2000-01-10', freq='D')
+        z = pd.to_datetime(index).to_pydatetime()
 
-    land_grid = SMECV_Grid_v052('land')
+        land_grid = SMECV_Grid_v052('land')
 
-    ts_writer = NcRegGridStack(dx=0.25, dy=0.25, z=z, z_name='time')
+        ts_writer = NcRegGridStack(dx=0.25, dy=0.25, z=z, z_name='time')
 
-    gpis, lons, lats, cells = land_grid.get_grid_points()
-    i=0
-    for lon, lat in zip(lons, lats):
-        if i > 10: break
-        data = pd.DataFrame(index=index,
-                            data={'var_{}'.format(i): np.random.rand(10) for i in range(5)})
-        ts_writer.write_series(lon, lat, data)
-        i+=1
+        gpis, lons, lats, cells = land_grid.get_grid_points()
+        i=0
+        for lon, lat in zip(lons, lats):
+            if i > 10: break
+            data = pd.DataFrame(index=index,
+                                data={'var_{}'.format(i): np.random.rand(10) for i in range(5)})
+            ts_writer.write_series(lon, lat, data)
+            i+=1
 
-    start = time.time()
-    os.makedirs(stack_out, exist_ok=True)
-    ts_writer.store_stack(os.path.join(stack_out, 'stack.nc'))
-    os.makedirs(imgs_out, exist_ok=True)
-    ts_writer.store_files(imgs_out)
-    end = time.time()
-    print('Writing file took {} seconds'.format(end - start))
+        start = time.time()
+        os.makedirs(stack_out, exist_ok=True)
+        ts_writer.store_stack(os.path.join(stack_out, 'stack.nc'))
+        os.makedirs(imgs_out, exist_ok=True)
+        ts_writer.store_files(imgs_out)
+        end = time.time()
+        print('Writing file took {} seconds'.format(end - start))
 
-    assert os.path.isfile(os.path.join(stack_out, 'stack.nc'))
-    assert len(os.listdir(imgs_out)) == z.size
+        assert os.path.isfile(os.path.join(stack_out, 'stack.nc'))
+        assert len(os.listdir(imgs_out)) == z.size
 
 if __name__ == '__main__':
     test_write_area()
