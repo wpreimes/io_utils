@@ -20,7 +20,7 @@ dependencies:
       - pyyaml
       - configparser
       - more_itertools
-      - Equi7Grid==0.2.2
+      - Equi7Grid
       - pytileproj
       - cadati
       - country-bounding-boxes

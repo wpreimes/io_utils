@@ -313,7 +313,7 @@ class NcRegGridStack(object):
 
             assert data[var].size == self.ds[self.z_name].size
 
-            dat = data[var]
+            dat = np.array(data[var])
             dat[np.isnan(dat)] = self.fill_value
             self.ds[var].loc[dict(**kwargs)] = dat
 

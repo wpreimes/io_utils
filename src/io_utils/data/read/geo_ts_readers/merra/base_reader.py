@@ -19,8 +19,8 @@ class MERRATs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
 
-        grid = load_grid(grid_path)
-        super(MERRATs, self).__init__(ts_path, grid, **kwargs)
+        self.grid = load_grid(grid_path)
+        super(MERRATs, self).__init__(ts_path, self.grid, **kwargs)
 
     def read(self, *args, **kwargs):
         df = super(MERRATs, self).read(*args, **kwargs)

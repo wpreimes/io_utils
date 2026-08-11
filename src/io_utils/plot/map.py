@@ -79,7 +79,6 @@ class MapPlotter:
         ax: matplotlib.axes.Axes, optional (default: None)
             If given, the map will be plotted into this axis.
         """
-        self.data_crs = ccrs.PlateCarree()
 
         if ax is None:
             self.fig = plt.figure(num=None, figsize=figsize, facecolor='w',
@@ -91,7 +90,7 @@ class MapPlotter:
             self.fig = None
             self.ax = ax
 
-        self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]], crs=self.data_crs)
+        self.ax.set_extent([llc[0], urc[0], llc[1], urc[1]])
 
     def __del__(self):
         plt.close(self.fig)
@@ -111,7 +110,7 @@ class MapPlotter:
         fontsize: int, optional (default: 5)
             Fontsize of the grid labels (if they are drawn)
         """
-        bounds = self.ax.get_extent(crs=self.data_crs)
+        bounds = self.ax.get_extent(ccrs.PlateCarree())
         llc, urc = (bounds[0], bounds[2]), (bounds[1], bounds[3])
         draw_labels = True if '1' in grid_loc else False
         map_add_grid(self.ax, self.ax.projection, grid_loc=grid_loc, llc=llc,

@@ -21,8 +21,8 @@ class ERATs(GriddedNcOrthoMultiTs, OrthoMultiTsCellReaderMixin):
         if grid_path is None:
             grid_path = os.path.join(ts_path, "grid.nc")
 
-        grid = nc.load_grid(grid_path)
-        super(ERATs, self).__init__(ts_path, grid, **kwargs)
+        self.grid = nc.load_grid(grid_path)
+        super(ERATs, self).__init__(ts_path, self.grid, **kwargs)
 
     def read(self, *args, **kwargs):
         df = super(ERATs, self).read(*args, **kwargs)

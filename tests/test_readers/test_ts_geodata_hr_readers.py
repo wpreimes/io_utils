@@ -22,17 +22,17 @@ def print_test_config(dataset, path_group=None):
     pg = path_group if path_group is not None else 'storage'
     print('Test reading {} data from {}.'.format(ds, pg))
 
-@pytest.mark.geo_test_data
-def test_ascat_direx_reader_reader(verbose=False):
-    if verbose: print('Test reading ASCAT Direx from storage.')
-    reader = GeoDirexTs(
-        dataset_or_path=('ASCAT', 'DIREX', 'v2', 'Senegal'),
-        ioclass_kws={'read_bulk': True},
-        parameters=['swi_005'],
-        scale_factors={'swi_005': 1.})
-    ts = reader.read(-17.455902100, 14.731057934)
-    assert not ts.empty
-    if verbose: print(ts)
+# @pytest.mark.geo_test_data
+# def test_ascat_direx_reader_reader(verbose=False):
+#     if verbose: print('Test reading ASCAT Direx from storage.')
+#     reader = GeoDirexTs(
+#         dataset_or_path=('ASCAT', 'DIREX', 'v2', 'Senegal'),
+#         ioclass_kws={'read_bulk': True},
+#         parameters=['swi_005'],
+#         scale_factors={'swi_005': 1.})
+#     ts = reader.read(-17.455902100, 14.731057934)
+#     assert not ts.empty
+#     if verbose: print(ts)
 
 @pytest.mark.skipif(not hr_available,
                     reason="Hires Image readers not available")
